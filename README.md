@@ -1,4 +1,4 @@
-# Hash Album
+# Memory Album
 
 An Android picture album app with a unique hash-based image identification feature. Even if you move a picture to a different folder, the app can still recognize it and load its associated remarks.
 
@@ -13,6 +13,16 @@ An Android picture album app with a unique hash-based image identification featu
 - Add personal notes/remarks to any image
 - Swipe up on an image to reveal the remark panel
 - Remarks are saved locally and persist across app sessions
+
+### 📁 Folder Organization
+- Browse images organized by folders/albums
+- Quick folder navigation with thumbnail previews
+- Image count displayed for each folder
+
+### 📷 Image Metadata Display
+- View EXIF metadata including date taken, camera info, and resolution
+- GPS location coordinates when available
+- File size and filename information
 
 ### 👆 Intuitive Swipe Navigation
 - **Swipe left/right**: Navigate between images
@@ -40,6 +50,7 @@ app/src/main/java/com/hashalbum/app/
 │   ├── ImageDataDao.kt      # Data access object
 │   └── ImageRepository.kt   # Repository pattern
 ├── ui/
+│   ├── BucketAdapter.kt     # Folder/album list adapter
 │   ├── GalleryAdapter.kt    # RecyclerView adapter
 │   ├── GalleryViewModel.kt  # ViewModel for gallery
 │   ├── ImagePagerAdapter.kt # ViewPager adapter
@@ -47,6 +58,7 @@ app/src/main/java/com/hashalbum/app/
 │   └── MainActivity.kt      # Main gallery activity
 └── util/
     ├── ImageHasher.kt       # SHA-256 hash generation
+    ├── ImageMetadataHelper.kt # EXIF metadata extraction
     └── MediaStoreHelper.kt  # MediaStore queries
 ```
 
@@ -104,7 +116,7 @@ CREATE TABLE image_data (
 
 ## Future Enhancements
 
-- [ ] Folder/album organization
+- [x] Folder/album organization
 - [ ] Search remarks
 - [ ] Export/import remarks
 - [ ] Cloud sync
