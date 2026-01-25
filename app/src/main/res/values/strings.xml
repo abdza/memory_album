@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Memory Album</string>
+    <string name="no_images">No images found</string>
+    <string name="close">Close</string>
+    <string name="image">Image</string>
+    <string name="remark">Remark</string>
+    <string name="enter_remark">Enter your remark here…</string>
+    <string name="save_remark">Save Remark</string>
+    <string name="swipe_up">Swipe up</string>
+    <string name="swipe_up_for_remark">Swipe up to add remark</string>
+    <string name="has_remark">This image has a remark</string>
+    <string name="remark_saved">Remark saved</string>
+    <string name="edit">Edit</string>
+    <string name="folders">Folders</string>
+    <string name="all_images">All Images</string>
+    <string name="image_info">Image Info</string>
+    <string name="date_taken">Date Taken</string>
+    <string name="location">Location</string>
+    <string name="camera">Camera</string>
+    <string name="resolution">Resolution</string>
+    <string name="file_size">File Size</string>
+    <string name="no_remark">No remark added</string>
+    <string name="add_remark">Add Remark</string>
+</resources>

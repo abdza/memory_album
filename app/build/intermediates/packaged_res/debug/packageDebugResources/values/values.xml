@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="accent">#536DFE</color>
+    <color name="black">#FF000000</color>
+    <color name="placeholder_bg">#E8EAF6</color>
+    <color name="primary">#1A237E</color>
+    <color name="primary_dark">#0D1642</color>
+    <color name="purple_200">#FFBB86FC</color>
+    <color name="purple_500">#FF6200EE</color>
+    <color name="purple_700">#FF3700B3</color>
+    <color name="remark_indicator_color">#536DFE</color>
+    <color name="teal_200">#FF03DAC5</color>
+    <color name="teal_700">#FF018786</color>
+    <color name="white">#FFFFFFFF</color>
+    <string name="add_remark">Add Remark</string>
+    <string name="all_images">All Images</string>
+    <string name="app_name">Memory Album</string>
+    <string name="camera">Camera</string>
+    <string name="close">Close</string>
+    <string name="date_taken">Date Taken</string>
+    <string name="edit">Edit</string>
+    <string name="enter_remark">Enter your remark here…</string>
+    <string name="file_size">File Size</string>
+    <string name="folders">Folders</string>
+    <string name="has_remark">This image has a remark</string>
+    <string name="image">Image</string>
+    <string name="image_info">Image Info</string>
+    <string name="location">Location</string>
+    <string name="no_images">No images found</string>
+    <string name="no_remark">No remark added</string>
+    <string name="remark">Remark</string>
+    <string name="remark_saved">Remark saved</string>
+    <string name="resolution">Resolution</string>
+    <string name="save_remark">Save Remark</string>
+    <string name="swipe_up">Swipe up</string>
+    <string name="swipe_up_for_remark">Swipe up to add remark</string>
+    <style name="Theme.HashAlbum" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="colorPrimary">@color/primary</item>
+        <item name="colorPrimaryVariant">@color/primary_dark</item>
+        <item name="colorOnPrimary">@color/white</item>
+        <item name="colorSecondary">@color/accent</item>
+        <item name="colorSecondaryVariant">@color/accent</item>
+        <item name="colorOnSecondary">@color/black</item>
+        <item name="android:statusBarColor">@color/primary_dark</item>
+    </style>
+    <style name="Theme.HashAlbum.FullScreen" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="colorPrimary">@color/primary</item>
+        <item name="colorPrimaryVariant">@color/primary_dark</item>
+        <item name="colorSecondary">@color/accent</item>
+        <item name="android:windowFullscreen">true</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:navigationBarColor">@android:color/black</item>
+        <item name="android:windowDrawsSystemBarBackgrounds">true</item>
+    </style>
+</resources>
