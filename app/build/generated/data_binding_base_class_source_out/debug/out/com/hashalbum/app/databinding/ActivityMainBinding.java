@@ -4,6 +4,7 @@ package com.hashalbum.app.databinding;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -15,7 +16,6 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import androidx.viewbinding.ViewBinding;
 import androidx.viewbinding.ViewBindings;
 import com.google.android.material.appbar.MaterialToolbar;
-import com.google.android.material.button.MaterialButton;
 import com.hashalbum.app.R;
 import java.lang.NullPointerException;
 import java.lang.Override;
@@ -26,16 +26,16 @@ public final class ActivityMainBinding implements ViewBinding {
   private final DrawerLayout rootView;
 
   @NonNull
-  public final MaterialButton batchRemarkButton;
+  public final ImageButton batchRemarkButton;
 
   @NonNull
-  public final MaterialButton batchTagButton;
+  public final ImageButton batchTagButton;
 
   @NonNull
   public final RecyclerView bucketRecyclerView;
 
   @NonNull
-  public final MaterialButton cancelSelectionButton;
+  public final ImageButton cancelSelectionButton;
 
   @NonNull
   public final DrawerLayout drawerLayout;
@@ -65,8 +65,8 @@ public final class ActivityMainBinding implements ViewBinding {
   public final MaterialToolbar toolbar;
 
   private ActivityMainBinding(@NonNull DrawerLayout rootView,
-      @NonNull MaterialButton batchRemarkButton, @NonNull MaterialButton batchTagButton,
-      @NonNull RecyclerView bucketRecyclerView, @NonNull MaterialButton cancelSelectionButton,
+      @NonNull ImageButton batchRemarkButton, @NonNull ImageButton batchTagButton,
+      @NonNull RecyclerView bucketRecyclerView, @NonNull ImageButton cancelSelectionButton,
       @NonNull DrawerLayout drawerLayout, @NonNull LinearLayout emptyView,
       @NonNull LinearLayout navigationDrawer, @NonNull ProgressBar progressBar,
       @NonNull RecyclerView recyclerView, @NonNull LinearLayout selectionBar,
@@ -116,13 +116,13 @@ public final class ActivityMainBinding implements ViewBinding {
     int id;
     missingId: {
       id = R.id.batchRemarkButton;
-      MaterialButton batchRemarkButton = ViewBindings.findChildViewById(rootView, id);
+      ImageButton batchRemarkButton = ViewBindings.findChildViewById(rootView, id);
       if (batchRemarkButton == null) {
         break missingId;
       }
 
       id = R.id.batchTagButton;
-      MaterialButton batchTagButton = ViewBindings.findChildViewById(rootView, id);
+      ImageButton batchTagButton = ViewBindings.findChildViewById(rootView, id);
       if (batchTagButton == null) {
         break missingId;
       }
@@ -134,7 +134,7 @@ public final class ActivityMainBinding implements ViewBinding {
       }
 
       id = R.id.cancelSelectionButton;
-      MaterialButton cancelSelectionButton = ViewBindings.findChildViewById(rootView, id);
+      ImageButton cancelSelectionButton = ViewBindings.findChildViewById(rootView, id);
       if (cancelSelectionButton == null) {
         break missingId;
       }

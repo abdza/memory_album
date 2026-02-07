@@ -37,4 +37,5 @@
     <string name="set_remark">Set Remark</string>
     <string name="remark_set">Remark set</string>
     <string name="cancel_selection">Cancel</string>
+    <string name="no_info">No remark or tags</string>
 </resources>

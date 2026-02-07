@@ -6,6 +6,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.viewbinding.ViewBinding;
@@ -26,16 +28,30 @@ public final class ItemGalleryImageBinding implements ViewBinding {
   public final ImageView imageView;
 
   @NonNull
+  public final LinearLayout infoOverlay;
+
+  @NonNull
+  public final TextView overlayRemark;
+
+  @NonNull
+  public final TextView overlayTags;
+
+  @NonNull
   public final View remarkIndicator;
 
   @NonNull
   public final View selectionOverlay;
 
   private ItemGalleryImageBinding(@NonNull FrameLayout rootView, @NonNull ImageView checkIcon,
-      @NonNull ImageView imageView, @NonNull View remarkIndicator, @NonNull View selectionOverlay) {
+      @NonNull ImageView imageView, @NonNull LinearLayout infoOverlay,
+      @NonNull TextView overlayRemark, @NonNull TextView overlayTags, @NonNull View remarkIndicator,
+      @NonNull View selectionOverlay) {
     this.rootView = rootView;
     this.checkIcon = checkIcon;
     this.imageView = imageView;
+    this.infoOverlay = infoOverlay;
+    this.overlayRemark = overlayRemark;
+    this.overlayTags = overlayTags;
     this.remarkIndicator = remarkIndicator;
     this.selectionOverlay = selectionOverlay;
   }
@@ -79,6 +95,24 @@ public final class ItemGalleryImageBinding implements ViewBinding {
         break missingId;
       }
 
+      id = R.id.infoOverlay;
+      LinearLayout infoOverlay = ViewBindings.findChildViewById(rootView, id);
+      if (infoOverlay == null) {
+        break missingId;
+      }
+
+      id = R.id.overlayRemark;
+      TextView overlayRemark = ViewBindings.findChildViewById(rootView, id);
+      if (overlayRemark == null) {
+        break missingId;
+      }
+
+      id = R.id.overlayTags;
+      TextView overlayTags = ViewBindings.findChildViewById(rootView, id);
+      if (overlayTags == null) {
+        break missingId;
+      }
+
       id = R.id.remarkIndicator;
       View remarkIndicator = ViewBindings.findChildViewById(rootView, id);
       if (remarkIndicator == null) {
@@ -91,8 +125,8 @@ public final class ItemGalleryImageBinding implements ViewBinding {
         break missingId;
       }
 
-      return new ItemGalleryImageBinding((FrameLayout) rootView, checkIcon, imageView,
-          remarkIndicator, selectionOverlay);
+      return new ItemGalleryImageBinding((FrameLayout) rootView, checkIcon, imageView, infoOverlay,
+          overlayRemark, overlayTags, remarkIndicator, selectionOverlay);
     }
     String missingId = rootView.getResources().getResourceName(id);
     throw new NullPointerException("Missing required view with ID: ".concat(missingId));

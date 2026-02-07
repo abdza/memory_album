@@ -106,29 +106,32 @@
                 android:textSize="16sp"
                 tools:text="3 selected" />
 
-            <com.google.android.material.button.MaterialButton
+            <ImageButton
                 android:id="@+id/batchTagButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/add_tags"
-                style="@style/Widget.MaterialComponents.Button.TextButton"
-                android:textColor="@android:color/white" />
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:src="@drawable/ic_tag"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="@string/add_tags"
+                android:tooltipText="@string/add_tags" />
 
-            <com.google.android.material.button.MaterialButton
+            <ImageButton
                 android:id="@+id/batchRemarkButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/set_remark"
-                style="@style/Widget.MaterialComponents.Button.TextButton"
-                android:textColor="@android:color/white" />
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:src="@drawable/ic_remark"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="@string/set_remark"
+                android:tooltipText="@string/set_remark" />
 
-            <com.google.android.material.button.MaterialButton
+            <ImageButton
                 android:id="@+id/cancelSelectionButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/cancel_selection"
-                style="@style/Widget.MaterialComponents.Button.TextButton"
-                android:textColor="@android:color/white" />
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:src="@drawable/ic_cancel"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="@string/cancel_selection"
+                android:tooltipText="@string/cancel_selection" />
 
         </LinearLayout>
 

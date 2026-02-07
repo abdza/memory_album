@@ -33,6 +33,7 @@
     <string name="image_thumbnail">Image thumbnail</string>
     <string name="location">Location</string>
     <string name="no_images">No images found</string>
+    <string name="no_info">No remark or tags</string>
     <string name="no_remark">No remark added</string>
     <string name="no_search_results">No images found</string>
     <string name="no_valid_paths">No valid paths</string>

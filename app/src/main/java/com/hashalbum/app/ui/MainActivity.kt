@@ -91,6 +91,13 @@ class MainActivity : AppCompatActivity() {
             },
             onSelectionChanged = { count ->
                 updateSelectionCount(count)
+            },
+            onDoubleTap = { image, holder ->
+                lifecycleScope.launch {
+                    val remark = viewModel.getRemark(image.uri)
+                    val tags = viewModel.getTagsForImage(image.uri)
+                    holder.showInfoOverlay(remark, tags)
+                }
             }
         )
 

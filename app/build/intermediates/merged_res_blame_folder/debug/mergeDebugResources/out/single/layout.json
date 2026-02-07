@@ -20,8 +20,8 @@
         "source": "/home/abdza/.gradle/daemon/8.6/com.hashalbum.app-main-47:/layout/activity_image_viewer.xml"
     },
     {
-        "merged": "com.hashalbum.app-mergeDebugResources-44:/layout/activity_main.xml",
-        "source": "com.hashalbum.app-main-47:/layout/activity_main.xml"
+        "merged": "com.hashalbum.app-mergeDebugResources-44:/layout/item_gallery_image.xml",
+        "source": "com.hashalbum.app-main-47:/layout/item_gallery_image.xml"
     },
     {
         "merged": "/home/abdza/.gradle/daemon/8.6/com.hashalbum.app-mergeDebugResources-44:/layout/item_bucket.xml",
