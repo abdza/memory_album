@@ -25,6 +25,7 @@ drawable panel_handle
 drawable placeholder_image
 drawable remark_indicator
 drawable remark_panel_bg
+id action_search
 id bucketCount
 id bucketName
 id bucketRecyclerView
@@ -71,6 +72,7 @@ layout activity_main
 layout item_bucket
 layout item_gallery_image
 layout item_image_pager
+menu menu_main
 mipmap ic_launcher
 mipmap ic_launcher_round
 string add_remark
@@ -89,10 +91,12 @@ string image_info
 string location
 string no_images
 string no_remark
+string no_search_results
 string remark
 string remark_saved
 string resolution
 string save_remark
+string search_remarks
 string swipe_up
 string swipe_up_for_remark
 style Theme.HashAlbum

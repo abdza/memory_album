@@ -16,6 +16,7 @@ import com.hashalbum.app.util.MediaStoreHelper
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 class GalleryViewModel(application: Application) : AndroidViewModel(application) {
@@ -33,7 +34,13 @@ class GalleryViewModel(application: Application) : AndroidViewModel(application)
     
     private val _currentBucket = MutableLiveData<ImageBucket?>(null)
     val currentBucket: LiveData<ImageBucket?> = _currentBucket
-    
+
+    private val _searchResults = MutableStateFlow<List<GalleryImage>>(emptyList())
+    val searchResults: StateFlow<List<GalleryImage>> = _searchResults.asStateFlow()
+
+    private val _isSearchMode = MutableStateFlow(false)
+    val isSearchMode: StateFlow<Boolean> = _isSearchMode.asStateFlow()
+
     // Cache for image hashes to avoid recalculating
     private val hashCache = mutableMapOf<Uri, String>()
     
@@ -118,5 +125,44 @@ class GalleryViewModel(application: Application) : AndroidViewModel(application)
     suspend fun getRemark(uri: Uri): String {
         val hash = getImageHash(uri) ?: return ""
         return repository.getByHash(hash)?.remark ?: ""
+    }
+
+    /**
+     * Search images by remark text.
+     */
+    fun searchRemarks(query: String) {
+        if (query.isBlank()) {
+            clearSearch()
+            return
+        }
+        _isSearchMode.value = true
+        viewModelScope.launch {
+            repository.searchByRemark(query).collectLatest { imageDataList ->
+                val galleryImages = imageDataList.mapNotNull { imageData ->
+                    imageData.lastKnownPath?.let { path ->
+                        try {
+                            GalleryImage(
+                                uri = Uri.parse(path),
+                                hash = imageData.hash,
+                                displayName = "",
+                                dateModified = imageData.updatedAt,
+                                size = 0L
+                            )
+                        } catch (e: Exception) {
+                            null
+                        }
+                    }
+                }
+                _searchResults.value = galleryImages
+            }
+        }
+    }
+
+    /**
+     * Exit search mode and clear results.
+     */
+    fun clearSearch() {
+        _isSearchMode.value = false
+        _searchResults.value = emptyList()
     }
 }

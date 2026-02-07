@@ -22,4 +22,6 @@
     <string name="file_size">File Size</string>
     <string name="no_remark">No remark added</string>
     <string name="add_remark">Add Remark</string>
+    <string name="search_remarks">Search remarks</string>
+    <string name="no_search_results">No images found</string>
 </resources>

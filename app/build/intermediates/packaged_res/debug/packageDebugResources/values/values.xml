@@ -28,10 +28,12 @@
     <string name="location">Location</string>
     <string name="no_images">No images found</string>
     <string name="no_remark">No remark added</string>
+    <string name="no_search_results">No images found</string>
     <string name="remark">Remark</string>
     <string name="remark_saved">Remark saved</string>
     <string name="resolution">Resolution</string>
     <string name="save_remark">Save Remark</string>
+    <string name="search_remarks">Search remarks</string>
     <string name="swipe_up">Swipe up</string>
     <string name="swipe_up_for_remark">Swipe up to add remark</string>
     <style name="Theme.HashAlbum" parent="Theme.MaterialComponents.DayNight.NoActionBar">

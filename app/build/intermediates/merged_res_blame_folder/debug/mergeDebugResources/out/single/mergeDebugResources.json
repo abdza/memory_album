@@ -4,6 +4,10 @@
         "source": "com.hashalbum.app-main-47:/drawable/ic_note.xml"
     },
     {
+        "merged": "com.hashalbum.app-debug-45:/menu_menu_main.xml.flat",
+        "source": "com.hashalbum.app-main-47:/menu/menu_main.xml"
+    },
+    {
         "merged": "com.hashalbum.app-debug-45:/drawable_ic_launcher_background.xml.flat",
         "source": "com.hashalbum.app-main-47:/drawable/ic_launcher_background.xml"
     },

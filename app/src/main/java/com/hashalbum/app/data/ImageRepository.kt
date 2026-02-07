@@ -6,6 +6,8 @@ class ImageRepository(private val imageDataDao: ImageDataDao) {
     
     val allImages: Flow<List<ImageData>> = imageDataDao.getAllImages()
     val imagesWithRemarks: Flow<List<ImageData>> = imageDataDao.getImagesWithRemarks()
+
+    fun searchByRemark(query: String): Flow<List<ImageData>> = imageDataDao.searchByRemark(query)
     
     suspend fun getByHash(hash: String): ImageData? {
         return imageDataDao.getByHash(hash)

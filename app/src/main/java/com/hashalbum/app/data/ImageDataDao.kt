@@ -17,6 +17,9 @@ interface ImageDataDao {
     
     @Query("SELECT * FROM image_data WHERE remark != '' ORDER BY updatedAt DESC")
     fun getImagesWithRemarks(): Flow<List<ImageData>>
+
+    @Query("SELECT * FROM image_data WHERE remark LIKE '%' || :query || '%' ORDER BY updatedAt DESC")
+    fun searchByRemark(query: String): Flow<List<ImageData>>
     
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(imageData: ImageData)
