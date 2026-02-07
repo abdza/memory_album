@@ -14,4 +14,5 @@
 
     <color name="placeholder_bg">#E8EAF6</color>
     <color name="remark_indicator_color">#536DFE</color>
+    <color name="selection_overlay">#66536DFE</color>
 </resources>

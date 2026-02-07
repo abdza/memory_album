@@ -2093,6 +2093,7 @@ color secondary_text_default_material_dark
 color secondary_text_default_material_light
 color secondary_text_disabled_material_dark
 color secondary_text_disabled_material_light
+color selection_overlay
 color switch_thumb_disabled_material_dark
 color switch_thumb_disabled_material_light
 color switch_thumb_material_dark
@@ -3174,6 +3175,7 @@ id action_text
 id actions
 id activity_chooser_view_content
 id add
+id addTagsButton
 id alertTitle
 id aligned
 id all
@@ -3192,6 +3194,7 @@ id autoCompleteToEnd
 id autoCompleteToStart
 id barrier
 id baseline
+id batchTagButton
 id beginOnFirstDraw
 id beginning
 id bestChoice
@@ -3210,6 +3213,7 @@ id cache_measures
 id callMeasure
 id cameraRow
 id cameraValue
+id cancelSelectionButton
 id cancel_button
 id carryVelocity
 id center
@@ -3220,6 +3224,7 @@ id center_vertical
 id chain
 id chain2
 id chains
+id checkIcon
 id checkbox
 id checked
 id chronometer
@@ -3522,6 +3527,7 @@ id scrollIndicatorUp
 id scrollView
 id scrollable
 id searchRemarkText
+id searchTagChipGroup
 id searchThumbnail
 id search_badge
 id search_bar
@@ -3535,6 +3541,9 @@ id search_src_text
 id search_voice_btn
 id select_dialog_listview
 id selected
+id selectionBar
+id selectionCount
+id selectionOverlay
 id selection_type
 id sharedValueSet
 id sharedValueUnset
@@ -3579,6 +3588,7 @@ id supportScrollUp
 id swipeHint
 id swipeRefresh
 id tabMode
+id tagChipGroup
 id tag_accessibility_actions
 id tag_accessibility_clickable_spans
 id tag_accessibility_heading
@@ -3592,6 +3602,7 @@ id tag_transition_group
 id tag_unhandled_key_event_manager
 id tag_unhandled_key_listeners
 id tag_window_insets_animation_callback
+id tagsSection
 id text
 id text2
 id textEnd
@@ -3883,6 +3894,7 @@ string abc_shareactionprovider_share_with
 string abc_shareactionprovider_share_with_application
 string abc_toolbar_collapse_description
 string add_remark
+string add_tags
 string all_images
 string androidx_startup
 string app_name
@@ -3901,6 +3913,7 @@ string call_notification_incoming_text
 string call_notification_ongoing_text
 string call_notification_screening_text
 string camera
+string cancel_selection
 string character_counter_content_description
 string character_counter_overflowed_content_description
 string character_counter_pattern
@@ -3909,6 +3922,7 @@ string close
 string date_taken
 string edit
 string enter_remark
+string enter_tags
 string error_a11y_label
 string error_icon_content_description
 string exposed_dropdown_menu_content_description
@@ -4050,6 +4064,9 @@ string side_sheet_behavior
 string status_bar_notification_info_overflow
 string swipe_up
 string swipe_up_for_remark
+string tag_removed
+string tags
+string tags_added
 style AlertDialog_AppCompat
 style AlertDialog_AppCompat_Light
 style Animation_AppCompat_Dialog

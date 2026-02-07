@@ -17,9 +17,11 @@ import androidx.core.view.GravityCompat
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.hashalbum.app.R
 import com.hashalbum.app.databinding.ActivityMainBinding
 import com.hashalbum.app.util.ImageBucket
+import com.hashalbum.app.util.TagParser
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
@@ -57,6 +59,7 @@ class MainActivity : AppCompatActivity() {
         setupSwipeRefresh()
         observeViewModel()
 
+        setupSelectionBar()
         checkPermissionAndLoad()
     }
 
@@ -70,17 +73,26 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setupRecyclerView() {
-        galleryAdapter = GalleryAdapter { image, position ->
-            val imageList = viewModel.images.value
-            val intent = Intent(this, ImageViewerActivity::class.java).apply {
-                putExtra(ImageViewerActivity.EXTRA_IMAGE_POSITION, position)
-                putStringArrayListExtra(
-                    ImageViewerActivity.EXTRA_IMAGE_URIS,
-                    ArrayList(imageList.map { it.uri.toString() })
-                )
+        galleryAdapter = GalleryAdapter(
+            onImageClick = { image, position ->
+                val imageList = viewModel.images.value
+                val intent = Intent(this, ImageViewerActivity::class.java).apply {
+                    putExtra(ImageViewerActivity.EXTRA_IMAGE_POSITION, position)
+                    putStringArrayListExtra(
+                        ImageViewerActivity.EXTRA_IMAGE_URIS,
+                        ArrayList(imageList.map { it.uri.toString() })
+                    )
+                }
+                startActivity(intent)
+            },
+            onLongPress = { image, _ ->
+                enterSelectionMode()
+                galleryAdapter.toggleSelection(image.uri)
+            },
+            onSelectionChanged = { count ->
+                updateSelectionCount(count)
             }
-            startActivity(intent)
-        }
+        )
 
         searchResultAdapter = SearchResultAdapter { searchResult ->
             val validPath = searchResult.paths.firstOrNull { it.isValid }
@@ -258,9 +270,61 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private fun setupSelectionBar() {
+        binding.cancelSelectionButton.setOnClickListener {
+            exitSelectionMode()
+        }
+        binding.batchTagButton.setOnClickListener {
+            showBatchTagDialog()
+        }
+    }
+
+    private fun enterSelectionMode() {
+        galleryAdapter.enterSelectionMode()
+        binding.selectionBar.visibility = View.VISIBLE
+        binding.swipeRefresh.isEnabled = false
+        updateSelectionCount(galleryAdapter.getSelectedCount())
+    }
+
+    private fun exitSelectionMode() {
+        galleryAdapter.exitSelectionMode()
+        binding.selectionBar.visibility = View.GONE
+        binding.swipeRefresh.isEnabled = true
+    }
+
+    private fun updateSelectionCount(count: Int) {
+        binding.selectionCount.text = "$count selected"
+    }
+
+    private fun showBatchTagDialog() {
+        val selectedImages = galleryAdapter.getSelectedImages()
+        if (selectedImages.isEmpty()) return
+
+        val input = android.widget.EditText(this).apply {
+            hint = getString(R.string.enter_tags)
+            setPadding(48, 32, 48, 32)
+        }
+        MaterialAlertDialogBuilder(this)
+            .setTitle(R.string.add_tags)
+            .setView(input)
+            .setPositiveButton(android.R.string.ok) { _, _ ->
+                val tags = TagParser.parse(input.text.toString())
+                if (tags.isNotEmpty()) {
+                    val uris = selectedImages.map { it.uri }
+                    viewModel.addTagsToImages(uris, tags)
+                    Toast.makeText(this, R.string.tags_added, Toast.LENGTH_SHORT).show()
+                    exitSelectionMode()
+                }
+            }
+            .setNegativeButton(android.R.string.cancel, null)
+            .show()
+    }
+
     @Deprecated("Deprecated in Java")
     override fun onBackPressed() {
-        if (binding.drawerLayout.isDrawerOpen(GravityCompat.START)) {
+        if (galleryAdapter.isSelectionMode) {
+            exitSelectionMode()
+        } else if (binding.drawerLayout.isDrawerOpen(GravityCompat.START)) {
             binding.drawerLayout.closeDrawer(GravityCompat.START)
         } else if (viewModel.isSearchMode.value) {
             viewModel.clearSearch()

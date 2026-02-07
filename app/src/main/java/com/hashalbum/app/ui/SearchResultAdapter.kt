@@ -12,6 +12,8 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
+import com.google.android.material.chip.Chip
+import com.google.android.material.chip.ChipGroup
 import com.hashalbum.app.R
 import com.hashalbum.app.data.PathInfo
 import com.hashalbum.app.data.SearchResultItem
@@ -38,6 +40,7 @@ class SearchResultAdapter(
         private val pathSummary: TextView = itemView.findViewById(R.id.pathSummary)
         private val togglePaths: TextView = itemView.findViewById(R.id.togglePaths)
         private val pathListContainer: LinearLayout = itemView.findViewById(R.id.pathListContainer)
+        private val tagChipGroup: ChipGroup = itemView.findViewById(R.id.searchTagChipGroup)
 
         fun bind(item: SearchResultItem) {
             // Load thumbnail from first valid path, or fallback to first path
@@ -55,6 +58,23 @@ class SearchResultAdapter(
             }
 
             remarkText.text = item.imageData.remark
+
+            // Display tags
+            tagChipGroup.removeAllViews()
+            if (item.tags.isNotEmpty()) {
+                tagChipGroup.visibility = View.VISIBLE
+                for (tag in item.tags) {
+                    val chip = Chip(itemView.context).apply {
+                        text = "#$tag"
+                        textSize = 11f
+                        isClickable = false
+                        chipMinHeight = 24f
+                    }
+                    tagChipGroup.addView(chip)
+                }
+            } else {
+                tagChipGroup.visibility = View.GONE
+            }
 
             val validCount = item.paths.count { it.isValid }
             val totalCount = item.paths.size

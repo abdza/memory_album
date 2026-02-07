@@ -38,6 +38,15 @@
                 android:maxLines="2"
                 android:ellipsize="end" />
 
+            <com.google.android.material.chip.ChipGroup
+                android:id="@+id/searchTagChipGroup"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:visibility="gone"
+                app:chipSpacingVertical="0dp"
+                app:chipSpacingHorizontal="4dp" />
+
             <TextView
                 android:id="@+id/pathSummary"
                 android:layout_width="match_parent"

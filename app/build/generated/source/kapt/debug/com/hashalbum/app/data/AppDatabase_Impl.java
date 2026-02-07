@@ -31,22 +31,26 @@ public final class AppDatabase_Impl extends AppDatabase {
 
   private volatile ImagePathDao _imagePathDao;
 
+  private volatile ImageTagDao _imageTagDao;
+
   @Override
   @NonNull
   protected SupportSQLiteOpenHelper createOpenHelper(@NonNull final DatabaseConfiguration config) {
-    final SupportSQLiteOpenHelper.Callback _openCallback = new RoomOpenHelper(config, new RoomOpenHelper.Delegate(2) {
+    final SupportSQLiteOpenHelper.Callback _openCallback = new RoomOpenHelper(config, new RoomOpenHelper.Delegate(3) {
       @Override
       public void createAllTables(@NonNull final SupportSQLiteDatabase db) {
         db.execSQL("CREATE TABLE IF NOT EXISTS `image_data` (`hash` TEXT NOT NULL, `remark` TEXT NOT NULL, `lastKnownPath` TEXT NOT NULL, `createdAt` INTEGER NOT NULL, `updatedAt` INTEGER NOT NULL, PRIMARY KEY(`hash`))");
         db.execSQL("CREATE TABLE IF NOT EXISTS `image_paths` (`hash` TEXT NOT NULL, `path` TEXT NOT NULL, `lastSeen` INTEGER NOT NULL, `isValid` INTEGER NOT NULL, PRIMARY KEY(`hash`, `path`), FOREIGN KEY(`hash`) REFERENCES `image_data`(`hash`) ON UPDATE NO ACTION ON DELETE CASCADE )");
+        db.execSQL("CREATE TABLE IF NOT EXISTS `image_tags` (`hash` TEXT NOT NULL, `tag` TEXT NOT NULL, `createdAt` INTEGER NOT NULL, PRIMARY KEY(`hash`, `tag`), FOREIGN KEY(`hash`) REFERENCES `image_data`(`hash`) ON UPDATE NO ACTION ON DELETE CASCADE )");
         db.execSQL("CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)");
-        db.execSQL("INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'db12064d89a8aec41b37dc6ef6e3ef24')");
+        db.execSQL("INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'be73ae9a6c007e187d30725f99e1eda1')");
       }
 
       @Override
       public void dropAllTables(@NonNull final SupportSQLiteDatabase db) {
         db.execSQL("DROP TABLE IF EXISTS `image_data`");
         db.execSQL("DROP TABLE IF EXISTS `image_paths`");
+        db.execSQL("DROP TABLE IF EXISTS `image_tags`");
         final List<? extends RoomDatabase.Callback> _callbacks = mCallbacks;
         if (_callbacks != null) {
           for (RoomDatabase.Callback _callback : _callbacks) {
@@ -121,9 +125,23 @@ public final class AppDatabase_Impl extends AppDatabase {
                   + " Expected:\n" + _infoImagePaths + "\n"
                   + " Found:\n" + _existingImagePaths);
         }
+        final HashMap<String, TableInfo.Column> _columnsImageTags = new HashMap<String, TableInfo.Column>(3);
+        _columnsImageTags.put("hash", new TableInfo.Column("hash", "TEXT", true, 1, null, TableInfo.CREATED_FROM_ENTITY));
+        _columnsImageTags.put("tag", new TableInfo.Column("tag", "TEXT", true, 2, null, TableInfo.CREATED_FROM_ENTITY));
+        _columnsImageTags.put("createdAt", new TableInfo.Column("createdAt", "INTEGER", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
+        final HashSet<TableInfo.ForeignKey> _foreignKeysImageTags = new HashSet<TableInfo.ForeignKey>(1);
+        _foreignKeysImageTags.add(new TableInfo.ForeignKey("image_data", "CASCADE", "NO ACTION", Arrays.asList("hash"), Arrays.asList("hash")));
+        final HashSet<TableInfo.Index> _indicesImageTags = new HashSet<TableInfo.Index>(0);
+        final TableInfo _infoImageTags = new TableInfo("image_tags", _columnsImageTags, _foreignKeysImageTags, _indicesImageTags);
+        final TableInfo _existingImageTags = TableInfo.read(db, "image_tags");
+        if (!_infoImageTags.equals(_existingImageTags)) {
+          return new RoomOpenHelper.ValidationResult(false, "image_tags(com.hashalbum.app.data.ImageTag).\n"
+                  + " Expected:\n" + _infoImageTags + "\n"
+                  + " Found:\n" + _existingImageTags);
+        }
         return new RoomOpenHelper.ValidationResult(true, null);
       }
-    }, "db12064d89a8aec41b37dc6ef6e3ef24", "4d1b87340caa163b82205d4a9959f49d");
+    }, "be73ae9a6c007e187d30725f99e1eda1", "e7582a7a58ed17cf3b6a25a5d9dd2226");
     final SupportSQLiteOpenHelper.Configuration _sqliteConfig = SupportSQLiteOpenHelper.Configuration.builder(config.context).name(config.name).callback(_openCallback).build();
     final SupportSQLiteOpenHelper _helper = config.sqliteOpenHelperFactory.create(_sqliteConfig);
     return _helper;
@@ -134,7 +152,7 @@ public final class AppDatabase_Impl extends AppDatabase {
   protected InvalidationTracker createInvalidationTracker() {
     final HashMap<String, String> _shadowTablesMap = new HashMap<String, String>(0);
     final HashMap<String, Set<String>> _viewTables = new HashMap<String, Set<String>>(0);
-    return new InvalidationTracker(this, _shadowTablesMap, _viewTables, "image_data","image_paths");
+    return new InvalidationTracker(this, _shadowTablesMap, _viewTables, "image_data","image_paths","image_tags");
   }
 
   @Override
@@ -152,6 +170,7 @@ public final class AppDatabase_Impl extends AppDatabase {
       }
       _db.execSQL("DELETE FROM `image_data`");
       _db.execSQL("DELETE FROM `image_paths`");
+      _db.execSQL("DELETE FROM `image_tags`");
       super.setTransactionSuccessful();
     } finally {
       super.endTransaction();
@@ -171,6 +190,7 @@ public final class AppDatabase_Impl extends AppDatabase {
     final HashMap<Class<?>, List<Class<?>>> _typeConvertersMap = new HashMap<Class<?>, List<Class<?>>>();
     _typeConvertersMap.put(ImageDataDao.class, ImageDataDao_Impl.getRequiredConverters());
     _typeConvertersMap.put(ImagePathDao.class, ImagePathDao_Impl.getRequiredConverters());
+    _typeConvertersMap.put(ImageTagDao.class, ImageTagDao_Impl.getRequiredConverters());
     return _typeConvertersMap;
   }
 
@@ -213,6 +233,20 @@ public final class AppDatabase_Impl extends AppDatabase {
           _imagePathDao = new ImagePathDao_Impl(this);
         }
         return _imagePathDao;
+      }
+    }
+  }
+
+  @Override
+  public ImageTagDao imageTagDao() {
+    if (_imageTagDao != null) {
+      return _imageTagDao;
+    } else {
+      synchronized(this) {
+        if(_imageTagDao == null) {
+          _imageTagDao = new ImageTagDao_Impl(this);
+        }
+        return _imageTagDao;
       }
     }
   }

@@ -4,7 +4,8 @@ import android.net.Uri
 
 data class SearchResultItem(
     val imageData: ImageData,
-    val paths: List<PathInfo>
+    val paths: List<PathInfo>,
+    val tags: List<String> = emptyList()
 )
 
 data class PathInfo(

@@ -24,4 +24,21 @@
         android:background="@drawable/remark_indicator"
         android:visibility="gone" />
 
+    <!-- Selection overlay -->
+    <View
+        android:id="@+id/selectionOverlay"
+        android:layout_width="match_parent"
+        android:layout_height="120dp"
+        android:background="@color/selection_overlay"
+        android:visibility="gone" />
+
+    <ImageView
+        android:id="@+id/checkIcon"
+        android:layout_width="28dp"
+        android:layout_height="28dp"
+        android:layout_gravity="center"
+        android:src="@android:drawable/checkbox_on_background"
+        android:visibility="gone"
+        android:contentDescription="@string/image" />
+
 </FrameLayout>

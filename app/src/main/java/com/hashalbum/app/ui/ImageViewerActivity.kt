@@ -16,10 +16,13 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GestureDetectorCompat
 import androidx.lifecycle.lifecycleScope
 import androidx.viewpager2.widget.ViewPager2
+import com.google.android.material.chip.Chip
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.hashalbum.app.R
 import com.hashalbum.app.databinding.ActivityImageViewerBinding
 import com.hashalbum.app.util.ImageMetadata
 import com.hashalbum.app.util.ImageMetadataHelper
+import com.hashalbum.app.util.TagParser
 import kotlinx.coroutines.launch
 import kotlin.math.abs
 
@@ -169,8 +172,81 @@ class ImageViewerActivity : AppCompatActivity() {
             }
         }
 
+        // Add tags button
+        binding.addTagsButton.setOnClickListener {
+            showAddTagsDialog()
+        }
+
         // Swipe hint
         binding.swipeHint.visibility = View.VISIBLE
+    }
+
+    private fun showAddTagsDialog() {
+        val input = android.widget.EditText(this).apply {
+            hint = getString(R.string.enter_tags)
+            setPadding(48, 32, 48, 32)
+        }
+        MaterialAlertDialogBuilder(this)
+            .setTitle(R.string.add_tags)
+            .setView(input)
+            .setPositiveButton(android.R.string.ok) { _, _ ->
+                val tags = TagParser.parse(input.text.toString())
+                if (tags.isNotEmpty() && imageUris.isNotEmpty() && currentPosition < imageUris.size) {
+                    val currentUri = imageUris[currentPosition]
+                    lifecycleScope.launch {
+                        viewModel.addTagsToImage(currentUri, tags)
+                        loadCurrentImageTags()
+                        Toast.makeText(this@ImageViewerActivity, R.string.tags_added, Toast.LENGTH_SHORT).show()
+                    }
+                }
+            }
+            .setNegativeButton(android.R.string.cancel, null)
+            .show()
+    }
+
+    private fun loadCurrentImageTags() {
+        if (imageUris.isEmpty() || currentPosition >= imageUris.size) return
+        val currentUri = imageUris[currentPosition]
+        lifecycleScope.launch {
+            val tags = viewModel.getTagsForImage(currentUri)
+            displayTags(tags)
+        }
+    }
+
+    private fun displayTags(tags: List<String>) {
+        binding.tagChipGroup.removeAllViews()
+        if (tags.isEmpty()) {
+            binding.tagsSection.visibility = View.GONE
+            return
+        }
+        binding.tagsSection.visibility = View.VISIBLE
+        for (tag in tags) {
+            val chip = Chip(this).apply {
+                text = "#$tag"
+                isCloseIconVisible = true
+                setTextColor(resources.getColor(android.R.color.white, theme))
+                chipBackgroundColor = android.content.res.ColorStateList.valueOf(
+                    resources.getColor(R.color.accent, theme)
+                )
+                closeIconTint = android.content.res.ColorStateList.valueOf(
+                    resources.getColor(android.R.color.white, theme)
+                )
+                setOnCloseIconClickListener {
+                    removeTag(tag)
+                }
+            }
+            binding.tagChipGroup.addView(chip)
+        }
+    }
+
+    private fun removeTag(tag: String) {
+        if (imageUris.isEmpty() || currentPosition >= imageUris.size) return
+        val currentUri = imageUris[currentPosition]
+        lifecycleScope.launch {
+            viewModel.removeTagFromImage(currentUri, tag)
+            loadCurrentImageTags()
+            Toast.makeText(this@ImageViewerActivity, R.string.tag_removed, Toast.LENGTH_SHORT).show()
+        }
     }
 
     private fun setRemarkDisplayMode() {
@@ -254,6 +330,9 @@ class ImageViewerActivity : AppCompatActivity() {
 
             // Show indicator if there's an existing remark
             binding.remarkIndicator.visibility = if (remark.isNotBlank()) View.VISIBLE else View.GONE
+
+            // Load tags
+            loadCurrentImageTags()
 
             // Pre-set the correct mode but don't show the panel
             prepareDisplayMode()

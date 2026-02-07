@@ -6,6 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.drawerlayout.widget.DrawerLayout;
@@ -14,6 +15,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import androidx.viewbinding.ViewBinding;
 import androidx.viewbinding.ViewBindings;
 import com.google.android.material.appbar.MaterialToolbar;
+import com.google.android.material.button.MaterialButton;
 import com.hashalbum.app.R;
 import java.lang.NullPointerException;
 import java.lang.Override;
@@ -24,7 +26,13 @@ public final class ActivityMainBinding implements ViewBinding {
   private final DrawerLayout rootView;
 
   @NonNull
+  public final MaterialButton batchTagButton;
+
+  @NonNull
   public final RecyclerView bucketRecyclerView;
+
+  @NonNull
+  public final MaterialButton cancelSelectionButton;
 
   @NonNull
   public final DrawerLayout drawerLayout;
@@ -42,23 +50,35 @@ public final class ActivityMainBinding implements ViewBinding {
   public final RecyclerView recyclerView;
 
   @NonNull
+  public final LinearLayout selectionBar;
+
+  @NonNull
+  public final TextView selectionCount;
+
+  @NonNull
   public final SwipeRefreshLayout swipeRefresh;
 
   @NonNull
   public final MaterialToolbar toolbar;
 
   private ActivityMainBinding(@NonNull DrawerLayout rootView,
-      @NonNull RecyclerView bucketRecyclerView, @NonNull DrawerLayout drawerLayout,
+      @NonNull MaterialButton batchTagButton, @NonNull RecyclerView bucketRecyclerView,
+      @NonNull MaterialButton cancelSelectionButton, @NonNull DrawerLayout drawerLayout,
       @NonNull LinearLayout emptyView, @NonNull LinearLayout navigationDrawer,
       @NonNull ProgressBar progressBar, @NonNull RecyclerView recyclerView,
+      @NonNull LinearLayout selectionBar, @NonNull TextView selectionCount,
       @NonNull SwipeRefreshLayout swipeRefresh, @NonNull MaterialToolbar toolbar) {
     this.rootView = rootView;
+    this.batchTagButton = batchTagButton;
     this.bucketRecyclerView = bucketRecyclerView;
+    this.cancelSelectionButton = cancelSelectionButton;
     this.drawerLayout = drawerLayout;
     this.emptyView = emptyView;
     this.navigationDrawer = navigationDrawer;
     this.progressBar = progressBar;
     this.recyclerView = recyclerView;
+    this.selectionBar = selectionBar;
+    this.selectionCount = selectionCount;
     this.swipeRefresh = swipeRefresh;
     this.toolbar = toolbar;
   }
@@ -90,9 +110,21 @@ public final class ActivityMainBinding implements ViewBinding {
     // This is done to optimize the compiled bytecode for size and performance.
     int id;
     missingId: {
+      id = R.id.batchTagButton;
+      MaterialButton batchTagButton = ViewBindings.findChildViewById(rootView, id);
+      if (batchTagButton == null) {
+        break missingId;
+      }
+
       id = R.id.bucketRecyclerView;
       RecyclerView bucketRecyclerView = ViewBindings.findChildViewById(rootView, id);
       if (bucketRecyclerView == null) {
+        break missingId;
+      }
+
+      id = R.id.cancelSelectionButton;
+      MaterialButton cancelSelectionButton = ViewBindings.findChildViewById(rootView, id);
+      if (cancelSelectionButton == null) {
         break missingId;
       }
 
@@ -122,6 +154,18 @@ public final class ActivityMainBinding implements ViewBinding {
         break missingId;
       }
 
+      id = R.id.selectionBar;
+      LinearLayout selectionBar = ViewBindings.findChildViewById(rootView, id);
+      if (selectionBar == null) {
+        break missingId;
+      }
+
+      id = R.id.selectionCount;
+      TextView selectionCount = ViewBindings.findChildViewById(rootView, id);
+      if (selectionCount == null) {
+        break missingId;
+      }
+
       id = R.id.swipeRefresh;
       SwipeRefreshLayout swipeRefresh = ViewBindings.findChildViewById(rootView, id);
       if (swipeRefresh == null) {
@@ -134,8 +178,9 @@ public final class ActivityMainBinding implements ViewBinding {
         break missingId;
       }
 
-      return new ActivityMainBinding((DrawerLayout) rootView, bucketRecyclerView, drawerLayout,
-          emptyView, navigationDrawer, progressBar, recyclerView, swipeRefresh, toolbar);
+      return new ActivityMainBinding((DrawerLayout) rootView, batchTagButton, bucketRecyclerView,
+          cancelSelectionButton, drawerLayout, emptyView, navigationDrawer, progressBar,
+          recyclerView, selectionBar, selectionCount, swipeRefresh, toolbar);
     }
     String missingId = rootView.getResources().getResourceName(id);
     throw new NullPointerException("Missing required view with ID: ".concat(missingId));

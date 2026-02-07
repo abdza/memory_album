@@ -154,7 +154,7 @@ public final class ImageDataDao_Impl implements ImageDataDao {
   }
 
   @Override
-  public Object insert(final ImageData imageData, final Continuation<? super Unit> $completion) {
+  public Object insert(final ImageData imageData, final Continuation<? super Unit> arg1) {
     return CoroutinesRoom.execute(__db, true, new Callable<Unit>() {
       @Override
       @NonNull
@@ -168,11 +168,11 @@ public final class ImageDataDao_Impl implements ImageDataDao {
           __db.endTransaction();
         }
       }
-    }, $completion);
+    }, arg1);
   }
 
   @Override
-  public Object delete(final ImageData imageData, final Continuation<? super Unit> $completion) {
+  public Object delete(final ImageData imageData, final Continuation<? super Unit> arg1) {
     return CoroutinesRoom.execute(__db, true, new Callable<Unit>() {
       @Override
       @NonNull
@@ -186,11 +186,11 @@ public final class ImageDataDao_Impl implements ImageDataDao {
           __db.endTransaction();
         }
       }
-    }, $completion);
+    }, arg1);
   }
 
   @Override
-  public Object update(final ImageData imageData, final Continuation<? super Unit> $completion) {
+  public Object update(final ImageData imageData, final Continuation<? super Unit> arg1) {
     return CoroutinesRoom.execute(__db, true, new Callable<Unit>() {
       @Override
       @NonNull
@@ -204,12 +204,12 @@ public final class ImageDataDao_Impl implements ImageDataDao {
           __db.endTransaction();
         }
       }
-    }, $completion);
+    }, arg1);
   }
 
   @Override
   public Object updateRemark(final String hash, final String remark, final long updatedAt,
-      final Continuation<? super Unit> $completion) {
+      final Continuation<? super Unit> arg3) {
     return CoroutinesRoom.execute(__db, true, new Callable<Unit>() {
       @Override
       @NonNull
@@ -242,12 +242,12 @@ public final class ImageDataDao_Impl implements ImageDataDao {
           __preparedStmtOfUpdateRemark.release(_stmt);
         }
       }
-    }, $completion);
+    }, arg3);
   }
 
   @Override
   public Object updatePath(final String hash, final String path, final long updatedAt,
-      final Continuation<? super Unit> $completion) {
+      final Continuation<? super Unit> arg3) {
     return CoroutinesRoom.execute(__db, true, new Callable<Unit>() {
       @Override
       @NonNull
@@ -280,11 +280,11 @@ public final class ImageDataDao_Impl implements ImageDataDao {
           __preparedStmtOfUpdatePath.release(_stmt);
         }
       }
-    }, $completion);
+    }, arg3);
   }
 
   @Override
-  public Object deleteByHash(final String hash, final Continuation<? super Unit> $completion) {
+  public Object deleteByHash(final String hash, final Continuation<? super Unit> arg1) {
     return CoroutinesRoom.execute(__db, true, new Callable<Unit>() {
       @Override
       @NonNull
@@ -309,11 +309,11 @@ public final class ImageDataDao_Impl implements ImageDataDao {
           __preparedStmtOfDeleteByHash.release(_stmt);
         }
       }
-    }, $completion);
+    }, arg1);
   }
 
   @Override
-  public Object getByHash(final String hash, final Continuation<? super ImageData> $completion) {
+  public Object getByHash(final String hash, final Continuation<? super ImageData> arg1) {
     final String _sql = "SELECT * FROM image_data WHERE hash = ?";
     final RoomSQLiteQuery _statement = RoomSQLiteQuery.acquire(_sql, 1);
     int _argIndex = 1;
@@ -368,7 +368,7 @@ public final class ImageDataDao_Impl implements ImageDataDao {
           _statement.release();
         }
       }
-    }, $completion);
+    }, arg1);
   }
 
   @Override

@@ -9,17 +9,21 @@
     <color name="purple_500">#FF6200EE</color>
     <color name="purple_700">#FF3700B3</color>
     <color name="remark_indicator_color">#536DFE</color>
+    <color name="selection_overlay">#66536DFE</color>
     <color name="teal_200">#FF03DAC5</color>
     <color name="teal_700">#FF018786</color>
     <color name="white">#FFFFFFFF</color>
     <string name="add_remark">Add Remark</string>
+    <string name="add_tags">Add Tags</string>
     <string name="all_images">All Images</string>
     <string name="app_name">Memory Album</string>
     <string name="camera">Camera</string>
+    <string name="cancel_selection">Cancel</string>
     <string name="close">Close</string>
     <string name="date_taken">Date Taken</string>
     <string name="edit">Edit</string>
     <string name="enter_remark">Enter your remark here…</string>
+    <string name="enter_tags">Enter tags (e.g. picnic family)</string>
     <string name="file_size">File Size</string>
     <string name="folders">Folders</string>
     <string name="has_remark">This image has a remark</string>
@@ -41,6 +45,9 @@
     <string name="show_paths">Show paths</string>
     <string name="swipe_up">Swipe up</string>
     <string name="swipe_up_for_remark">Swipe up to add remark</string>
+    <string name="tag_removed">Tag removed</string>
+    <string name="tags">Tags</string>
+    <string name="tags_added">Tags added</string>
     <style name="Theme.HashAlbum" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <item name="colorPrimary">@color/primary</item>
         <item name="colorPrimaryVariant">@color/primary_dark</item>

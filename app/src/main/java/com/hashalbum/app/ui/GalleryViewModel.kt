@@ -50,7 +50,7 @@ class GalleryViewModel(application: Application) : AndroidViewModel(application)
 
     init {
         val database = (application as HashAlbumApp).database
-        repository = ImageRepository(database.imageDataDao(), database.imagePathDao())
+        repository = ImageRepository(database.imageDataDao(), database.imagePathDao(), database.imageTagDao())
     }
 
     fun loadAllImages() {
@@ -123,6 +123,36 @@ class GalleryViewModel(application: Application) : AndroidViewModel(application)
         repository.addOrUpdatePath(hash, uri.toString())
     }
 
+    suspend fun getTagsForImage(uri: Uri): List<String> {
+        val hash = getImageHash(uri) ?: return emptyList()
+        return repository.getTagsForHashSync(hash)
+    }
+
+    suspend fun addTagsToImage(uri: Uri, tags: List<String>) {
+        val hash = getImageHash(uri) ?: return
+        // Ensure ImageData row exists
+        val existing = repository.getByHash(hash)
+        if (existing == null) {
+            repository.insert(ImageData(hash = hash, lastKnownPath = uri.toString()))
+        }
+        // Ensure path is tracked so search results can show thumbnail
+        repository.addOrUpdatePath(hash, uri.toString())
+        repository.addTagsToImage(hash, tags)
+    }
+
+    suspend fun removeTagFromImage(uri: Uri, tag: String) {
+        val hash = getImageHash(uri) ?: return
+        repository.removeTagFromImage(hash, tag)
+    }
+
+    fun addTagsToImages(uris: List<Uri>, tags: List<String>) {
+        viewModelScope.launch {
+            for (uri in uris) {
+                addTagsToImage(uri, tags)
+            }
+        }
+    }
+
     fun searchRemarks(query: String) {
         if (query.isBlank()) {
             clearSearch()
@@ -131,7 +161,19 @@ class GalleryViewModel(application: Application) : AndroidViewModel(application)
         _isSearchMode.value = true
         viewModelScope.launch {
             repository.searchByRemark(query).collectLatest { imageDataList ->
-                val results = imageDataList.map { imageData ->
+                // Also search by tag
+                val tagQuery = query.trimStart('#')
+                val tagMatchedHashes = repository.searchByTag(tagQuery)
+                val remarkHashes = imageDataList.map { it.hash }.toSet()
+
+                // Load ImageData for tag-only matches
+                val tagOnlyData = tagMatchedHashes
+                    .filter { it !in remarkHashes }
+                    .mapNotNull { repository.getByHash(it) }
+
+                val allImageData = imageDataList + tagOnlyData
+
+                val results = allImageData.map { imageData ->
                     val paths = repository.getPathsForHashSync(imageData.hash).map { imagePath ->
                         PathInfo(
                             uri = Uri.parse(imagePath.path),
@@ -139,7 +181,8 @@ class GalleryViewModel(application: Application) : AndroidViewModel(application)
                             isValid = imagePath.isValid
                         )
                     }
-                    SearchResultItem(imageData = imageData, paths = paths)
+                    val tags = repository.getTagsForHashSync(imageData.hash)
+                    SearchResultItem(imageData = imageData, paths = paths, tags = tags)
                 }
                 _searchResults.value = results
 

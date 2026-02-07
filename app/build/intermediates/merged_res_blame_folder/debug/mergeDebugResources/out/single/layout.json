@@ -1,15 +1,27 @@
 [
     {
-        "merged": "com.hashalbum.app-mergeDebugResources-44:/layout/item_bucket.xml",
-        "source": "com.hashalbum.app-main-47:/layout/item_bucket.xml"
-    },
-    {
-        "merged": "com.hashalbum.app-mergeDebugResources-44:/layout/item_path.xml",
-        "source": "com.hashalbum.app-main-47:/layout/item_path.xml"
+        "merged": "/home/abdza/.gradle/daemon/8.6/com.hashalbum.app-mergeDebugResources-44:/layout/activity_main.xml",
+        "source": "/home/abdza/.gradle/daemon/8.6/com.hashalbum.app-main-47:/layout/activity_main.xml"
     },
     {
         "merged": "com.hashalbum.app-mergeDebugResources-44:/layout/item_search_result.xml",
         "source": "com.hashalbum.app-main-47:/layout/item_search_result.xml"
+    },
+    {
+        "merged": "/home/abdza/.gradle/daemon/8.6/com.hashalbum.app-mergeDebugResources-44:/layout/item_path.xml",
+        "source": "/home/abdza/.gradle/daemon/8.6/com.hashalbum.app-main-47:/layout/item_path.xml"
+    },
+    {
+        "merged": "/home/abdza/.gradle/daemon/8.6/com.hashalbum.app-mergeDebugResources-44:/layout/item_search_result.xml",
+        "source": "/home/abdza/.gradle/daemon/8.6/com.hashalbum.app-main-47:/layout/item_search_result.xml"
+    },
+    {
+        "merged": "/home/abdza/.gradle/daemon/8.6/com.hashalbum.app-mergeDebugResources-44:/layout/item_gallery_image.xml",
+        "source": "/home/abdza/.gradle/daemon/8.6/com.hashalbum.app-main-47:/layout/item_gallery_image.xml"
+    },
+    {
+        "merged": "/home/abdza/.gradle/daemon/8.6/com.hashalbum.app-mergeDebugResources-44:/layout/activity_image_viewer.xml",
+        "source": "/home/abdza/.gradle/daemon/8.6/com.hashalbum.app-main-47:/layout/activity_image_viewer.xml"
     },
     {
         "merged": "com.hashalbum.app-mergeDebugResources-44:/layout/activity_main.xml",
@@ -24,7 +36,11 @@
         "source": "com.hashalbum.app-main-47:/layout/item_gallery_image.xml"
     },
     {
-        "merged": "com.hashalbum.app-mergeDebugResources-44:/layout/item_image_pager.xml",
-        "source": "com.hashalbum.app-main-47:/layout/item_image_pager.xml"
+        "merged": "/home/abdza/.gradle/daemon/8.6/com.hashalbum.app-mergeDebugResources-44:/layout/item_bucket.xml",
+        "source": "/home/abdza/.gradle/daemon/8.6/com.hashalbum.app-main-47:/layout/item_bucket.xml"
+    },
+    {
+        "merged": "/home/abdza/.gradle/daemon/8.6/com.hashalbum.app-mergeDebugResources-44:/layout/item_image_pager.xml",
+        "source": "/home/abdza/.gradle/daemon/8.6/com.hashalbum.app-main-47:/layout/item_image_pager.xml"
     }
 ]

@@ -16,6 +16,7 @@ import androidx.viewbinding.ViewBinding;
 import androidx.viewbinding.ViewBindings;
 import androidx.viewpager2.widget.ViewPager2;
 import com.google.android.material.button.MaterialButton;
+import com.google.android.material.chip.ChipGroup;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 import com.hashalbum.app.R;
@@ -26,6 +27,9 @@ import java.lang.String;
 public final class ActivityImageViewerBinding implements ViewBinding {
   @NonNull
   private final FrameLayout rootView;
+
+  @NonNull
+  public final MaterialButton addTagsButton;
 
   @NonNull
   public final LinearLayout cameraRow;
@@ -106,12 +110,19 @@ public final class ActivityImageViewerBinding implements ViewBinding {
   public final LinearLayout swipeHint;
 
   @NonNull
+  public final ChipGroup tagChipGroup;
+
+  @NonNull
+  public final LinearLayout tagsSection;
+
+  @NonNull
   public final LinearLayout topBar;
 
   @NonNull
   public final ViewPager2 viewPager;
 
-  private ActivityImageViewerBinding(@NonNull FrameLayout rootView, @NonNull LinearLayout cameraRow,
+  private ActivityImageViewerBinding(@NonNull FrameLayout rootView,
+      @NonNull MaterialButton addTagsButton, @NonNull LinearLayout cameraRow,
       @NonNull TextView cameraValue, @NonNull ImageButton closeButton,
       @NonNull LinearLayout dateRow, @NonNull TextView dateTakenValue,
       @NonNull MaterialButton editRemarkButton, @NonNull LinearLayout fileSizeRow,
@@ -124,9 +135,11 @@ public final class ActivityImageViewerBinding implements ViewBinding {
       @NonNull TextView remarkLabel, @NonNull LinearLayout remarkPanel,
       @NonNull View remarkPanelHandle, @NonNull LinearLayout resolutionRow,
       @NonNull TextView resolutionValue, @NonNull MaterialButton saveRemarkButton,
-      @NonNull LinearLayout swipeHint, @NonNull LinearLayout topBar,
+      @NonNull LinearLayout swipeHint, @NonNull ChipGroup tagChipGroup,
+      @NonNull LinearLayout tagsSection, @NonNull LinearLayout topBar,
       @NonNull ViewPager2 viewPager) {
     this.rootView = rootView;
+    this.addTagsButton = addTagsButton;
     this.cameraRow = cameraRow;
     this.cameraValue = cameraValue;
     this.closeButton = closeButton;
@@ -153,6 +166,8 @@ public final class ActivityImageViewerBinding implements ViewBinding {
     this.resolutionValue = resolutionValue;
     this.saveRemarkButton = saveRemarkButton;
     this.swipeHint = swipeHint;
+    this.tagChipGroup = tagChipGroup;
+    this.tagsSection = tagsSection;
     this.topBar = topBar;
     this.viewPager = viewPager;
   }
@@ -184,6 +199,12 @@ public final class ActivityImageViewerBinding implements ViewBinding {
     // This is done to optimize the compiled bytecode for size and performance.
     int id;
     missingId: {
+      id = R.id.addTagsButton;
+      MaterialButton addTagsButton = ViewBindings.findChildViewById(rootView, id);
+      if (addTagsButton == null) {
+        break missingId;
+      }
+
       id = R.id.cameraRow;
       LinearLayout cameraRow = ViewBindings.findChildViewById(rootView, id);
       if (cameraRow == null) {
@@ -340,6 +361,18 @@ public final class ActivityImageViewerBinding implements ViewBinding {
         break missingId;
       }
 
+      id = R.id.tagChipGroup;
+      ChipGroup tagChipGroup = ViewBindings.findChildViewById(rootView, id);
+      if (tagChipGroup == null) {
+        break missingId;
+      }
+
+      id = R.id.tagsSection;
+      LinearLayout tagsSection = ViewBindings.findChildViewById(rootView, id);
+      if (tagsSection == null) {
+        break missingId;
+      }
+
       id = R.id.topBar;
       LinearLayout topBar = ViewBindings.findChildViewById(rootView, id);
       if (topBar == null) {
@@ -352,12 +385,13 @@ public final class ActivityImageViewerBinding implements ViewBinding {
         break missingId;
       }
 
-      return new ActivityImageViewerBinding((FrameLayout) rootView, cameraRow, cameraValue,
-          closeButton, dateRow, dateTakenValue, editRemarkButton, fileSizeRow, fileSizeValue,
-          imageCounter, locationRow, locationValue, metadataSection, noRemarkText, remarkDisplay,
-          remarkDisplayContainer, remarkEditContainer, remarkIndicator, remarkInput,
+      return new ActivityImageViewerBinding((FrameLayout) rootView, addTagsButton, cameraRow,
+          cameraValue, closeButton, dateRow, dateTakenValue, editRemarkButton, fileSizeRow,
+          fileSizeValue, imageCounter, locationRow, locationValue, metadataSection, noRemarkText,
+          remarkDisplay, remarkDisplayContainer, remarkEditContainer, remarkIndicator, remarkInput,
           remarkInputLayout, remarkLabel, remarkPanel, remarkPanelHandle, resolutionRow,
-          resolutionValue, saveRemarkButton, swipeHint, topBar, viewPager);
+          resolutionValue, saveRemarkButton, swipeHint, tagChipGroup, tagsSection, topBar,
+          viewPager);
     }
     String missingId = rootView.getResources().getResourceName(id);
     throw new NullPointerException("Missing required view with ID: ".concat(missingId));

@@ -4,7 +4,8 @@ import kotlinx.coroutines.flow.Flow
 
 class ImageRepository(
     private val imageDataDao: ImageDataDao,
-    private val imagePathDao: ImagePathDao
+    private val imagePathDao: ImagePathDao,
+    private val imageTagDao: ImageTagDao
 ) {
 
     val allImages: Flow<List<ImageData>> = imageDataDao.getAllImages()
@@ -52,6 +53,11 @@ class ImageRepository(
     }
 
     suspend fun addOrUpdatePath(hash: String, path: String) {
+        // Ensure parent image_data row exists (FK constraint)
+        val imageData = imageDataDao.getByHash(hash)
+        if (imageData == null) {
+            imageDataDao.insert(ImageData(hash = hash, lastKnownPath = path))
+        }
         val existing = imagePathDao.getPathsForHashSync(hash).find { it.path == path }
         if (existing != null) {
             imagePathDao.updateLastSeen(hash, path)
@@ -79,5 +85,22 @@ class ImageRepository(
 
     suspend fun delete(hash: String) {
         imageDataDao.deleteByHash(hash)
+    }
+
+    suspend fun addTagsToImage(hash: String, tags: List<String>) {
+        val imageTags = tags.map { ImageTag(hash = hash, tag = it) }
+        imageTagDao.insertTags(imageTags)
+    }
+
+    suspend fun removeTagFromImage(hash: String, tag: String) {
+        imageTagDao.deleteTag(hash, tag)
+    }
+
+    suspend fun getTagsForHashSync(hash: String): List<String> {
+        return imageTagDao.getTagsForHashSync(hash).map { it.tag }
+    }
+
+    suspend fun searchByTag(query: String): List<String> {
+        return imageTagDao.searchByTag(query)
     }
 }

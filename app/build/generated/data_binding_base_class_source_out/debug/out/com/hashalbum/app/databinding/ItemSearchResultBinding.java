@@ -12,6 +12,7 @@ import androidx.annotation.Nullable;
 import androidx.viewbinding.ViewBinding;
 import androidx.viewbinding.ViewBindings;
 import com.google.android.material.card.MaterialCardView;
+import com.google.android.material.chip.ChipGroup;
 import com.hashalbum.app.R;
 import java.lang.NullPointerException;
 import java.lang.Override;
@@ -31,6 +32,9 @@ public final class ItemSearchResultBinding implements ViewBinding {
   public final TextView searchRemarkText;
 
   @NonNull
+  public final ChipGroup searchTagChipGroup;
+
+  @NonNull
   public final ImageView searchThumbnail;
 
   @NonNull
@@ -38,12 +42,13 @@ public final class ItemSearchResultBinding implements ViewBinding {
 
   private ItemSearchResultBinding(@NonNull MaterialCardView rootView,
       @NonNull LinearLayout pathListContainer, @NonNull TextView pathSummary,
-      @NonNull TextView searchRemarkText, @NonNull ImageView searchThumbnail,
-      @NonNull TextView togglePaths) {
+      @NonNull TextView searchRemarkText, @NonNull ChipGroup searchTagChipGroup,
+      @NonNull ImageView searchThumbnail, @NonNull TextView togglePaths) {
     this.rootView = rootView;
     this.pathListContainer = pathListContainer;
     this.pathSummary = pathSummary;
     this.searchRemarkText = searchRemarkText;
+    this.searchTagChipGroup = searchTagChipGroup;
     this.searchThumbnail = searchThumbnail;
     this.togglePaths = togglePaths;
   }
@@ -93,6 +98,12 @@ public final class ItemSearchResultBinding implements ViewBinding {
         break missingId;
       }
 
+      id = R.id.searchTagChipGroup;
+      ChipGroup searchTagChipGroup = ViewBindings.findChildViewById(rootView, id);
+      if (searchTagChipGroup == null) {
+        break missingId;
+      }
+
       id = R.id.searchThumbnail;
       ImageView searchThumbnail = ViewBindings.findChildViewById(rootView, id);
       if (searchThumbnail == null) {
@@ -106,7 +117,7 @@ public final class ItemSearchResultBinding implements ViewBinding {
       }
 
       return new ItemSearchResultBinding((MaterialCardView) rootView, pathListContainer,
-          pathSummary, searchRemarkText, searchThumbnail, togglePaths);
+          pathSummary, searchRemarkText, searchTagChipGroup, searchThumbnail, togglePaths);
     }
     String missingId = rootView.getResources().getResourceName(id);
     throw new NullPointerException("Missing required view with ID: ".concat(missingId));
