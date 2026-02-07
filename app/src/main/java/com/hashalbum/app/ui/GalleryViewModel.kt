@@ -10,83 +10,86 @@ import com.hashalbum.app.HashAlbumApp
 import com.hashalbum.app.data.GalleryImage
 import com.hashalbum.app.data.ImageData
 import com.hashalbum.app.data.ImageRepository
+import com.hashalbum.app.data.PathInfo
+import com.hashalbum.app.data.SearchResultItem
 import com.hashalbum.app.util.ImageBucket
 import com.hashalbum.app.util.ImageHasher
 import com.hashalbum.app.util.MediaStoreHelper
+import com.hashalbum.app.util.PathValidator
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class GalleryViewModel(application: Application) : AndroidViewModel(application) {
-    
+
     private val repository: ImageRepository
-    
+
     private val _images = MutableStateFlow<List<GalleryImage>>(emptyList())
     val images: StateFlow<List<GalleryImage>> = _images.asStateFlow()
-    
+
     private val _buckets = MutableStateFlow<List<ImageBucket>>(emptyList())
     val buckets: StateFlow<List<ImageBucket>> = _buckets.asStateFlow()
-    
+
     private val _isLoading = MutableLiveData(false)
     val isLoading: LiveData<Boolean> = _isLoading
-    
+
     private val _currentBucket = MutableLiveData<ImageBucket?>(null)
     val currentBucket: LiveData<ImageBucket?> = _currentBucket
 
-    private val _searchResults = MutableStateFlow<List<GalleryImage>>(emptyList())
-    val searchResults: StateFlow<List<GalleryImage>> = _searchResults.asStateFlow()
+    private val _searchResults = MutableStateFlow<List<SearchResultItem>>(emptyList())
+    val searchResults: StateFlow<List<SearchResultItem>> = _searchResults.asStateFlow()
 
     private val _isSearchMode = MutableStateFlow(false)
     val isSearchMode: StateFlow<Boolean> = _isSearchMode.asStateFlow()
 
-    // Cache for image hashes to avoid recalculating
     private val hashCache = mutableMapOf<Uri, String>()
-    
+
     init {
         val database = (application as HashAlbumApp).database
-        repository = ImageRepository(database.imageDataDao())
+        repository = ImageRepository(database.imageDataDao(), database.imagePathDao())
     }
-    
+
     fun loadAllImages() {
         viewModelScope.launch {
             _isLoading.value = true
             _currentBucket.value = null
-            
+
             val loadedImages = MediaStoreHelper.loadAllImages(getApplication())
             _images.value = loadedImages
-            
+
             _isLoading.value = false
+
+            validateAllPaths()
         }
     }
-    
+
     fun loadBuckets() {
         viewModelScope.launch {
             _isLoading.value = true
-            
+
             val loadedBuckets = MediaStoreHelper.getImageBuckets(getApplication())
             _buckets.value = loadedBuckets
-            
+
             _isLoading.value = false
         }
     }
-    
+
     fun loadImagesFromBucket(bucket: ImageBucket) {
         viewModelScope.launch {
             _isLoading.value = true
             _currentBucket.value = bucket
-            
+
             val loadedImages = MediaStoreHelper.loadImagesFromBucket(getApplication(), bucket.id)
             _images.value = loadedImages
-            
+
             _isLoading.value = false
         }
     }
-    
-    /**
-     * Get the hash for an image, using cache if available.
-     */
+
     suspend fun getImageHash(uri: Uri): String? {
         return hashCache[uri] ?: run {
             val hash = ImageHasher.generateHash(getApplication(), uri)
@@ -94,42 +97,32 @@ class GalleryViewModel(application: Application) : AndroidViewModel(application)
             hash
         }
     }
-    
-    /**
-     * Get image data by hash from database.
-     */
+
     suspend fun getImageData(hash: String): ImageData? {
         return repository.getByHash(hash)
     }
-    
-    /**
-     * Save or update remark for an image.
-     */
+
     suspend fun saveRemark(uri: Uri, remark: String) {
         val hash = getImageHash(uri) ?: return
         repository.saveOrUpdateRemark(hash, remark, uri.toString())
     }
-    
-    /**
-     * Check if an image has a remark saved.
-     */
+
     suspend fun hasRemark(uri: Uri): Boolean {
         val hash = getImageHash(uri) ?: return false
         val imageData = repository.getByHash(hash)
         return !imageData?.remark.isNullOrBlank()
     }
-    
-    /**
-     * Get remark for an image.
-     */
+
     suspend fun getRemark(uri: Uri): String {
         val hash = getImageHash(uri) ?: return ""
         return repository.getByHash(hash)?.remark ?: ""
     }
 
-    /**
-     * Search images by remark text.
-     */
+    suspend fun trackImagePath(uri: Uri) {
+        val hash = getImageHash(uri) ?: return
+        repository.addOrUpdatePath(hash, uri.toString())
+    }
+
     fun searchRemarks(query: String) {
         if (query.isBlank()) {
             clearSearch()
@@ -138,29 +131,73 @@ class GalleryViewModel(application: Application) : AndroidViewModel(application)
         _isSearchMode.value = true
         viewModelScope.launch {
             repository.searchByRemark(query).collectLatest { imageDataList ->
-                val galleryImages = imageDataList.mapNotNull { imageData ->
-                    imageData.lastKnownPath?.let { path ->
-                        try {
-                            GalleryImage(
-                                uri = Uri.parse(path),
-                                hash = imageData.hash,
-                                displayName = "",
-                                dateModified = imageData.updatedAt,
-                                size = 0L
-                            )
-                        } catch (e: Exception) {
-                            null
-                        }
+                val results = imageDataList.map { imageData ->
+                    val paths = repository.getPathsForHashSync(imageData.hash).map { imagePath ->
+                        PathInfo(
+                            uri = Uri.parse(imagePath.path),
+                            lastSeen = imagePath.lastSeen,
+                            isValid = imagePath.isValid
+                        )
                     }
+                    SearchResultItem(imageData = imageData, paths = paths)
                 }
-                _searchResults.value = galleryImages
+                _searchResults.value = results
+
+                validateSearchResultPaths(results)
             }
         }
     }
 
-    /**
-     * Exit search mode and clear results.
-     */
+    private fun validateSearchResultPaths(results: List<SearchResultItem>) {
+        viewModelScope.launch(Dispatchers.IO) {
+            val context = getApplication<Application>()
+            var changed = false
+            for (result in results) {
+                for (pathInfo in result.paths) {
+                    val valid = PathValidator.isPathValid(context, pathInfo.uri)
+                    if (valid != pathInfo.isValid) {
+                        repository.updatePathValidity(result.imageData.hash, pathInfo.uri.toString(), valid)
+                        changed = true
+                    }
+                }
+            }
+            if (changed) {
+                withContext(Dispatchers.Main) {
+                    val updated = _searchResults.value.map { item ->
+                        val freshPaths = repository.getPathsForHashSync(item.imageData.hash).map { imagePath ->
+                            PathInfo(
+                                uri = Uri.parse(imagePath.path),
+                                lastSeen = imagePath.lastSeen,
+                                isValid = imagePath.isValid
+                            )
+                        }
+                        item.copy(paths = freshPaths)
+                    }
+                    _searchResults.value = updated
+                }
+            }
+        }
+    }
+
+    fun validateAllPaths() {
+        viewModelScope.launch(Dispatchers.IO) {
+            val context = getApplication<Application>()
+            val allPaths = repository.getAllPathsSync()
+            for (imagePath in allPaths) {
+                try {
+                    val uri = Uri.parse(imagePath.path)
+                    val valid = PathValidator.isPathValid(context, uri)
+                    if (valid != imagePath.isValid) {
+                        repository.updatePathValidity(imagePath.hash, imagePath.path, valid)
+                    }
+                } catch (_: Exception) {
+                    repository.updatePathValidity(imagePath.hash, imagePath.path, false)
+                }
+            }
+            repository.deleteStaleInvalidPaths(30)
+        }
+    }
+
     fun clearSearch() {
         _isSearchMode.value = false
         _searchResults.value = emptyList()

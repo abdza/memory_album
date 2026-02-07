@@ -23,17 +23,22 @@
     <string name="file_size">File Size</string>
     <string name="folders">Folders</string>
     <string name="has_remark">This image has a remark</string>
+    <string name="hide_paths">Hide paths</string>
     <string name="image">Image</string>
     <string name="image_info">Image Info</string>
+    <string name="image_thumbnail">Image thumbnail</string>
     <string name="location">Location</string>
     <string name="no_images">No images found</string>
     <string name="no_remark">No remark added</string>
     <string name="no_search_results">No images found</string>
+    <string name="no_valid_paths">No valid paths</string>
     <string name="remark">Remark</string>
     <string name="remark_saved">Remark saved</string>
     <string name="resolution">Resolution</string>
     <string name="save_remark">Save Remark</string>
     <string name="search_remarks">Search remarks</string>
+    <string name="search_results">Search Results</string>
+    <string name="show_paths">Show paths</string>
     <string name="swipe_up">Swipe up</string>
     <string name="swipe_up_for_remark">Swipe up to add remark</string>
     <style name="Theme.HashAlbum" parent="Theme.MaterialComponents.DayNight.NoActionBar">

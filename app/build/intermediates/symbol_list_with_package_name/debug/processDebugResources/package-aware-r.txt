@@ -3097,6 +3097,8 @@ drawable panel_handle
 drawable placeholder_image
 drawable remark_indicator
 drawable remark_panel_bg
+drawable status_dot_invalid
+drawable status_dot_valid
 drawable test_level_drawable
 drawable tooltip_frame_dark
 drawable tooltip_frame_light
@@ -3471,7 +3473,10 @@ id parentRelative
 id parent_matrix
 id password_toggle
 id path
+id pathListContainer
 id pathRelative
+id pathSummary
+id pathText
 id peekHeight
 id percent
 id pin
@@ -3516,6 +3521,8 @@ id scrollIndicatorDown
 id scrollIndicatorUp
 id scrollView
 id scrollable
+id searchRemarkText
+id searchThumbnail
 id search_badge
 id search_bar
 id search_button
@@ -3562,6 +3569,8 @@ id startToEnd
 id startVertical
 id staticLayout
 id staticPostLayout
+id statusDot
+id statusLabel
 id stop
 id stretch
 id submenuarrow
@@ -3604,6 +3613,7 @@ id title
 id titleDividerNoCustom
 id title_template
 id toggle
+id togglePaths
 id toolbar
 id top
 id topBar
@@ -3778,6 +3788,8 @@ layout ime_secondary_split_test_activity
 layout item_bucket
 layout item_gallery_image
 layout item_image_pager
+layout item_path
+layout item_search_result
 layout m3_alert_dialog
 layout m3_alert_dialog_actions
 layout m3_alert_dialog_title
@@ -3906,9 +3918,11 @@ string file_size
 string folders
 string has_remark
 string hide_bottom_view_on_scroll_behavior
+string hide_paths
 string icon_content_description
 string image
 string image_info
+string image_thumbnail
 string item_view_role_description
 string location
 string m3_exceed_max_badge_text_suffix
@@ -4014,6 +4028,7 @@ string mtrl_timepicker_confirm
 string no_images
 string no_remark
 string no_search_results
+string no_valid_paths
 string password_toggle_content_description
 string path_password_eye
 string path_password_eye_mask_strike_through
@@ -4025,9 +4040,11 @@ string resolution
 string save_remark
 string search_menu_title
 string search_remarks
+string search_results
 string searchbar_scrolling_view_behavior
 string searchview_clear_text_content_description
 string searchview_navigation_content_description
+string show_paths
 string side_sheet_accessibility_pane_title
 string side_sheet_behavior
 string status_bar_notification_info_overflow

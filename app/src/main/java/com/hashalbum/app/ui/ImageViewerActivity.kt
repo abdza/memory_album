@@ -245,6 +245,9 @@ class ImageViewerActivity : AppCompatActivity() {
             currentRemark = remark
             binding.remarkInput.setText(remark)
 
+            // Track this path
+            viewModel.trackImagePath(currentUri)
+
             // Load metadata
             currentMetadata = ImageMetadataHelper.getMetadata(this@ImageViewerActivity, currentUri)
             updateMetadataDisplay()

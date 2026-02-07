@@ -4,8 +4,40 @@
         "source": "com.hashalbum.app-main-47:/drawable/ic_note.xml"
     },
     {
+        "merged": "com.hashalbum.app-debug-45:/drawable_ic_menu.xml.flat",
+        "source": "com.hashalbum.app-main-47:/drawable/ic_menu.xml"
+    },
+    {
+        "merged": "com.hashalbum.app-debug-45:/mipmap-anydpi-v26_ic_launcher.xml.flat",
+        "source": "com.hashalbum.app-main-47:/mipmap-anydpi-v26/ic_launcher.xml"
+    },
+    {
+        "merged": "com.hashalbum.app-debug-45:/layout_item_path.xml.flat",
+        "source": "com.hashalbum.app-main-47:/layout/item_path.xml"
+    },
+    {
+        "merged": "com.hashalbum.app-debug-45:/layout_activity_image_viewer.xml.flat",
+        "source": "com.hashalbum.app-main-47:/layout/activity_image_viewer.xml"
+    },
+    {
+        "merged": "com.hashalbum.app-debug-45:/xml_backup_rules.xml.flat",
+        "source": "com.hashalbum.app-main-47:/xml/backup_rules.xml"
+    },
+    {
+        "merged": "com.hashalbum.app-debug-45:/drawable_remark_panel_bg.xml.flat",
+        "source": "com.hashalbum.app-main-47:/drawable/remark_panel_bg.xml"
+    },
+    {
+        "merged": "com.hashalbum.app-debug-45:/layout_activity_main.xml.flat",
+        "source": "com.hashalbum.app-main-47:/layout/activity_main.xml"
+    },
+    {
         "merged": "com.hashalbum.app-debug-45:/menu_menu_main.xml.flat",
         "source": "com.hashalbum.app-main-47:/menu/menu_main.xml"
+    },
+    {
+        "merged": "com.hashalbum.app-debug-45:/layout_item_search_result.xml.flat",
+        "source": "com.hashalbum.app-main-47:/layout/item_search_result.xml"
     },
     {
         "merged": "com.hashalbum.app-debug-45:/drawable_ic_launcher_background.xml.flat",
@@ -24,20 +56,12 @@
         "source": "com.hashalbum.app-main-47:/xml/data_extraction_rules.xml"
     },
     {
-        "merged": "com.hashalbum.app-debug-45:/drawable_ic_menu.xml.flat",
-        "source": "com.hashalbum.app-main-47:/drawable/ic_menu.xml"
-    },
-    {
         "merged": "com.hashalbum.app-debug-45:/drawable_ic_swipe_up.xml.flat",
         "source": "com.hashalbum.app-main-47:/drawable/ic_swipe_up.xml"
     },
     {
         "merged": "com.hashalbum.app-debug-45:/drawable_ic_close.xml.flat",
         "source": "com.hashalbum.app-main-47:/drawable/ic_close.xml"
-    },
-    {
-        "merged": "com.hashalbum.app-debug-45:/mipmap-anydpi-v26_ic_launcher.xml.flat",
-        "source": "com.hashalbum.app-main-47:/mipmap-anydpi-v26/ic_launcher.xml"
     },
     {
         "merged": "com.hashalbum.app-debug-45:/drawable_gradient_bottom.xml.flat",
@@ -64,10 +88,6 @@
         "source": "com.hashalbum.app-main-47:/layout/item_bucket.xml"
     },
     {
-        "merged": "com.hashalbum.app-debug-45:/layout_activity_image_viewer.xml.flat",
-        "source": "com.hashalbum.app-main-47:/layout/activity_image_viewer.xml"
-    },
-    {
         "merged": "com.hashalbum.app-debug-45:/mipmap-anydpi-v26_ic_launcher_round.xml.flat",
         "source": "com.hashalbum.app-main-47:/mipmap-anydpi-v26/ic_launcher_round.xml"
     },
@@ -76,16 +96,12 @@
         "source": "com.hashalbum.app-main-47:/layout/item_image_pager.xml"
     },
     {
-        "merged": "com.hashalbum.app-debug-45:/xml_backup_rules.xml.flat",
-        "source": "com.hashalbum.app-main-47:/xml/backup_rules.xml"
+        "merged": "com.hashalbum.app-debug-45:/drawable_status_dot_valid.xml.flat",
+        "source": "com.hashalbum.app-main-47:/drawable/status_dot_valid.xml"
     },
     {
-        "merged": "com.hashalbum.app-debug-45:/drawable_remark_panel_bg.xml.flat",
-        "source": "com.hashalbum.app-main-47:/drawable/remark_panel_bg.xml"
-    },
-    {
-        "merged": "com.hashalbum.app-debug-45:/layout_activity_main.xml.flat",
-        "source": "com.hashalbum.app-main-47:/layout/activity_main.xml"
+        "merged": "com.hashalbum.app-debug-45:/drawable_status_dot_invalid.xml.flat",
+        "source": "com.hashalbum.app-main-47:/drawable/status_dot_invalid.xml"
     },
     {
         "merged": "com.hashalbum.app-debug-45:/layout_item_gallery_image.xml.flat",

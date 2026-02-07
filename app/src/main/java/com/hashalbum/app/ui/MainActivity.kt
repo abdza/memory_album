@@ -29,6 +29,7 @@ class MainActivity : AppCompatActivity() {
     private val viewModel: GalleryViewModel by viewModels()
     private lateinit var galleryAdapter: GalleryAdapter
     private lateinit var bucketAdapter: BucketAdapter
+    private lateinit var searchResultAdapter: SearchResultAdapter
 
     private val permissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestPermission()
@@ -67,15 +68,10 @@ class MainActivity : AppCompatActivity() {
             binding.drawerLayout.openDrawer(GravityCompat.START)
         }
     }
-    
+
     private fun setupRecyclerView() {
         galleryAdapter = GalleryAdapter { image, position ->
-            // Open image viewer
-            val imageList = if (viewModel.isSearchMode.value) {
-                viewModel.searchResults.value
-            } else {
-                viewModel.images.value
-            }
+            val imageList = viewModel.images.value
             val intent = Intent(this, ImageViewerActivity::class.java).apply {
                 putExtra(ImageViewerActivity.EXTRA_IMAGE_POSITION, position)
                 putStringArrayListExtra(
@@ -85,14 +81,29 @@ class MainActivity : AppCompatActivity() {
             }
             startActivity(intent)
         }
-        
+
+        searchResultAdapter = SearchResultAdapter { searchResult ->
+            val validPath = searchResult.paths.firstOrNull { it.isValid }
+                ?: searchResult.paths.firstOrNull()
+            if (validPath != null) {
+                val intent = Intent(this, ImageViewerActivity::class.java).apply {
+                    putExtra(ImageViewerActivity.EXTRA_IMAGE_POSITION, 0)
+                    putStringArrayListExtra(
+                        ImageViewerActivity.EXTRA_IMAGE_URIS,
+                        arrayListOf(validPath.uri.toString())
+                    )
+                }
+                startActivity(intent)
+            }
+        }
+
         binding.recyclerView.apply {
             layoutManager = GridLayoutManager(this@MainActivity, 3)
             adapter = galleryAdapter
             setHasFixedSize(true)
         }
     }
-    
+
     private fun setupBucketDrawer() {
         bucketAdapter = BucketAdapter { bucket ->
             if (bucket != null) {
@@ -158,7 +169,20 @@ class MainActivity : AppCompatActivity() {
     private fun loadBuckets() {
         viewModel.loadBuckets()
     }
-    
+
+    private fun switchToSearchMode() {
+        binding.recyclerView.layoutManager = LinearLayoutManager(this)
+        binding.recyclerView.adapter = searchResultAdapter
+        supportActionBar?.title = getString(R.string.search_results)
+    }
+
+    private fun switchToGalleryMode() {
+        binding.recyclerView.layoutManager = GridLayoutManager(this, 3)
+        binding.recyclerView.adapter = galleryAdapter
+        val currentBucket = viewModel.currentBucket.value
+        supportActionBar?.title = currentBucket?.name ?: getString(R.string.all_images)
+    }
+
     private fun observeViewModel() {
         lifecycleScope.launch {
             viewModel.images.collectLatest { images ->
@@ -178,7 +202,7 @@ class MainActivity : AppCompatActivity() {
         lifecycleScope.launch {
             viewModel.searchResults.collectLatest { results ->
                 if (viewModel.isSearchMode.value) {
-                    galleryAdapter.submitList(results)
+                    searchResultAdapter.submitList(results)
                     binding.emptyView.visibility = if (results.isEmpty()) View.VISIBLE else View.GONE
                 }
             }
@@ -187,14 +211,13 @@ class MainActivity : AppCompatActivity() {
         lifecycleScope.launch {
             viewModel.isSearchMode.collectLatest { isSearchMode ->
                 if (isSearchMode) {
-                    galleryAdapter.submitList(viewModel.searchResults.value)
+                    switchToSearchMode()
+                    searchResultAdapter.submitList(viewModel.searchResults.value)
                     binding.emptyView.visibility = if (viewModel.searchResults.value.isEmpty()) View.VISIBLE else View.GONE
                 } else {
+                    switchToGalleryMode()
                     galleryAdapter.submitList(viewModel.images.value)
                     binding.emptyView.visibility = if (viewModel.images.value.isEmpty()) View.VISIBLE else View.GONE
-                    // Restore title
-                    val currentBucket = viewModel.currentBucket.value
-                    supportActionBar?.title = currentBucket?.name ?: getString(R.string.all_images)
                 }
             }
         }
@@ -208,7 +231,7 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
-    
+
     private fun checkPermissionAndLoad() {
         val permission = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             Manifest.permission.READ_MEDIA_IMAGES
@@ -240,18 +263,16 @@ class MainActivity : AppCompatActivity() {
         if (binding.drawerLayout.isDrawerOpen(GravityCompat.START)) {
             binding.drawerLayout.closeDrawer(GravityCompat.START)
         } else if (viewModel.isSearchMode.value) {
-            // Exit search mode
             viewModel.clearSearch()
             invalidateOptionsMenu()
         } else if (viewModel.currentBucket.value != null) {
-            // Go back to all images
             viewModel.loadAllImages()
             supportActionBar?.title = getString(R.string.all_images)
         } else {
             super.onBackPressed()
         }
     }
-    
+
     private fun loadImages() {
         viewModel.loadAllImages()
     }
