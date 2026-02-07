@@ -277,6 +277,9 @@ class MainActivity : AppCompatActivity() {
         binding.batchTagButton.setOnClickListener {
             showBatchTagDialog()
         }
+        binding.batchRemarkButton.setOnClickListener {
+            showBatchRemarkDialog()
+        }
     }
 
     private fun enterSelectionMode() {
@@ -313,6 +316,32 @@ class MainActivity : AppCompatActivity() {
                     val uris = selectedImages.map { it.uri }
                     viewModel.addTagsToImages(uris, tags)
                     Toast.makeText(this, R.string.tags_added, Toast.LENGTH_SHORT).show()
+                    exitSelectionMode()
+                }
+            }
+            .setNegativeButton(android.R.string.cancel, null)
+            .show()
+    }
+
+    private fun showBatchRemarkDialog() {
+        val selectedImages = galleryAdapter.getSelectedImages()
+        if (selectedImages.isEmpty()) return
+
+        val input = android.widget.EditText(this).apply {
+            hint = getString(R.string.enter_remark)
+            setPadding(48, 32, 48, 32)
+            inputType = android.text.InputType.TYPE_CLASS_TEXT or android.text.InputType.TYPE_TEXT_FLAG_MULTI_LINE
+            minLines = 3
+        }
+        MaterialAlertDialogBuilder(this)
+            .setTitle(R.string.set_remark)
+            .setView(input)
+            .setPositiveButton(android.R.string.ok) { _, _ ->
+                val remark = input.text.toString().trim()
+                if (remark.isNotEmpty()) {
+                    val uris = selectedImages.map { it.uri }
+                    viewModel.saveRemarkToImages(uris, remark)
+                    Toast.makeText(this, R.string.remark_set, Toast.LENGTH_SHORT).show()
                     exitSelectionMode()
                 }
             }

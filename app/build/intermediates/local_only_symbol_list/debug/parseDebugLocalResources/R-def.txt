@@ -30,6 +30,7 @@ drawable status_dot_invalid
 drawable status_dot_valid
 id action_search
 id addTagsButton
+id batchRemarkButton
 id batchTagButton
 id bucketCount
 id bucketName
@@ -123,10 +124,12 @@ string no_search_results
 string no_valid_paths
 string remark
 string remark_saved
+string remark_set
 string resolution
 string save_remark
 string search_remarks
 string search_results
+string set_remark
 string show_paths
 string swipe_up
 string swipe_up_for_remark

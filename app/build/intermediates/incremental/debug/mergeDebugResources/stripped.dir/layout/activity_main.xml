@@ -115,6 +115,14 @@
                 android:textColor="@android:color/white" />
 
             <com.google.android.material.button.MaterialButton
+                android:id="@+id/batchRemarkButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/set_remark"
+                style="@style/Widget.MaterialComponents.Button.TextButton"
+                android:textColor="@android:color/white" />
+
+            <com.google.android.material.button.MaterialButton
                 android:id="@+id/cancelSelectionButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

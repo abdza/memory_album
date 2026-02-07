@@ -38,10 +38,12 @@
     <string name="no_valid_paths">No valid paths</string>
     <string name="remark">Remark</string>
     <string name="remark_saved">Remark saved</string>
+    <string name="remark_set">Remark set</string>
     <string name="resolution">Resolution</string>
     <string name="save_remark">Save Remark</string>
     <string name="search_remarks">Search remarks</string>
     <string name="search_results">Search Results</string>
+    <string name="set_remark">Set Remark</string>
     <string name="show_paths">Show paths</string>
     <string name="swipe_up">Swipe up</string>
     <string name="swipe_up_for_remark">Swipe up to add remark</string>

@@ -3194,6 +3194,7 @@ id autoCompleteToEnd
 id autoCompleteToStart
 id barrier
 id baseline
+id batchRemarkButton
 id batchTagButton
 id beginOnFirstDraw
 id beginning
@@ -4050,6 +4051,7 @@ string path_password_eye_mask_visible
 string path_password_strike_through
 string remark
 string remark_saved
+string remark_set
 string resolution
 string save_remark
 string search_menu_title
@@ -4058,6 +4060,7 @@ string search_results
 string searchbar_scrolling_view_behavior
 string searchview_clear_text_content_description
 string searchview_navigation_content_description
+string set_remark
 string show_paths
 string side_sheet_accessibility_pane_title
 string side_sheet_behavior

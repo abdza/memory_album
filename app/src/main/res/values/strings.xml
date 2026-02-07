@@ -34,5 +34,7 @@
     <string name="enter_tags">Enter tags (e.g. picnic family)</string>
     <string name="tags_added">Tags added</string>
     <string name="tag_removed">Tag removed</string>
+    <string name="set_remark">Set Remark</string>
+    <string name="remark_set">Remark set</string>
     <string name="cancel_selection">Cancel</string>
 </resources>

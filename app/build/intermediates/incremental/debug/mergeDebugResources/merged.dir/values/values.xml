@@ -2144,6 +2144,7 @@
     <string name="path_password_strike_through" translatable="false">M3.27,4.27 L19.74,20.74</string>
     <string name="remark">Remark</string>
     <string name="remark_saved">Remark saved</string>
+    <string name="remark_set">Remark set</string>
     <string name="resolution">Resolution</string>
     <string name="save_remark">Save Remark</string>
     <string name="search_menu_title">Search</string>
@@ -2154,6 +2155,7 @@
   </string>
     <string description="Content description for the X button to clear text [CHAR_LIMIT=NONE]" name="searchview_clear_text_content_description">Clear text</string>
     <string description="Content description for the navigation button to return to the previous screen [CHAR_LIMIT=NONE]" name="searchview_navigation_content_description">Back</string>
+    <string name="set_remark">Set Remark</string>
     <string name="show_paths">Show paths</string>
     <string description="Title of the side sheet&apos;s accessibility pane that is spoken by TalkBack when the side sheet appears on screen. [CHAR_LIMIT=NONE]" name="side_sheet_accessibility_pane_title">Side Sheet</string>
     <string name="side_sheet_behavior" translatable="false">com.google.android.material.sidesheet.SideSheetBehavior</string>

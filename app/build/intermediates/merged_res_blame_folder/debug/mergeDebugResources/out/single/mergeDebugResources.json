@@ -40,10 +40,6 @@
         "source": "/home/abdza/.gradle/daemon/8.6/com.hashalbum.app-main-47:/drawable/ic_swipe_up.xml"
     },
     {
-        "merged": "com.hashalbum.app-debug-45:/layout_activity_image_viewer.xml.flat",
-        "source": "com.hashalbum.app-main-47:/layout/activity_image_viewer.xml"
-    },
-    {
         "merged": "/home/abdza/.gradle/daemon/8.6/com.hashalbum.app-debug-45:/layout_activity_image_viewer.xml.flat",
         "source": "/home/abdza/.gradle/daemon/8.6/com.hashalbum.app-main-47:/layout/activity_image_viewer.xml"
     },
@@ -62,10 +58,6 @@
     {
         "merged": "com.hashalbum.app-debug-45:/layout_activity_main.xml.flat",
         "source": "com.hashalbum.app-main-47:/layout/activity_main.xml"
-    },
-    {
-        "merged": "com.hashalbum.app-debug-45:/layout_item_search_result.xml.flat",
-        "source": "com.hashalbum.app-main-47:/layout/item_search_result.xml"
     },
     {
         "merged": "/home/abdza/.gradle/daemon/8.6/com.hashalbum.app-debug-45:/layout_activity_main.xml.flat",
@@ -118,9 +110,5 @@
     {
         "merged": "/home/abdza/.gradle/daemon/8.6/com.hashalbum.app-debug-45:/drawable_status_dot_valid.xml.flat",
         "source": "/home/abdza/.gradle/daemon/8.6/com.hashalbum.app-main-47:/drawable/status_dot_valid.xml"
-    },
-    {
-        "merged": "com.hashalbum.app-debug-45:/layout_item_gallery_image.xml.flat",
-        "source": "com.hashalbum.app-main-47:/layout/item_gallery_image.xml"
     }
 ]

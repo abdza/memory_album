@@ -14,6 +14,22 @@ An Android picture album app with a unique hash-based image identification featu
 - Swipe up on an image to reveal the remark panel
 - Remarks are saved locally and persist across app sessions
 
+### 🏷️ Image Tagging
+- Tag images with custom labels (e.g. #picnic #familytime)
+- Add tags to individual images from the viewer
+- Remove tags via the close icon on tag chips
+- Tags are stored as lowercase, deduplicated entries
+
+### ✅ Multi-Select & Batch Tagging
+- Long-press an image in the gallery to enter selection mode
+- Select multiple images and apply tags to all at once
+- Selection bar shows count and provides "Add Tags" and "Cancel" actions
+
+### 🔍 Search
+- Search remarks and tags from the toolbar
+- Tag-matched and remark-matched results are merged and deduplicated
+- Search results display tag chips alongside remark text
+
 ### 📁 Folder Organization
 - Browse images organized by folders/albums
 - Quick folder navigation with thumbnail previews
@@ -44,22 +60,29 @@ An Android picture album app with a unique hash-based image identification featu
 app/src/main/java/com/hashalbum/app/
 ├── HashAlbumApp.kt          # Application class
 ├── data/
-│   ├── AppDatabase.kt       # Room database
+│   ├── AppDatabase.kt       # Room database (v3)
 │   ├── GalleryImage.kt      # Image data class
 │   ├── ImageData.kt         # Database entity
 │   ├── ImageDataDao.kt      # Data access object
-│   └── ImageRepository.kt   # Repository pattern
+│   ├── ImagePath.kt         # Path tracking entity
+│   ├── ImagePathDao.kt      # Path data access object
+│   ├── ImageTag.kt          # Tag entity
+│   ├── ImageTagDao.kt       # Tag data access object
+│   ├── ImageRepository.kt   # Repository pattern
+│   └── SearchResultItem.kt  # Search result model
 ├── ui/
 │   ├── BucketAdapter.kt     # Folder/album list adapter
-│   ├── GalleryAdapter.kt    # RecyclerView adapter
+│   ├── GalleryAdapter.kt    # RecyclerView adapter (with multi-select)
 │   ├── GalleryViewModel.kt  # ViewModel for gallery
 │   ├── ImagePagerAdapter.kt # ViewPager adapter
 │   ├── ImageViewerActivity.kt # Full-screen image viewer
+│   ├── SearchResultAdapter.kt # Search results adapter
 │   └── MainActivity.kt      # Main gallery activity
 └── util/
     ├── ImageHasher.kt       # SHA-256 hash generation
     ├── ImageMetadataHelper.kt # EXIF metadata extraction
-    └── MediaStoreHelper.kt  # MediaStore queries
+    ├── MediaStoreHelper.kt  # MediaStore queries
+    └── TagParser.kt         # Tag input parsing utility
 ```
 
 ## Tech Stack
@@ -112,16 +135,33 @@ CREATE TABLE image_data (
     createdAt INTEGER,
     updatedAt INTEGER
 );
+
+CREATE TABLE image_paths (
+    hash TEXT NOT NULL,
+    path TEXT NOT NULL,
+    lastSeen INTEGER,
+    isValid INTEGER,
+    PRIMARY KEY(hash, path),
+    FOREIGN KEY(hash) REFERENCES image_data(hash) ON DELETE CASCADE
+);
+
+CREATE TABLE image_tags (
+    hash TEXT NOT NULL,
+    tag TEXT NOT NULL,
+    createdAt INTEGER,
+    PRIMARY KEY(hash, tag),
+    FOREIGN KEY(hash) REFERENCES image_data(hash) ON DELETE CASCADE
+);
 ```
 
 ## Future Enhancements
 
 - [x] Folder/album organization
-- [ ] Search remarks
+- [x] Search remarks
+- [x] Image tags support
+- [x] Batch tagging (multi-select)
 - [ ] Export/import remarks
-- [ ] Cloud sync
-- [ ] Image tags support
-- [ ] Batch remark editing
+- [x] Batch remark editing
 
 ## License
 

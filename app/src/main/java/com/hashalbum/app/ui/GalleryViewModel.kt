@@ -153,6 +153,14 @@ class GalleryViewModel(application: Application) : AndroidViewModel(application)
         }
     }
 
+    fun saveRemarkToImages(uris: List<Uri>, remark: String) {
+        viewModelScope.launch {
+            for (uri in uris) {
+                saveRemark(uri, remark)
+            }
+        }
+    }
+
     fun searchRemarks(query: String) {
         if (query.isBlank()) {
             clearSearch()
