@@ -19,6 +19,7 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.hashalbum.app.R
+import com.hashalbum.app.data.GalleryItem
 import com.hashalbum.app.databinding.ActivityMainBinding
 import com.hashalbum.app.util.ImageBucket
 import com.hashalbum.app.util.TagParser
@@ -74,14 +75,14 @@ class MainActivity : AppCompatActivity() {
 
     private fun setupRecyclerView() {
         galleryAdapter = GalleryAdapter(
-            onImageClick = { image, position ->
-                val imageList = viewModel.images.value
+            onImageClick = { image, _ ->
+                val imageItems = viewModel.galleryItems.value
+                    .filterIsInstance<GalleryItem.ImageItem>()
+                val imageUris = ArrayList(imageItems.map { it.image.uri.toString() })
+                val imagePosition = imageItems.indexOfFirst { it.image.uri == image.uri }
                 val intent = Intent(this, ImageViewerActivity::class.java).apply {
-                    putExtra(ImageViewerActivity.EXTRA_IMAGE_POSITION, position)
-                    putStringArrayListExtra(
-                        ImageViewerActivity.EXTRA_IMAGE_URIS,
-                        ArrayList(imageList.map { it.uri.toString() })
-                    )
+                    putExtra(ImageViewerActivity.EXTRA_IMAGE_POSITION, imagePosition.coerceAtLeast(0))
+                    putStringArrayListExtra(ImageViewerActivity.EXTRA_IMAGE_URIS, imageUris)
                 }
                 startActivity(intent)
             },
@@ -116,8 +117,15 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
+        val gridLayoutManager = GridLayoutManager(this, 3)
+        gridLayoutManager.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
+            override fun getSpanSize(position: Int): Int {
+                return if (galleryAdapter.getItemViewType(position) == 0) 3 else 1
+            }
+        }
+
         binding.recyclerView.apply {
-            layoutManager = GridLayoutManager(this@MainActivity, 3)
+            layoutManager = gridLayoutManager
             adapter = galleryAdapter
             setHasFixedSize(true)
         }
@@ -196,7 +204,13 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun switchToGalleryMode() {
-        binding.recyclerView.layoutManager = GridLayoutManager(this, 3)
+        val gridLayoutManager = GridLayoutManager(this, 3)
+        gridLayoutManager.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
+            override fun getSpanSize(position: Int): Int {
+                return if (galleryAdapter.getItemViewType(position) == 0) 3 else 1
+            }
+        }
+        binding.recyclerView.layoutManager = gridLayoutManager
         binding.recyclerView.adapter = galleryAdapter
         val currentBucket = viewModel.currentBucket.value
         supportActionBar?.title = currentBucket?.name ?: getString(R.string.all_images)
@@ -204,10 +218,10 @@ class MainActivity : AppCompatActivity() {
 
     private fun observeViewModel() {
         lifecycleScope.launch {
-            viewModel.images.collectLatest { images ->
+            viewModel.galleryItems.collectLatest { items ->
                 if (!viewModel.isSearchMode.value) {
-                    galleryAdapter.submitList(images)
-                    binding.emptyView.visibility = if (images.isEmpty()) View.VISIBLE else View.GONE
+                    galleryAdapter.submitList(items)
+                    binding.emptyView.visibility = if (items.isEmpty()) View.VISIBLE else View.GONE
                 }
             }
         }
@@ -235,8 +249,8 @@ class MainActivity : AppCompatActivity() {
                     binding.emptyView.visibility = if (viewModel.searchResults.value.isEmpty()) View.VISIBLE else View.GONE
                 } else {
                     switchToGalleryMode()
-                    galleryAdapter.submitList(viewModel.images.value)
-                    binding.emptyView.visibility = if (viewModel.images.value.isEmpty()) View.VISIBLE else View.GONE
+                    galleryAdapter.submitList(viewModel.galleryItems.value)
+                    binding.emptyView.visibility = if (viewModel.galleryItems.value.isEmpty()) View.VISIBLE else View.GONE
                 }
             }
         }

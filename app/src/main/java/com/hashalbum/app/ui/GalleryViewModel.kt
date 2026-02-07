@@ -7,7 +7,9 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.hashalbum.app.HashAlbumApp
+import com.hashalbum.app.R
 import com.hashalbum.app.data.GalleryImage
+import com.hashalbum.app.data.GalleryItem
 import com.hashalbum.app.data.ImageData
 import com.hashalbum.app.data.ImageRepository
 import com.hashalbum.app.data.PathInfo
@@ -23,6 +25,10 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.text.SimpleDateFormat
+import java.util.Calendar
+import java.util.Date
+import java.util.Locale
 
 class GalleryViewModel(application: Application) : AndroidViewModel(application) {
 
@@ -30,6 +36,9 @@ class GalleryViewModel(application: Application) : AndroidViewModel(application)
 
     private val _images = MutableStateFlow<List<GalleryImage>>(emptyList())
     val images: StateFlow<List<GalleryImage>> = _images.asStateFlow()
+
+    private val _galleryItems = MutableStateFlow<List<GalleryItem>>(emptyList())
+    val galleryItems: StateFlow<List<GalleryItem>> = _galleryItems.asStateFlow()
 
     private val _buckets = MutableStateFlow<List<ImageBucket>>(emptyList())
     val buckets: StateFlow<List<ImageBucket>> = _buckets.asStateFlow()
@@ -60,6 +69,7 @@ class GalleryViewModel(application: Application) : AndroidViewModel(application)
 
             val loadedImages = MediaStoreHelper.loadAllImages(getApplication())
             _images.value = loadedImages
+            _galleryItems.value = groupImagesByDate(loadedImages)
 
             _isLoading.value = false
 
@@ -85,6 +95,7 @@ class GalleryViewModel(application: Application) : AndroidViewModel(application)
 
             val loadedImages = MediaStoreHelper.loadImagesFromBucket(getApplication(), bucket.id)
             _images.value = loadedImages
+            _galleryItems.value = groupImagesByDate(loadedImages)
 
             _isLoading.value = false
         }
@@ -247,6 +258,49 @@ class GalleryViewModel(application: Application) : AndroidViewModel(application)
             }
             repository.deleteStaleInvalidPaths(30)
         }
+    }
+
+    private fun groupImagesByDate(images: List<GalleryImage>): List<GalleryItem> {
+        if (images.isEmpty()) return emptyList()
+
+        val app = getApplication<Application>()
+        val todayLabel = app.getString(R.string.today)
+        val yesterdayLabel = app.getString(R.string.yesterday)
+
+        val today = Calendar.getInstance().apply {
+            set(Calendar.HOUR_OF_DAY, 0)
+            set(Calendar.MINUTE, 0)
+            set(Calendar.SECOND, 0)
+            set(Calendar.MILLISECOND, 0)
+        }
+        val yesterday = Calendar.getInstance().apply {
+            timeInMillis = today.timeInMillis
+            add(Calendar.DAY_OF_YEAR, -1)
+        }
+        val dateFormat = SimpleDateFormat("MMM d, yyyy", Locale.getDefault())
+
+        val result = mutableListOf<GalleryItem>()
+        var currentLabel: String? = null
+
+        for (image in images) {
+            val imageDate = Calendar.getInstance().apply {
+                timeInMillis = image.dateModified * 1000
+            }
+
+            val label = when {
+                imageDate.timeInMillis >= today.timeInMillis -> todayLabel
+                imageDate.timeInMillis >= yesterday.timeInMillis -> yesterdayLabel
+                else -> dateFormat.format(Date(image.dateModified * 1000))
+            }
+
+            if (label != currentLabel) {
+                result.add(GalleryItem.DateHeader(label))
+                currentLabel = label
+            }
+            result.add(GalleryItem.ImageItem(image))
+        }
+
+        return result
     }
 
     fun clearSearch() {

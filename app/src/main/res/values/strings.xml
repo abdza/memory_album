@@ -38,4 +38,6 @@
     <string name="remark_set">Remark set</string>
     <string name="cancel_selection">Cancel</string>
     <string name="no_info">No remark or tags</string>
+    <string name="today">Today</string>
+    <string name="yesterday">Yesterday</string>
 </resources>

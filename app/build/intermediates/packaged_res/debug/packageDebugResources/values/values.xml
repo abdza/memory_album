@@ -51,6 +51,8 @@
     <string name="tag_removed">Tag removed</string>
     <string name="tags">Tags</string>
     <string name="tags_added">Tags added</string>
+    <string name="today">Today</string>
+    <string name="yesterday">Yesterday</string>
     <style name="Theme.HashAlbum" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <item name="colorPrimary">@color/primary</item>
         <item name="colorPrimaryVariant">@color/primary_dark</item>

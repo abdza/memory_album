@@ -3256,6 +3256,7 @@ id currentState
 id custom
 id customPanel
 id cut
+id dateHeaderText
 id dateRow
 id dateTakenValue
 id date_picker_actions
@@ -3804,6 +3805,7 @@ layout design_text_input_start_icon
 layout ime_base_split_test_activity
 layout ime_secondary_split_test_activity
 layout item_bucket
+layout item_date_header
 layout item_gallery_image
 layout item_image_pager
 layout item_path
@@ -4077,6 +4079,8 @@ string swipe_up_for_remark
 string tag_removed
 string tags
 string tags_added
+string today
+string yesterday
 style AlertDialog_AppCompat
 style AlertDialog_AppCompat_Light
 style Animation_AppCompat_Dialog

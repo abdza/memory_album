@@ -16,13 +16,19 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.hashalbum.app.R
 import com.hashalbum.app.data.GalleryImage
+import com.hashalbum.app.data.GalleryItem
 
 class GalleryAdapter(
     private val onImageClick: (GalleryImage, Int) -> Unit,
     private val onLongPress: ((GalleryImage, Int) -> Unit)? = null,
     private val onSelectionChanged: ((Int) -> Unit)? = null,
     private val onDoubleTap: ((GalleryImage, ImageViewHolder) -> Unit)? = null
-) : ListAdapter<GalleryImage, GalleryAdapter.ImageViewHolder>(ImageDiffCallback()) {
+) : ListAdapter<GalleryItem, RecyclerView.ViewHolder>(GalleryItemDiffCallback()) {
+
+    companion object {
+        private const val VIEW_TYPE_HEADER = 0
+        private const val VIEW_TYPE_IMAGE = 1
+    }
 
     var isSelectionMode = false
         private set
@@ -56,7 +62,9 @@ class GalleryAdapter(
     }
 
     fun getSelectedImages(): List<GalleryImage> {
-        return currentList.filter { selectedItems.contains(it.uri) }
+        return currentList.filterIsInstance<GalleryItem.ImageItem>()
+            .map { it.image }
+            .filter { selectedItems.contains(it.uri) }
     }
 
     fun getSelectedCount(): Int = selectedItems.size
@@ -66,15 +74,41 @@ class GalleryAdapter(
         overlayVisibleHolder = null
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ImageViewHolder {
-        val view = LayoutInflater.from(parent.context)
-            .inflate(R.layout.item_gallery_image, parent, false)
-        return ImageViewHolder(view)
+    override fun getItemViewType(position: Int): Int {
+        return when (getItem(position)) {
+            is GalleryItem.DateHeader -> VIEW_TYPE_HEADER
+            is GalleryItem.ImageItem -> VIEW_TYPE_IMAGE
+        }
     }
 
-    override fun onBindViewHolder(holder: ImageViewHolder, position: Int) {
-        val image = getItem(position)
-        holder.bind(image, position)
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
+        return when (viewType) {
+            VIEW_TYPE_HEADER -> {
+                val view = LayoutInflater.from(parent.context)
+                    .inflate(R.layout.item_date_header, parent, false)
+                DateHeaderViewHolder(view)
+            }
+            else -> {
+                val view = LayoutInflater.from(parent.context)
+                    .inflate(R.layout.item_gallery_image, parent, false)
+                ImageViewHolder(view)
+            }
+        }
+    }
+
+    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+        when (val item = getItem(position)) {
+            is GalleryItem.DateHeader -> (holder as DateHeaderViewHolder).bind(item.label)
+            is GalleryItem.ImageItem -> (holder as ImageViewHolder).bind(item.image, position)
+        }
+    }
+
+    class DateHeaderViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        private val textView: TextView = itemView.findViewById(R.id.dateHeaderText)
+
+        fun bind(label: String) {
+            textView.text = label
+        }
     }
 
     inner class ImageViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -177,12 +211,18 @@ class GalleryAdapter(
         }
     }
 
-    class ImageDiffCallback : DiffUtil.ItemCallback<GalleryImage>() {
-        override fun areItemsTheSame(oldItem: GalleryImage, newItem: GalleryImage): Boolean {
-            return oldItem.uri == newItem.uri
+    class GalleryItemDiffCallback : DiffUtil.ItemCallback<GalleryItem>() {
+        override fun areItemsTheSame(oldItem: GalleryItem, newItem: GalleryItem): Boolean {
+            return when {
+                oldItem is GalleryItem.DateHeader && newItem is GalleryItem.DateHeader ->
+                    oldItem.label == newItem.label
+                oldItem is GalleryItem.ImageItem && newItem is GalleryItem.ImageItem ->
+                    oldItem.image.uri == newItem.image.uri
+                else -> false
+            }
         }
 
-        override fun areContentsTheSame(oldItem: GalleryImage, newItem: GalleryImage): Boolean {
+        override fun areContentsTheSame(oldItem: GalleryItem, newItem: GalleryItem): Boolean {
             return oldItem == newItem
         }
     }

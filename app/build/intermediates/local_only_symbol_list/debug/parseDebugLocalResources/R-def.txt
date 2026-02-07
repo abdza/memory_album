@@ -44,6 +44,7 @@ id cameraValue
 id cancelSelectionButton
 id checkIcon
 id closeButton
+id dateHeaderText
 id dateRow
 id dateTakenValue
 id drawerLayout
@@ -98,6 +99,7 @@ id viewPager
 layout activity_image_viewer
 layout activity_main
 layout item_bucket
+layout item_date_header
 layout item_gallery_image
 layout item_image_pager
 layout item_path
@@ -143,6 +145,8 @@ string swipe_up_for_remark
 string tag_removed
 string tags
 string tags_added
+string today
+string yesterday
 style Theme.HashAlbum
 style Theme.HashAlbum.FullScreen
 xml backup_rules
