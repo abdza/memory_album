@@ -108,6 +108,15 @@
                 tools:text="3 selected" />
 
             <ImageButton
+                android:id="@+id/batchContactButton"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:src="@drawable/ic_contacts"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="@string/add_contacts"
+                android:tooltipText="@string/add_contacts" />
+
+            <ImageButton
                 android:id="@+id/batchTagButton"
                 android:layout_width="48dp"
                 android:layout_height="48dp"

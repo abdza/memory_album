@@ -18,144 +18,155 @@
 15    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
 15-->/home/abdza/data/kakikoding/memory_album/app/src/main/AndroidManifest.xml:8:5-76
 15-->/home/abdza/data/kakikoding/memory_album/app/src/main/AndroidManifest.xml:8:22-73
-16
-17    <permission
-17-->[androidx.core:core:1.12.0] /home/abdza/.gradle/caches/transforms-4/8278dba50f4586a0c21c43c5fda17fdb/transformed/core-1.12.0/AndroidManifest.xml:22:5-24:47
-18        android:name="com.hashalbum.app.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION"
-18-->[androidx.core:core:1.12.0] /home/abdza/.gradle/caches/transforms-4/8278dba50f4586a0c21c43c5fda17fdb/transformed/core-1.12.0/AndroidManifest.xml:23:9-81
-19        android:protectionLevel="signature" />
-19-->[androidx.core:core:1.12.0] /home/abdza/.gradle/caches/transforms-4/8278dba50f4586a0c21c43c5fda17fdb/transformed/core-1.12.0/AndroidManifest.xml:24:9-44
-20
-21    <uses-permission android:name="com.hashalbum.app.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION" />
-21-->[androidx.core:core:1.12.0] /home/abdza/.gradle/caches/transforms-4/8278dba50f4586a0c21c43c5fda17fdb/transformed/core-1.12.0/AndroidManifest.xml:26:5-97
-21-->[androidx.core:core:1.12.0] /home/abdza/.gradle/caches/transforms-4/8278dba50f4586a0c21c43c5fda17fdb/transformed/core-1.12.0/AndroidManifest.xml:26:22-94
-22
-23    <application
-23-->/home/abdza/data/kakikoding/memory_album/app/src/main/AndroidManifest.xml:10:5-37:19
-24        android:name="com.hashalbum.app.HashAlbumApp"
-24-->/home/abdza/data/kakikoding/memory_album/app/src/main/AndroidManifest.xml:11:9-37
-25        android:allowBackup="true"
-25-->/home/abdza/data/kakikoding/memory_album/app/src/main/AndroidManifest.xml:12:9-35
-26        android:appComponentFactory="androidx.core.app.CoreComponentFactory"
-26-->[androidx.core:core:1.12.0] /home/abdza/.gradle/caches/transforms-4/8278dba50f4586a0c21c43c5fda17fdb/transformed/core-1.12.0/AndroidManifest.xml:28:18-86
-27        android:dataExtractionRules="@xml/data_extraction_rules"
-27-->/home/abdza/data/kakikoding/memory_album/app/src/main/AndroidManifest.xml:13:9-65
-28        android:debuggable="true"
-29        android:extractNativeLibs="false"
-30        android:fullBackupContent="@xml/backup_rules"
-30-->/home/abdza/data/kakikoding/memory_album/app/src/main/AndroidManifest.xml:14:9-54
-31        android:icon="@mipmap/ic_launcher"
-31-->/home/abdza/data/kakikoding/memory_album/app/src/main/AndroidManifest.xml:15:9-43
-32        android:label="@string/app_name"
-32-->/home/abdza/data/kakikoding/memory_album/app/src/main/AndroidManifest.xml:16:9-41
-33        android:roundIcon="@mipmap/ic_launcher_round"
-33-->/home/abdza/data/kakikoding/memory_album/app/src/main/AndroidManifest.xml:17:9-54
-34        android:supportsRtl="true"
-34-->/home/abdza/data/kakikoding/memory_album/app/src/main/AndroidManifest.xml:18:9-35
-35        android:theme="@style/Theme.HashAlbum" >
-35-->/home/abdza/data/kakikoding/memory_album/app/src/main/AndroidManifest.xml:19:9-47
-36        <activity
-36-->/home/abdza/data/kakikoding/memory_album/app/src/main/AndroidManifest.xml:22:9-30:20
-37            android:name="com.hashalbum.app.ui.MainActivity"
-37-->/home/abdza/data/kakikoding/memory_album/app/src/main/AndroidManifest.xml:23:13-44
-38            android:exported="true"
-38-->/home/abdza/data/kakikoding/memory_album/app/src/main/AndroidManifest.xml:24:13-36
-39            android:theme="@style/Theme.HashAlbum" >
-39-->/home/abdza/data/kakikoding/memory_album/app/src/main/AndroidManifest.xml:25:13-51
-40            <intent-filter>
-40-->/home/abdza/data/kakikoding/memory_album/app/src/main/AndroidManifest.xml:26:13-29:29
-41                <action android:name="android.intent.action.MAIN" />
-41-->/home/abdza/data/kakikoding/memory_album/app/src/main/AndroidManifest.xml:27:17-69
-41-->/home/abdza/data/kakikoding/memory_album/app/src/main/AndroidManifest.xml:27:25-66
-42
-43                <category android:name="android.intent.category.LAUNCHER" />
-43-->/home/abdza/data/kakikoding/memory_album/app/src/main/AndroidManifest.xml:28:17-77
-43-->/home/abdza/data/kakikoding/memory_album/app/src/main/AndroidManifest.xml:28:27-74
-44            </intent-filter>
-45        </activity>
-46        <activity
-46-->/home/abdza/data/kakikoding/memory_album/app/src/main/AndroidManifest.xml:32:9-35:65
-47            android:name="com.hashalbum.app.ui.ImageViewerActivity"
-47-->/home/abdza/data/kakikoding/memory_album/app/src/main/AndroidManifest.xml:33:13-51
-48            android:exported="false"
-48-->/home/abdza/data/kakikoding/memory_album/app/src/main/AndroidManifest.xml:34:13-37
-49            android:theme="@style/Theme.HashAlbum.FullScreen" />
-49-->/home/abdza/data/kakikoding/memory_album/app/src/main/AndroidManifest.xml:35:13-62
-50
-51        <provider
-51-->[androidx.emoji2:emoji2:1.2.0] /home/abdza/.gradle/caches/transforms-4/918e58d55708ee41f81e5aa112dd9381/transformed/emoji2-1.2.0/AndroidManifest.xml:24:9-32:20
-52            android:name="androidx.startup.InitializationProvider"
-52-->[androidx.emoji2:emoji2:1.2.0] /home/abdza/.gradle/caches/transforms-4/918e58d55708ee41f81e5aa112dd9381/transformed/emoji2-1.2.0/AndroidManifest.xml:25:13-67
-53            android:authorities="com.hashalbum.app.androidx-startup"
-53-->[androidx.emoji2:emoji2:1.2.0] /home/abdza/.gradle/caches/transforms-4/918e58d55708ee41f81e5aa112dd9381/transformed/emoji2-1.2.0/AndroidManifest.xml:26:13-68
-54            android:exported="false" >
-54-->[androidx.emoji2:emoji2:1.2.0] /home/abdza/.gradle/caches/transforms-4/918e58d55708ee41f81e5aa112dd9381/transformed/emoji2-1.2.0/AndroidManifest.xml:27:13-37
-55            <meta-data
-55-->[androidx.emoji2:emoji2:1.2.0] /home/abdza/.gradle/caches/transforms-4/918e58d55708ee41f81e5aa112dd9381/transformed/emoji2-1.2.0/AndroidManifest.xml:29:13-31:52
-56                android:name="androidx.emoji2.text.EmojiCompatInitializer"
-56-->[androidx.emoji2:emoji2:1.2.0] /home/abdza/.gradle/caches/transforms-4/918e58d55708ee41f81e5aa112dd9381/transformed/emoji2-1.2.0/AndroidManifest.xml:30:17-75
-57                android:value="androidx.startup" />
-57-->[androidx.emoji2:emoji2:1.2.0] /home/abdza/.gradle/caches/transforms-4/918e58d55708ee41f81e5aa112dd9381/transformed/emoji2-1.2.0/AndroidManifest.xml:31:17-49
-58            <meta-data
-58-->[androidx.lifecycle:lifecycle-process:2.7.0] /home/abdza/.gradle/caches/transforms-4/a178dcb1991f7e5bb95ea9061c60da05/transformed/lifecycle-process-2.7.0/AndroidManifest.xml:29:13-31:52
-59                android:name="androidx.lifecycle.ProcessLifecycleInitializer"
-59-->[androidx.lifecycle:lifecycle-process:2.7.0] /home/abdza/.gradle/caches/transforms-4/a178dcb1991f7e5bb95ea9061c60da05/transformed/lifecycle-process-2.7.0/AndroidManifest.xml:30:17-78
-60                android:value="androidx.startup" />
-60-->[androidx.lifecycle:lifecycle-process:2.7.0] /home/abdza/.gradle/caches/transforms-4/a178dcb1991f7e5bb95ea9061c60da05/transformed/lifecycle-process-2.7.0/AndroidManifest.xml:31:17-49
-61            <meta-data
-61-->[androidx.profileinstaller:profileinstaller:1.3.0] /home/abdza/.gradle/caches/transforms-4/be6fe83453976c73d5281bd42ab96984/transformed/profileinstaller-1.3.0/AndroidManifest.xml:29:13-31:52
-62                android:name="androidx.profileinstaller.ProfileInstallerInitializer"
-62-->[androidx.profileinstaller:profileinstaller:1.3.0] /home/abdza/.gradle/caches/transforms-4/be6fe83453976c73d5281bd42ab96984/transformed/profileinstaller-1.3.0/AndroidManifest.xml:30:17-85
-63                android:value="androidx.startup" />
-63-->[androidx.profileinstaller:profileinstaller:1.3.0] /home/abdza/.gradle/caches/transforms-4/be6fe83453976c73d5281bd42ab96984/transformed/profileinstaller-1.3.0/AndroidManifest.xml:31:17-49
-64        </provider>
-65
-66        <service
-66-->[androidx.room:room-runtime:2.6.1] /home/abdza/.gradle/caches/transforms-4/7afa12049ba95690d07008a3ea1faf6c/transformed/room-runtime-2.6.1/AndroidManifest.xml:24:9-28:63
-67            android:name="androidx.room.MultiInstanceInvalidationService"
-67-->[androidx.room:room-runtime:2.6.1] /home/abdza/.gradle/caches/transforms-4/7afa12049ba95690d07008a3ea1faf6c/transformed/room-runtime-2.6.1/AndroidManifest.xml:25:13-74
-68            android:directBootAware="true"
-68-->[androidx.room:room-runtime:2.6.1] /home/abdza/.gradle/caches/transforms-4/7afa12049ba95690d07008a3ea1faf6c/transformed/room-runtime-2.6.1/AndroidManifest.xml:26:13-43
-69            android:exported="false" />
-69-->[androidx.room:room-runtime:2.6.1] /home/abdza/.gradle/caches/transforms-4/7afa12049ba95690d07008a3ea1faf6c/transformed/room-runtime-2.6.1/AndroidManifest.xml:27:13-37
+16    <uses-permission android:name="android.permission.READ_CONTACTS" />
+16-->/home/abdza/data/kakikoding/memory_album/app/src/main/AndroidManifest.xml:9:5-72
+16-->/home/abdza/data/kakikoding/memory_album/app/src/main/AndroidManifest.xml:9:22-69
+17
+18    <permission
+18-->[androidx.core:core:1.12.0] /home/abdza/.gradle/caches/transforms-4/8278dba50f4586a0c21c43c5fda17fdb/transformed/core-1.12.0/AndroidManifest.xml:22:5-24:47
+19        android:name="com.hashalbum.app.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION"
+19-->[androidx.core:core:1.12.0] /home/abdza/.gradle/caches/transforms-4/8278dba50f4586a0c21c43c5fda17fdb/transformed/core-1.12.0/AndroidManifest.xml:23:9-81
+20        android:protectionLevel="signature" />
+20-->[androidx.core:core:1.12.0] /home/abdza/.gradle/caches/transforms-4/8278dba50f4586a0c21c43c5fda17fdb/transformed/core-1.12.0/AndroidManifest.xml:24:9-44
+21
+22    <uses-permission android:name="com.hashalbum.app.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION" />
+22-->[androidx.core:core:1.12.0] /home/abdza/.gradle/caches/transforms-4/8278dba50f4586a0c21c43c5fda17fdb/transformed/core-1.12.0/AndroidManifest.xml:26:5-97
+22-->[androidx.core:core:1.12.0] /home/abdza/.gradle/caches/transforms-4/8278dba50f4586a0c21c43c5fda17fdb/transformed/core-1.12.0/AndroidManifest.xml:26:22-94
+23
+24    <application
+24-->/home/abdza/data/kakikoding/memory_album/app/src/main/AndroidManifest.xml:11:5-43:19
+25        android:name="com.hashalbum.app.HashAlbumApp"
+25-->/home/abdza/data/kakikoding/memory_album/app/src/main/AndroidManifest.xml:12:9-37
+26        android:allowBackup="true"
+26-->/home/abdza/data/kakikoding/memory_album/app/src/main/AndroidManifest.xml:13:9-35
+27        android:appComponentFactory="androidx.core.app.CoreComponentFactory"
+27-->[androidx.core:core:1.12.0] /home/abdza/.gradle/caches/transforms-4/8278dba50f4586a0c21c43c5fda17fdb/transformed/core-1.12.0/AndroidManifest.xml:28:18-86
+28        android:dataExtractionRules="@xml/data_extraction_rules"
+28-->/home/abdza/data/kakikoding/memory_album/app/src/main/AndroidManifest.xml:14:9-65
+29        android:debuggable="true"
+30        android:extractNativeLibs="false"
+31        android:fullBackupContent="@xml/backup_rules"
+31-->/home/abdza/data/kakikoding/memory_album/app/src/main/AndroidManifest.xml:15:9-54
+32        android:icon="@mipmap/ic_launcher"
+32-->/home/abdza/data/kakikoding/memory_album/app/src/main/AndroidManifest.xml:16:9-43
+33        android:label="@string/app_name"
+33-->/home/abdza/data/kakikoding/memory_album/app/src/main/AndroidManifest.xml:17:9-41
+34        android:roundIcon="@mipmap/ic_launcher_round"
+34-->/home/abdza/data/kakikoding/memory_album/app/src/main/AndroidManifest.xml:18:9-54
+35        android:supportsRtl="true"
+35-->/home/abdza/data/kakikoding/memory_album/app/src/main/AndroidManifest.xml:19:9-35
+36        android:theme="@style/Theme.HashAlbum" >
+36-->/home/abdza/data/kakikoding/memory_album/app/src/main/AndroidManifest.xml:20:9-47
+37        <activity
+37-->/home/abdza/data/kakikoding/memory_album/app/src/main/AndroidManifest.xml:23:9-31:20
+38            android:name="com.hashalbum.app.ui.MainActivity"
+38-->/home/abdza/data/kakikoding/memory_album/app/src/main/AndroidManifest.xml:24:13-44
+39            android:exported="true"
+39-->/home/abdza/data/kakikoding/memory_album/app/src/main/AndroidManifest.xml:25:13-36
+40            android:theme="@style/Theme.HashAlbum" >
+40-->/home/abdza/data/kakikoding/memory_album/app/src/main/AndroidManifest.xml:26:13-51
+41            <intent-filter>
+41-->/home/abdza/data/kakikoding/memory_album/app/src/main/AndroidManifest.xml:27:13-30:29
+42                <action android:name="android.intent.action.MAIN" />
+42-->/home/abdza/data/kakikoding/memory_album/app/src/main/AndroidManifest.xml:28:17-69
+42-->/home/abdza/data/kakikoding/memory_album/app/src/main/AndroidManifest.xml:28:25-66
+43
+44                <category android:name="android.intent.category.LAUNCHER" />
+44-->/home/abdza/data/kakikoding/memory_album/app/src/main/AndroidManifest.xml:29:17-77
+44-->/home/abdza/data/kakikoding/memory_album/app/src/main/AndroidManifest.xml:29:27-74
+45            </intent-filter>
+46        </activity>
+47        <activity
+47-->/home/abdza/data/kakikoding/memory_album/app/src/main/AndroidManifest.xml:33:9-36:65
+48            android:name="com.hashalbum.app.ui.ImageViewerActivity"
+48-->/home/abdza/data/kakikoding/memory_album/app/src/main/AndroidManifest.xml:34:13-51
+49            android:exported="false"
+49-->/home/abdza/data/kakikoding/memory_album/app/src/main/AndroidManifest.xml:35:13-37
+50            android:theme="@style/Theme.HashAlbum.FullScreen" />
+50-->/home/abdza/data/kakikoding/memory_album/app/src/main/AndroidManifest.xml:36:13-62
+51        <activity
+51-->/home/abdza/data/kakikoding/memory_album/app/src/main/AndroidManifest.xml:38:9-41:54
+52            android:name="com.hashalbum.app.ui.ContactsActivity"
+52-->/home/abdza/data/kakikoding/memory_album/app/src/main/AndroidManifest.xml:39:13-48
+53            android:exported="false"
+53-->/home/abdza/data/kakikoding/memory_album/app/src/main/AndroidManifest.xml:40:13-37
+54            android:theme="@style/Theme.HashAlbum" />
+54-->/home/abdza/data/kakikoding/memory_album/app/src/main/AndroidManifest.xml:41:13-51
+55
+56        <provider
+56-->[androidx.emoji2:emoji2:1.2.0] /home/abdza/.gradle/caches/transforms-4/918e58d55708ee41f81e5aa112dd9381/transformed/emoji2-1.2.0/AndroidManifest.xml:24:9-32:20
+57            android:name="androidx.startup.InitializationProvider"
+57-->[androidx.emoji2:emoji2:1.2.0] /home/abdza/.gradle/caches/transforms-4/918e58d55708ee41f81e5aa112dd9381/transformed/emoji2-1.2.0/AndroidManifest.xml:25:13-67
+58            android:authorities="com.hashalbum.app.androidx-startup"
+58-->[androidx.emoji2:emoji2:1.2.0] /home/abdza/.gradle/caches/transforms-4/918e58d55708ee41f81e5aa112dd9381/transformed/emoji2-1.2.0/AndroidManifest.xml:26:13-68
+59            android:exported="false" >
+59-->[androidx.emoji2:emoji2:1.2.0] /home/abdza/.gradle/caches/transforms-4/918e58d55708ee41f81e5aa112dd9381/transformed/emoji2-1.2.0/AndroidManifest.xml:27:13-37
+60            <meta-data
+60-->[androidx.emoji2:emoji2:1.2.0] /home/abdza/.gradle/caches/transforms-4/918e58d55708ee41f81e5aa112dd9381/transformed/emoji2-1.2.0/AndroidManifest.xml:29:13-31:52
+61                android:name="androidx.emoji2.text.EmojiCompatInitializer"
+61-->[androidx.emoji2:emoji2:1.2.0] /home/abdza/.gradle/caches/transforms-4/918e58d55708ee41f81e5aa112dd9381/transformed/emoji2-1.2.0/AndroidManifest.xml:30:17-75
+62                android:value="androidx.startup" />
+62-->[androidx.emoji2:emoji2:1.2.0] /home/abdza/.gradle/caches/transforms-4/918e58d55708ee41f81e5aa112dd9381/transformed/emoji2-1.2.0/AndroidManifest.xml:31:17-49
+63            <meta-data
+63-->[androidx.lifecycle:lifecycle-process:2.7.0] /home/abdza/.gradle/caches/transforms-4/a178dcb1991f7e5bb95ea9061c60da05/transformed/lifecycle-process-2.7.0/AndroidManifest.xml:29:13-31:52
+64                android:name="androidx.lifecycle.ProcessLifecycleInitializer"
+64-->[androidx.lifecycle:lifecycle-process:2.7.0] /home/abdza/.gradle/caches/transforms-4/a178dcb1991f7e5bb95ea9061c60da05/transformed/lifecycle-process-2.7.0/AndroidManifest.xml:30:17-78
+65                android:value="androidx.startup" />
+65-->[androidx.lifecycle:lifecycle-process:2.7.0] /home/abdza/.gradle/caches/transforms-4/a178dcb1991f7e5bb95ea9061c60da05/transformed/lifecycle-process-2.7.0/AndroidManifest.xml:31:17-49
+66            <meta-data
+66-->[androidx.profileinstaller:profileinstaller:1.3.0] /home/abdza/.gradle/caches/transforms-4/be6fe83453976c73d5281bd42ab96984/transformed/profileinstaller-1.3.0/AndroidManifest.xml:29:13-31:52
+67                android:name="androidx.profileinstaller.ProfileInstallerInitializer"
+67-->[androidx.profileinstaller:profileinstaller:1.3.0] /home/abdza/.gradle/caches/transforms-4/be6fe83453976c73d5281bd42ab96984/transformed/profileinstaller-1.3.0/AndroidManifest.xml:30:17-85
+68                android:value="androidx.startup" />
+68-->[androidx.profileinstaller:profileinstaller:1.3.0] /home/abdza/.gradle/caches/transforms-4/be6fe83453976c73d5281bd42ab96984/transformed/profileinstaller-1.3.0/AndroidManifest.xml:31:17-49
+69        </provider>
 70
-71        <receiver
-71-->[androidx.profileinstaller:profileinstaller:1.3.0] /home/abdza/.gradle/caches/transforms-4/be6fe83453976c73d5281bd42ab96984/transformed/profileinstaller-1.3.0/AndroidManifest.xml:34:9-52:20
-72            android:name="androidx.profileinstaller.ProfileInstallReceiver"
-72-->[androidx.profileinstaller:profileinstaller:1.3.0] /home/abdza/.gradle/caches/transforms-4/be6fe83453976c73d5281bd42ab96984/transformed/profileinstaller-1.3.0/AndroidManifest.xml:35:13-76
-73            android:directBootAware="false"
-73-->[androidx.profileinstaller:profileinstaller:1.3.0] /home/abdza/.gradle/caches/transforms-4/be6fe83453976c73d5281bd42ab96984/transformed/profileinstaller-1.3.0/AndroidManifest.xml:36:13-44
-74            android:enabled="true"
-74-->[androidx.profileinstaller:profileinstaller:1.3.0] /home/abdza/.gradle/caches/transforms-4/be6fe83453976c73d5281bd42ab96984/transformed/profileinstaller-1.3.0/AndroidManifest.xml:37:13-35
-75            android:exported="true"
-75-->[androidx.profileinstaller:profileinstaller:1.3.0] /home/abdza/.gradle/caches/transforms-4/be6fe83453976c73d5281bd42ab96984/transformed/profileinstaller-1.3.0/AndroidManifest.xml:38:13-36
-76            android:permission="android.permission.DUMP" >
-76-->[androidx.profileinstaller:profileinstaller:1.3.0] /home/abdza/.gradle/caches/transforms-4/be6fe83453976c73d5281bd42ab96984/transformed/profileinstaller-1.3.0/AndroidManifest.xml:39:13-57
-77            <intent-filter>
-77-->[androidx.profileinstaller:profileinstaller:1.3.0] /home/abdza/.gradle/caches/transforms-4/be6fe83453976c73d5281bd42ab96984/transformed/profileinstaller-1.3.0/AndroidManifest.xml:40:13-42:29
-78                <action android:name="androidx.profileinstaller.action.INSTALL_PROFILE" />
-78-->[androidx.profileinstaller:profileinstaller:1.3.0] /home/abdza/.gradle/caches/transforms-4/be6fe83453976c73d5281bd42ab96984/transformed/profileinstaller-1.3.0/AndroidManifest.xml:41:17-91
-78-->[androidx.profileinstaller:profileinstaller:1.3.0] /home/abdza/.gradle/caches/transforms-4/be6fe83453976c73d5281bd42ab96984/transformed/profileinstaller-1.3.0/AndroidManifest.xml:41:25-88
-79            </intent-filter>
-80            <intent-filter>
-80-->[androidx.profileinstaller:profileinstaller:1.3.0] /home/abdza/.gradle/caches/transforms-4/be6fe83453976c73d5281bd42ab96984/transformed/profileinstaller-1.3.0/AndroidManifest.xml:43:13-45:29
-81                <action android:name="androidx.profileinstaller.action.SKIP_FILE" />
-81-->[androidx.profileinstaller:profileinstaller:1.3.0] /home/abdza/.gradle/caches/transforms-4/be6fe83453976c73d5281bd42ab96984/transformed/profileinstaller-1.3.0/AndroidManifest.xml:44:17-85
-81-->[androidx.profileinstaller:profileinstaller:1.3.0] /home/abdza/.gradle/caches/transforms-4/be6fe83453976c73d5281bd42ab96984/transformed/profileinstaller-1.3.0/AndroidManifest.xml:44:25-82
-82            </intent-filter>
-83            <intent-filter>
-83-->[androidx.profileinstaller:profileinstaller:1.3.0] /home/abdza/.gradle/caches/transforms-4/be6fe83453976c73d5281bd42ab96984/transformed/profileinstaller-1.3.0/AndroidManifest.xml:46:13-48:29
-84                <action android:name="androidx.profileinstaller.action.SAVE_PROFILE" />
-84-->[androidx.profileinstaller:profileinstaller:1.3.0] /home/abdza/.gradle/caches/transforms-4/be6fe83453976c73d5281bd42ab96984/transformed/profileinstaller-1.3.0/AndroidManifest.xml:47:17-88
-84-->[androidx.profileinstaller:profileinstaller:1.3.0] /home/abdza/.gradle/caches/transforms-4/be6fe83453976c73d5281bd42ab96984/transformed/profileinstaller-1.3.0/AndroidManifest.xml:47:25-85
-85            </intent-filter>
-86            <intent-filter>
-86-->[androidx.profileinstaller:profileinstaller:1.3.0] /home/abdza/.gradle/caches/transforms-4/be6fe83453976c73d5281bd42ab96984/transformed/profileinstaller-1.3.0/AndroidManifest.xml:49:13-51:29
-87                <action android:name="androidx.profileinstaller.action.BENCHMARK_OPERATION" />
-87-->[androidx.profileinstaller:profileinstaller:1.3.0] /home/abdza/.gradle/caches/transforms-4/be6fe83453976c73d5281bd42ab96984/transformed/profileinstaller-1.3.0/AndroidManifest.xml:50:17-95
-87-->[androidx.profileinstaller:profileinstaller:1.3.0] /home/abdza/.gradle/caches/transforms-4/be6fe83453976c73d5281bd42ab96984/transformed/profileinstaller-1.3.0/AndroidManifest.xml:50:25-92
-88            </intent-filter>
-89        </receiver>
-90    </application>
-91
-92</manifest>
+71        <service
+71-->[androidx.room:room-runtime:2.6.1] /home/abdza/.gradle/caches/transforms-4/7afa12049ba95690d07008a3ea1faf6c/transformed/room-runtime-2.6.1/AndroidManifest.xml:24:9-28:63
+72            android:name="androidx.room.MultiInstanceInvalidationService"
+72-->[androidx.room:room-runtime:2.6.1] /home/abdza/.gradle/caches/transforms-4/7afa12049ba95690d07008a3ea1faf6c/transformed/room-runtime-2.6.1/AndroidManifest.xml:25:13-74
+73            android:directBootAware="true"
+73-->[androidx.room:room-runtime:2.6.1] /home/abdza/.gradle/caches/transforms-4/7afa12049ba95690d07008a3ea1faf6c/transformed/room-runtime-2.6.1/AndroidManifest.xml:26:13-43
+74            android:exported="false" />
+74-->[androidx.room:room-runtime:2.6.1] /home/abdza/.gradle/caches/transforms-4/7afa12049ba95690d07008a3ea1faf6c/transformed/room-runtime-2.6.1/AndroidManifest.xml:27:13-37
+75
+76        <receiver
+76-->[androidx.profileinstaller:profileinstaller:1.3.0] /home/abdza/.gradle/caches/transforms-4/be6fe83453976c73d5281bd42ab96984/transformed/profileinstaller-1.3.0/AndroidManifest.xml:34:9-52:20
+77            android:name="androidx.profileinstaller.ProfileInstallReceiver"
+77-->[androidx.profileinstaller:profileinstaller:1.3.0] /home/abdza/.gradle/caches/transforms-4/be6fe83453976c73d5281bd42ab96984/transformed/profileinstaller-1.3.0/AndroidManifest.xml:35:13-76
+78            android:directBootAware="false"
+78-->[androidx.profileinstaller:profileinstaller:1.3.0] /home/abdza/.gradle/caches/transforms-4/be6fe83453976c73d5281bd42ab96984/transformed/profileinstaller-1.3.0/AndroidManifest.xml:36:13-44
+79            android:enabled="true"
+79-->[androidx.profileinstaller:profileinstaller:1.3.0] /home/abdza/.gradle/caches/transforms-4/be6fe83453976c73d5281bd42ab96984/transformed/profileinstaller-1.3.0/AndroidManifest.xml:37:13-35
+80            android:exported="true"
+80-->[androidx.profileinstaller:profileinstaller:1.3.0] /home/abdza/.gradle/caches/transforms-4/be6fe83453976c73d5281bd42ab96984/transformed/profileinstaller-1.3.0/AndroidManifest.xml:38:13-36
+81            android:permission="android.permission.DUMP" >
+81-->[androidx.profileinstaller:profileinstaller:1.3.0] /home/abdza/.gradle/caches/transforms-4/be6fe83453976c73d5281bd42ab96984/transformed/profileinstaller-1.3.0/AndroidManifest.xml:39:13-57
+82            <intent-filter>
+82-->[androidx.profileinstaller:profileinstaller:1.3.0] /home/abdza/.gradle/caches/transforms-4/be6fe83453976c73d5281bd42ab96984/transformed/profileinstaller-1.3.0/AndroidManifest.xml:40:13-42:29
+83                <action android:name="androidx.profileinstaller.action.INSTALL_PROFILE" />
+83-->[androidx.profileinstaller:profileinstaller:1.3.0] /home/abdza/.gradle/caches/transforms-4/be6fe83453976c73d5281bd42ab96984/transformed/profileinstaller-1.3.0/AndroidManifest.xml:41:17-91
+83-->[androidx.profileinstaller:profileinstaller:1.3.0] /home/abdza/.gradle/caches/transforms-4/be6fe83453976c73d5281bd42ab96984/transformed/profileinstaller-1.3.0/AndroidManifest.xml:41:25-88
+84            </intent-filter>
+85            <intent-filter>
+85-->[androidx.profileinstaller:profileinstaller:1.3.0] /home/abdza/.gradle/caches/transforms-4/be6fe83453976c73d5281bd42ab96984/transformed/profileinstaller-1.3.0/AndroidManifest.xml:43:13-45:29
+86                <action android:name="androidx.profileinstaller.action.SKIP_FILE" />
+86-->[androidx.profileinstaller:profileinstaller:1.3.0] /home/abdza/.gradle/caches/transforms-4/be6fe83453976c73d5281bd42ab96984/transformed/profileinstaller-1.3.0/AndroidManifest.xml:44:17-85
+86-->[androidx.profileinstaller:profileinstaller:1.3.0] /home/abdza/.gradle/caches/transforms-4/be6fe83453976c73d5281bd42ab96984/transformed/profileinstaller-1.3.0/AndroidManifest.xml:44:25-82
+87            </intent-filter>
+88            <intent-filter>
+88-->[androidx.profileinstaller:profileinstaller:1.3.0] /home/abdza/.gradle/caches/transforms-4/be6fe83453976c73d5281bd42ab96984/transformed/profileinstaller-1.3.0/AndroidManifest.xml:46:13-48:29
+89                <action android:name="androidx.profileinstaller.action.SAVE_PROFILE" />
+89-->[androidx.profileinstaller:profileinstaller:1.3.0] /home/abdza/.gradle/caches/transforms-4/be6fe83453976c73d5281bd42ab96984/transformed/profileinstaller-1.3.0/AndroidManifest.xml:47:17-88
+89-->[androidx.profileinstaller:profileinstaller:1.3.0] /home/abdza/.gradle/caches/transforms-4/be6fe83453976c73d5281bd42ab96984/transformed/profileinstaller-1.3.0/AndroidManifest.xml:47:25-85
+90            </intent-filter>
+91            <intent-filter>
+91-->[androidx.profileinstaller:profileinstaller:1.3.0] /home/abdza/.gradle/caches/transforms-4/be6fe83453976c73d5281bd42ab96984/transformed/profileinstaller-1.3.0/AndroidManifest.xml:49:13-51:29
+92                <action android:name="androidx.profileinstaller.action.BENCHMARK_OPERATION" />
+92-->[androidx.profileinstaller:profileinstaller:1.3.0] /home/abdza/.gradle/caches/transforms-4/be6fe83453976c73d5281bd42ab96984/transformed/profileinstaller-1.3.0/AndroidManifest.xml:50:17-95
+92-->[androidx.profileinstaller:profileinstaller:1.3.0] /home/abdza/.gradle/caches/transforms-4/be6fe83453976c73d5281bd42ab96984/transformed/profileinstaller-1.3.0/AndroidManifest.xml:50:25-92
+93            </intent-filter>
+94        </receiver>
+95    </application>
+96
+97</manifest>

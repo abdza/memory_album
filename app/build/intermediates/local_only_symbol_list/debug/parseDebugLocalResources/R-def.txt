@@ -17,6 +17,7 @@ drawable gradient_bottom
 drawable gradient_top
 drawable ic_cancel
 drawable ic_close
+drawable ic_contacts
 drawable ic_empty_gallery
 drawable ic_launcher_background
 drawable ic_launcher_foreground
@@ -31,8 +32,11 @@ drawable remark_indicator
 drawable remark_panel_bg
 drawable status_dot_invalid
 drawable status_dot_valid
+id action_contacts
 id action_search
+id addContactsButton
 id addTagsButton
+id batchContactButton
 id batchRemarkButton
 id batchTagButton
 id bucketCount
@@ -44,6 +48,10 @@ id cameraValue
 id cancelSelectionButton
 id checkIcon
 id closeButton
+id contactChipGroup
+id contactCount
+id contactName
+id contactsSection
 id dateHeaderText
 id dateRow
 id dateTakenValue
@@ -61,6 +69,7 @@ id locationValue
 id metadataSection
 id navigationDrawer
 id noRemarkText
+id overlayContacts
 id overlayRemark
 id overlayTags
 id pathListContainer
@@ -96,9 +105,11 @@ id togglePaths
 id toolbar
 id topBar
 id viewPager
+layout activity_contacts
 layout activity_image_viewer
 layout activity_main
 layout item_bucket
+layout item_contact
 layout item_date_header
 layout item_gallery_image
 layout item_image_pager
@@ -107,6 +118,7 @@ layout item_search_result
 menu menu_main
 mipmap ic_launcher
 mipmap ic_launcher_round
+string add_contacts
 string add_remark
 string add_tags
 string all_images
@@ -114,8 +126,14 @@ string app_name
 string camera
 string cancel_selection
 string close
+string contact_images
+string contact_removed
+string contacts
+string contacts_added
+string contacts_permission_needed
 string date_taken
 string edit
+string enter_contacts
 string enter_remark
 string enter_tags
 string file_size
@@ -126,8 +144,10 @@ string image
 string image_info
 string image_thumbnail
 string location
+string no_contacts
 string no_images
 string no_info
+string no_phone_contacts
 string no_remark
 string no_search_results
 string no_valid_paths
@@ -136,6 +156,7 @@ string remark_saved
 string remark_set
 string resolution
 string save_remark
+string search_contacts
 string search_remarks
 string search_results
 string set_remark

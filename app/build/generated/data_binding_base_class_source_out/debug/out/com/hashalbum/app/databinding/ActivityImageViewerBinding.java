@@ -29,6 +29,9 @@ public final class ActivityImageViewerBinding implements ViewBinding {
   private final FrameLayout rootView;
 
   @NonNull
+  public final MaterialButton addContactsButton;
+
+  @NonNull
   public final MaterialButton addTagsButton;
 
   @NonNull
@@ -39,6 +42,12 @@ public final class ActivityImageViewerBinding implements ViewBinding {
 
   @NonNull
   public final ImageButton closeButton;
+
+  @NonNull
+  public final ChipGroup contactChipGroup;
+
+  @NonNull
+  public final LinearLayout contactsSection;
 
   @NonNull
   public final LinearLayout dateRow;
@@ -122,27 +131,31 @@ public final class ActivityImageViewerBinding implements ViewBinding {
   public final ViewPager2 viewPager;
 
   private ActivityImageViewerBinding(@NonNull FrameLayout rootView,
-      @NonNull MaterialButton addTagsButton, @NonNull LinearLayout cameraRow,
-      @NonNull TextView cameraValue, @NonNull ImageButton closeButton,
-      @NonNull LinearLayout dateRow, @NonNull TextView dateTakenValue,
-      @NonNull MaterialButton editRemarkButton, @NonNull LinearLayout fileSizeRow,
-      @NonNull TextView fileSizeValue, @NonNull TextView imageCounter,
-      @NonNull LinearLayout locationRow, @NonNull TextView locationValue,
-      @NonNull LinearLayout metadataSection, @NonNull TextView noRemarkText,
-      @NonNull TextView remarkDisplay, @NonNull ScrollView remarkDisplayContainer,
-      @NonNull LinearLayout remarkEditContainer, @NonNull ImageView remarkIndicator,
-      @NonNull TextInputEditText remarkInput, @NonNull TextInputLayout remarkInputLayout,
-      @NonNull TextView remarkLabel, @NonNull LinearLayout remarkPanel,
-      @NonNull View remarkPanelHandle, @NonNull LinearLayout resolutionRow,
-      @NonNull TextView resolutionValue, @NonNull MaterialButton saveRemarkButton,
-      @NonNull LinearLayout swipeHint, @NonNull ChipGroup tagChipGroup,
-      @NonNull LinearLayout tagsSection, @NonNull LinearLayout topBar,
-      @NonNull ViewPager2 viewPager) {
+      @NonNull MaterialButton addContactsButton, @NonNull MaterialButton addTagsButton,
+      @NonNull LinearLayout cameraRow, @NonNull TextView cameraValue,
+      @NonNull ImageButton closeButton, @NonNull ChipGroup contactChipGroup,
+      @NonNull LinearLayout contactsSection, @NonNull LinearLayout dateRow,
+      @NonNull TextView dateTakenValue, @NonNull MaterialButton editRemarkButton,
+      @NonNull LinearLayout fileSizeRow, @NonNull TextView fileSizeValue,
+      @NonNull TextView imageCounter, @NonNull LinearLayout locationRow,
+      @NonNull TextView locationValue, @NonNull LinearLayout metadataSection,
+      @NonNull TextView noRemarkText, @NonNull TextView remarkDisplay,
+      @NonNull ScrollView remarkDisplayContainer, @NonNull LinearLayout remarkEditContainer,
+      @NonNull ImageView remarkIndicator, @NonNull TextInputEditText remarkInput,
+      @NonNull TextInputLayout remarkInputLayout, @NonNull TextView remarkLabel,
+      @NonNull LinearLayout remarkPanel, @NonNull View remarkPanelHandle,
+      @NonNull LinearLayout resolutionRow, @NonNull TextView resolutionValue,
+      @NonNull MaterialButton saveRemarkButton, @NonNull LinearLayout swipeHint,
+      @NonNull ChipGroup tagChipGroup, @NonNull LinearLayout tagsSection,
+      @NonNull LinearLayout topBar, @NonNull ViewPager2 viewPager) {
     this.rootView = rootView;
+    this.addContactsButton = addContactsButton;
     this.addTagsButton = addTagsButton;
     this.cameraRow = cameraRow;
     this.cameraValue = cameraValue;
     this.closeButton = closeButton;
+    this.contactChipGroup = contactChipGroup;
+    this.contactsSection = contactsSection;
     this.dateRow = dateRow;
     this.dateTakenValue = dateTakenValue;
     this.editRemarkButton = editRemarkButton;
@@ -199,6 +212,12 @@ public final class ActivityImageViewerBinding implements ViewBinding {
     // This is done to optimize the compiled bytecode for size and performance.
     int id;
     missingId: {
+      id = R.id.addContactsButton;
+      MaterialButton addContactsButton = ViewBindings.findChildViewById(rootView, id);
+      if (addContactsButton == null) {
+        break missingId;
+      }
+
       id = R.id.addTagsButton;
       MaterialButton addTagsButton = ViewBindings.findChildViewById(rootView, id);
       if (addTagsButton == null) {
@@ -220,6 +239,18 @@ public final class ActivityImageViewerBinding implements ViewBinding {
       id = R.id.closeButton;
       ImageButton closeButton = ViewBindings.findChildViewById(rootView, id);
       if (closeButton == null) {
+        break missingId;
+      }
+
+      id = R.id.contactChipGroup;
+      ChipGroup contactChipGroup = ViewBindings.findChildViewById(rootView, id);
+      if (contactChipGroup == null) {
+        break missingId;
+      }
+
+      id = R.id.contactsSection;
+      LinearLayout contactsSection = ViewBindings.findChildViewById(rootView, id);
+      if (contactsSection == null) {
         break missingId;
       }
 
@@ -385,10 +416,11 @@ public final class ActivityImageViewerBinding implements ViewBinding {
         break missingId;
       }
 
-      return new ActivityImageViewerBinding((FrameLayout) rootView, addTagsButton, cameraRow,
-          cameraValue, closeButton, dateRow, dateTakenValue, editRemarkButton, fileSizeRow,
-          fileSizeValue, imageCounter, locationRow, locationValue, metadataSection, noRemarkText,
-          remarkDisplay, remarkDisplayContainer, remarkEditContainer, remarkIndicator, remarkInput,
+      return new ActivityImageViewerBinding((FrameLayout) rootView, addContactsButton,
+          addTagsButton, cameraRow, cameraValue, closeButton, contactChipGroup, contactsSection,
+          dateRow, dateTakenValue, editRemarkButton, fileSizeRow, fileSizeValue, imageCounter,
+          locationRow, locationValue, metadataSection, noRemarkText, remarkDisplay,
+          remarkDisplayContainer, remarkEditContainer, remarkIndicator, remarkInput,
           remarkInputLayout, remarkLabel, remarkPanel, remarkPanelHandle, resolutionRow,
           resolutionValue, saveRemarkButton, swipeHint, tagChipGroup, tagsSection, topBar,
           viewPager);

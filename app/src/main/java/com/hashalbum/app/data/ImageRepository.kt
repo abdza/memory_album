@@ -5,7 +5,8 @@ import kotlinx.coroutines.flow.Flow
 class ImageRepository(
     private val imageDataDao: ImageDataDao,
     private val imagePathDao: ImagePathDao,
-    private val imageTagDao: ImageTagDao
+    private val imageTagDao: ImageTagDao,
+    private val contactDao: ContactDao? = null
 ) {
 
     val allImages: Flow<List<ImageData>> = imageDataDao.getAllImages()
@@ -102,5 +103,40 @@ class ImageRepository(
 
     suspend fun searchByTag(query: String): List<String> {
         return imageTagDao.searchByTag(query)
+    }
+
+    suspend fun getOrCreateContact(name: String): Long {
+        val dao = contactDao ?: return -1
+        val existing = dao.getContactByName(name)
+        return existing?.id ?: dao.insertContact(Contact(name = name))
+    }
+
+    suspend fun addContactsToImage(hash: String, contactNames: List<String>) {
+        val dao = contactDao ?: return
+        for (name in contactNames) {
+            val contactId = getOrCreateContact(name)
+            if (contactId >= 0) {
+                dao.insertImageContact(ImageContact(hash = hash, contactId = contactId))
+            }
+        }
+    }
+
+    suspend fun removeContactFromImage(hash: String, contactId: Long) {
+        contactDao?.deleteImageContact(hash, contactId)
+    }
+
+    suspend fun getContactsForImage(hash: String): List<Contact> {
+        val dao = contactDao ?: return emptyList()
+        val imageContacts = dao.getContactsForHash(hash)
+        return imageContacts.mapNotNull { dao.getContactById(it.contactId) }
+    }
+
+    suspend fun getImageHashesForContact(contactId: Long): List<String> {
+        return contactDao?.getHashesForContact(contactId) ?: emptyList()
+    }
+
+    fun getContactsWithCount(): Flow<List<ContactWithCount>> {
+        return contactDao?.getContactsWithCount()
+            ?: kotlinx.coroutines.flow.flowOf(emptyList())
     }
 }

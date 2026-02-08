@@ -9,4 +9,10 @@
         app:actionViewClass="androidx.appcompat.widget.SearchView"
         app:showAsAction="ifRoom|collapseActionView" />
 
+    <item
+        android:id="@+id/action_contacts"
+        android:icon="@drawable/ic_contacts"
+        android:title="@string/contacts"
+        app:showAsAction="ifRoom" />
+
 </menu>

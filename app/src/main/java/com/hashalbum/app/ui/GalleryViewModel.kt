@@ -59,7 +59,7 @@ class GalleryViewModel(application: Application) : AndroidViewModel(application)
 
     init {
         val database = (application as HashAlbumApp).database
-        repository = ImageRepository(database.imageDataDao(), database.imagePathDao(), database.imageTagDao())
+        repository = ImageRepository(database.imageDataDao(), database.imagePathDao(), database.imageTagDao(), database.contactDao())
     }
 
     fun loadAllImages() {
@@ -277,7 +277,7 @@ class GalleryViewModel(application: Application) : AndroidViewModel(application)
             timeInMillis = today.timeInMillis
             add(Calendar.DAY_OF_YEAR, -1)
         }
-        val dateFormat = SimpleDateFormat("MMM d, yyyy", Locale.getDefault())
+        val dateFormat = SimpleDateFormat("EEE, MMM d, yyyy", Locale.getDefault())
 
         val result = mutableListOf<GalleryItem>()
         var currentLabel: String? = null
@@ -306,5 +306,33 @@ class GalleryViewModel(application: Application) : AndroidViewModel(application)
     fun clearSearch() {
         _isSearchMode.value = false
         _searchResults.value = emptyList()
+    }
+
+    suspend fun getContactsForImage(uri: Uri): List<com.hashalbum.app.data.Contact> {
+        val hash = getImageHash(uri) ?: return emptyList()
+        return repository.getContactsForImage(hash)
+    }
+
+    suspend fun addContactsToImage(uri: Uri, names: List<String>) {
+        val hash = getImageHash(uri) ?: return
+        val existing = repository.getByHash(hash)
+        if (existing == null) {
+            repository.insert(ImageData(hash = hash, lastKnownPath = uri.toString()))
+        }
+        repository.addOrUpdatePath(hash, uri.toString())
+        repository.addContactsToImage(hash, names)
+    }
+
+    suspend fun removeContactFromImage(uri: Uri, contactId: Long) {
+        val hash = getImageHash(uri) ?: return
+        repository.removeContactFromImage(hash, contactId)
+    }
+
+    fun addContactsToImages(uris: List<Uri>, names: List<String>) {
+        viewModelScope.launch {
+            for (uri in uris) {
+                addContactsToImage(uri, names)
+            }
+        }
     }
 }

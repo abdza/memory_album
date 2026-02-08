@@ -119,6 +119,7 @@ class GalleryAdapter(
         private val infoOverlay: LinearLayout = itemView.findViewById(R.id.infoOverlay)
         private val overlayRemark: TextView = itemView.findViewById(R.id.overlayRemark)
         private val overlayTags: TextView = itemView.findViewById(R.id.overlayTags)
+        private val overlayContacts: TextView = itemView.findViewById(R.id.overlayContacts)
 
         fun bind(image: GalleryImage, position: Int) {
             Glide.with(itemView.context)
@@ -178,14 +179,16 @@ class GalleryAdapter(
             remarkIndicator.visibility = if (show) View.VISIBLE else View.GONE
         }
 
-        fun showInfoOverlay(remark: String, tags: List<String>) {
+        fun showInfoOverlay(remark: String, tags: List<String>, contacts: List<String> = emptyList()) {
             val hasRemark = remark.isNotEmpty()
             val hasTags = tags.isNotEmpty()
+            val hasContacts = contacts.isNotEmpty()
 
-            if (!hasRemark && !hasTags) {
+            if (!hasRemark && !hasTags && !hasContacts) {
                 overlayRemark.text = itemView.context.getString(R.string.no_info)
                 overlayRemark.visibility = View.VISIBLE
                 overlayTags.visibility = View.GONE
+                overlayContacts.visibility = View.GONE
             } else {
                 if (hasRemark) {
                     overlayRemark.text = remark
@@ -199,6 +202,13 @@ class GalleryAdapter(
                     overlayTags.visibility = View.VISIBLE
                 } else {
                     overlayTags.visibility = View.GONE
+                }
+
+                if (hasContacts) {
+                    overlayContacts.text = contacts.joinToString(", ")
+                    overlayContacts.visibility = View.VISIBLE
+                } else {
+                    overlayContacts.visibility = View.GONE
                 }
             }
 

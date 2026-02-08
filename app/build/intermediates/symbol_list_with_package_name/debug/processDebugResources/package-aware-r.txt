@@ -3008,6 +3008,7 @@ drawable ic_cancel
 drawable ic_clear_black_24
 drawable ic_clock_black_24dp
 drawable ic_close
+drawable ic_contacts
 drawable ic_empty_gallery
 drawable ic_keyboard_black_24dp
 drawable ic_launcher_background
@@ -3164,6 +3165,7 @@ id action_bar_root
 id action_bar_spinner
 id action_bar_subtitle
 id action_bar_title
+id action_contacts
 id action_container
 id action_context_bar
 id action_divider
@@ -3178,6 +3180,7 @@ id action_text
 id actions
 id activity_chooser_view_content
 id add
+id addContactsButton
 id addTagsButton
 id alertTitle
 id aligned
@@ -3197,6 +3200,7 @@ id autoCompleteToEnd
 id autoCompleteToStart
 id barrier
 id baseline
+id batchContactButton
 id batchRemarkButton
 id batchTagButton
 id beginOnFirstDraw
@@ -3243,6 +3247,10 @@ id collapseActionView
 id compress
 id confirm_button
 id constraint
+id contactChipGroup
+id contactCount
+id contactName
+id contactsSection
 id container
 id content
 id contentPanel
@@ -3475,6 +3483,7 @@ id open_search_view_toolbar
 id open_search_view_toolbar_container
 id outline
 id outward
+id overlayContacts
 id overlayRemark
 id overlayTags
 id overshoot
@@ -3784,6 +3793,7 @@ layout abc_search_dropdown_item_icons_2line
 layout abc_search_view
 layout abc_select_dialog_material
 layout abc_tooltip
+layout activity_contacts
 layout activity_image_viewer
 layout activity_main
 layout custom_dialog
@@ -3805,6 +3815,7 @@ layout design_text_input_start_icon
 layout ime_base_split_test_activity
 layout ime_secondary_split_test_activity
 layout item_bucket
+layout item_contact
 layout item_date_header
 layout item_gallery_image
 layout item_image_pager
@@ -3902,6 +3913,7 @@ string abc_searchview_description_voice
 string abc_shareactionprovider_share_with
 string abc_shareactionprovider_share_with_application
 string abc_toolbar_collapse_description
+string add_contacts
 string add_remark
 string add_tags
 string all_images
@@ -3928,8 +3940,14 @@ string character_counter_overflowed_content_description
 string character_counter_pattern
 string clear_text_end_icon_content_description
 string close
+string contact_images
+string contact_removed
+string contacts
+string contacts_added
+string contacts_permission_needed
 string date_taken
 string edit
+string enter_contacts
 string enter_remark
 string enter_tags
 string error_a11y_label
@@ -4048,8 +4066,10 @@ string mtrl_switch_track_decoration_path
 string mtrl_switch_track_path
 string mtrl_timepicker_cancel
 string mtrl_timepicker_confirm
+string no_contacts
 string no_images
 string no_info
+string no_phone_contacts
 string no_remark
 string no_search_results
 string no_valid_paths
@@ -4063,6 +4083,7 @@ string remark_saved
 string remark_set
 string resolution
 string save_remark
+string search_contacts
 string search_menu_title
 string search_remarks
 string search_results

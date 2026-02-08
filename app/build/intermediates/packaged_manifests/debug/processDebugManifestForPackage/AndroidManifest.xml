@@ -13,6 +13,7 @@
         android:name="android.permission.READ_EXTERNAL_STORAGE"
         android:maxSdkVersion="32" />
     <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
+    <uses-permission android:name="android.permission.READ_CONTACTS" />
 
     <permission
         android:name="com.hashalbum.app.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION"
@@ -47,6 +48,10 @@
             android:name="com.hashalbum.app.ui.ImageViewerActivity"
             android:exported="false"
             android:theme="@style/Theme.HashAlbum.FullScreen" />
+        <activity
+            android:name="com.hashalbum.app.ui.ContactsActivity"
+            android:exported="false"
+            android:theme="@style/Theme.HashAlbum" />
 
         <provider
             android:name="androidx.startup.InitializationProvider"

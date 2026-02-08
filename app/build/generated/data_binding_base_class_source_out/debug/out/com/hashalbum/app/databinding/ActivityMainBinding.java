@@ -26,6 +26,9 @@ public final class ActivityMainBinding implements ViewBinding {
   private final DrawerLayout rootView;
 
   @NonNull
+  public final ImageButton batchContactButton;
+
+  @NonNull
   public final ImageButton batchRemarkButton;
 
   @NonNull
@@ -65,14 +68,15 @@ public final class ActivityMainBinding implements ViewBinding {
   public final MaterialToolbar toolbar;
 
   private ActivityMainBinding(@NonNull DrawerLayout rootView,
-      @NonNull ImageButton batchRemarkButton, @NonNull ImageButton batchTagButton,
-      @NonNull RecyclerView bucketRecyclerView, @NonNull ImageButton cancelSelectionButton,
-      @NonNull DrawerLayout drawerLayout, @NonNull LinearLayout emptyView,
-      @NonNull LinearLayout navigationDrawer, @NonNull ProgressBar progressBar,
-      @NonNull RecyclerView recyclerView, @NonNull LinearLayout selectionBar,
-      @NonNull TextView selectionCount, @NonNull SwipeRefreshLayout swipeRefresh,
-      @NonNull MaterialToolbar toolbar) {
+      @NonNull ImageButton batchContactButton, @NonNull ImageButton batchRemarkButton,
+      @NonNull ImageButton batchTagButton, @NonNull RecyclerView bucketRecyclerView,
+      @NonNull ImageButton cancelSelectionButton, @NonNull DrawerLayout drawerLayout,
+      @NonNull LinearLayout emptyView, @NonNull LinearLayout navigationDrawer,
+      @NonNull ProgressBar progressBar, @NonNull RecyclerView recyclerView,
+      @NonNull LinearLayout selectionBar, @NonNull TextView selectionCount,
+      @NonNull SwipeRefreshLayout swipeRefresh, @NonNull MaterialToolbar toolbar) {
     this.rootView = rootView;
+    this.batchContactButton = batchContactButton;
     this.batchRemarkButton = batchRemarkButton;
     this.batchTagButton = batchTagButton;
     this.bucketRecyclerView = bucketRecyclerView;
@@ -115,6 +119,12 @@ public final class ActivityMainBinding implements ViewBinding {
     // This is done to optimize the compiled bytecode for size and performance.
     int id;
     missingId: {
+      id = R.id.batchContactButton;
+      ImageButton batchContactButton = ViewBindings.findChildViewById(rootView, id);
+      if (batchContactButton == null) {
+        break missingId;
+      }
+
       id = R.id.batchRemarkButton;
       ImageButton batchRemarkButton = ViewBindings.findChildViewById(rootView, id);
       if (batchRemarkButton == null) {
@@ -189,9 +199,10 @@ public final class ActivityMainBinding implements ViewBinding {
         break missingId;
       }
 
-      return new ActivityMainBinding((DrawerLayout) rootView, batchRemarkButton, batchTagButton,
-          bucketRecyclerView, cancelSelectionButton, drawerLayout, emptyView, navigationDrawer,
-          progressBar, recyclerView, selectionBar, selectionCount, swipeRefresh, toolbar);
+      return new ActivityMainBinding((DrawerLayout) rootView, batchContactButton, batchRemarkButton,
+          batchTagButton, bucketRecyclerView, cancelSelectionButton, drawerLayout, emptyView,
+          navigationDrawer, progressBar, recyclerView, selectionBar, selectionCount, swipeRefresh,
+          toolbar);
     }
     String missingId = rootView.getResources().getResourceName(id);
     throw new NullPointerException("Missing required view with ID: ".concat(missingId));

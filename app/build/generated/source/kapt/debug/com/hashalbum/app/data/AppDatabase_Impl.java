@@ -33,17 +33,22 @@ public final class AppDatabase_Impl extends AppDatabase {
 
   private volatile ImageTagDao _imageTagDao;
 
+  private volatile ContactDao _contactDao;
+
   @Override
   @NonNull
   protected SupportSQLiteOpenHelper createOpenHelper(@NonNull final DatabaseConfiguration config) {
-    final SupportSQLiteOpenHelper.Callback _openCallback = new RoomOpenHelper(config, new RoomOpenHelper.Delegate(3) {
+    final SupportSQLiteOpenHelper.Callback _openCallback = new RoomOpenHelper(config, new RoomOpenHelper.Delegate(4) {
       @Override
       public void createAllTables(@NonNull final SupportSQLiteDatabase db) {
         db.execSQL("CREATE TABLE IF NOT EXISTS `image_data` (`hash` TEXT NOT NULL, `remark` TEXT NOT NULL, `lastKnownPath` TEXT NOT NULL, `createdAt` INTEGER NOT NULL, `updatedAt` INTEGER NOT NULL, PRIMARY KEY(`hash`))");
         db.execSQL("CREATE TABLE IF NOT EXISTS `image_paths` (`hash` TEXT NOT NULL, `path` TEXT NOT NULL, `lastSeen` INTEGER NOT NULL, `isValid` INTEGER NOT NULL, PRIMARY KEY(`hash`, `path`), FOREIGN KEY(`hash`) REFERENCES `image_data`(`hash`) ON UPDATE NO ACTION ON DELETE CASCADE )");
         db.execSQL("CREATE TABLE IF NOT EXISTS `image_tags` (`hash` TEXT NOT NULL, `tag` TEXT NOT NULL, `createdAt` INTEGER NOT NULL, PRIMARY KEY(`hash`, `tag`), FOREIGN KEY(`hash`) REFERENCES `image_data`(`hash`) ON UPDATE NO ACTION ON DELETE CASCADE )");
+        db.execSQL("CREATE TABLE IF NOT EXISTS `contacts` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `name` TEXT NOT NULL, `createdAt` INTEGER NOT NULL)");
+        db.execSQL("CREATE TABLE IF NOT EXISTS `image_contacts` (`hash` TEXT NOT NULL, `contactId` INTEGER NOT NULL, `createdAt` INTEGER NOT NULL, PRIMARY KEY(`hash`, `contactId`), FOREIGN KEY(`hash`) REFERENCES `image_data`(`hash`) ON UPDATE NO ACTION ON DELETE CASCADE , FOREIGN KEY(`contactId`) REFERENCES `contacts`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )");
+        db.execSQL("CREATE INDEX IF NOT EXISTS `index_image_contacts_contactId` ON `image_contacts` (`contactId`)");
         db.execSQL("CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)");
-        db.execSQL("INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'be73ae9a6c007e187d30725f99e1eda1')");
+        db.execSQL("INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'a60a105e0d6f18872adf7f8818129dc4')");
       }
 
       @Override
@@ -51,6 +56,8 @@ public final class AppDatabase_Impl extends AppDatabase {
         db.execSQL("DROP TABLE IF EXISTS `image_data`");
         db.execSQL("DROP TABLE IF EXISTS `image_paths`");
         db.execSQL("DROP TABLE IF EXISTS `image_tags`");
+        db.execSQL("DROP TABLE IF EXISTS `contacts`");
+        db.execSQL("DROP TABLE IF EXISTS `image_contacts`");
         final List<? extends RoomDatabase.Callback> _callbacks = mCallbacks;
         if (_callbacks != null) {
           for (RoomDatabase.Callback _callback : _callbacks) {
@@ -139,9 +146,38 @@ public final class AppDatabase_Impl extends AppDatabase {
                   + " Expected:\n" + _infoImageTags + "\n"
                   + " Found:\n" + _existingImageTags);
         }
+        final HashMap<String, TableInfo.Column> _columnsContacts = new HashMap<String, TableInfo.Column>(3);
+        _columnsContacts.put("id", new TableInfo.Column("id", "INTEGER", true, 1, null, TableInfo.CREATED_FROM_ENTITY));
+        _columnsContacts.put("name", new TableInfo.Column("name", "TEXT", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
+        _columnsContacts.put("createdAt", new TableInfo.Column("createdAt", "INTEGER", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
+        final HashSet<TableInfo.ForeignKey> _foreignKeysContacts = new HashSet<TableInfo.ForeignKey>(0);
+        final HashSet<TableInfo.Index> _indicesContacts = new HashSet<TableInfo.Index>(0);
+        final TableInfo _infoContacts = new TableInfo("contacts", _columnsContacts, _foreignKeysContacts, _indicesContacts);
+        final TableInfo _existingContacts = TableInfo.read(db, "contacts");
+        if (!_infoContacts.equals(_existingContacts)) {
+          return new RoomOpenHelper.ValidationResult(false, "contacts(com.hashalbum.app.data.Contact).\n"
+                  + " Expected:\n" + _infoContacts + "\n"
+                  + " Found:\n" + _existingContacts);
+        }
+        final HashMap<String, TableInfo.Column> _columnsImageContacts = new HashMap<String, TableInfo.Column>(3);
+        _columnsImageContacts.put("hash", new TableInfo.Column("hash", "TEXT", true, 1, null, TableInfo.CREATED_FROM_ENTITY));
+        _columnsImageContacts.put("contactId", new TableInfo.Column("contactId", "INTEGER", true, 2, null, TableInfo.CREATED_FROM_ENTITY));
+        _columnsImageContacts.put("createdAt", new TableInfo.Column("createdAt", "INTEGER", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
+        final HashSet<TableInfo.ForeignKey> _foreignKeysImageContacts = new HashSet<TableInfo.ForeignKey>(2);
+        _foreignKeysImageContacts.add(new TableInfo.ForeignKey("image_data", "CASCADE", "NO ACTION", Arrays.asList("hash"), Arrays.asList("hash")));
+        _foreignKeysImageContacts.add(new TableInfo.ForeignKey("contacts", "CASCADE", "NO ACTION", Arrays.asList("contactId"), Arrays.asList("id")));
+        final HashSet<TableInfo.Index> _indicesImageContacts = new HashSet<TableInfo.Index>(1);
+        _indicesImageContacts.add(new TableInfo.Index("index_image_contacts_contactId", false, Arrays.asList("contactId"), Arrays.asList("ASC")));
+        final TableInfo _infoImageContacts = new TableInfo("image_contacts", _columnsImageContacts, _foreignKeysImageContacts, _indicesImageContacts);
+        final TableInfo _existingImageContacts = TableInfo.read(db, "image_contacts");
+        if (!_infoImageContacts.equals(_existingImageContacts)) {
+          return new RoomOpenHelper.ValidationResult(false, "image_contacts(com.hashalbum.app.data.ImageContact).\n"
+                  + " Expected:\n" + _infoImageContacts + "\n"
+                  + " Found:\n" + _existingImageContacts);
+        }
         return new RoomOpenHelper.ValidationResult(true, null);
       }
-    }, "be73ae9a6c007e187d30725f99e1eda1", "e7582a7a58ed17cf3b6a25a5d9dd2226");
+    }, "a60a105e0d6f18872adf7f8818129dc4", "de97f569f3d2f2a66fb2a452a223ba96");
     final SupportSQLiteOpenHelper.Configuration _sqliteConfig = SupportSQLiteOpenHelper.Configuration.builder(config.context).name(config.name).callback(_openCallback).build();
     final SupportSQLiteOpenHelper _helper = config.sqliteOpenHelperFactory.create(_sqliteConfig);
     return _helper;
@@ -152,7 +188,7 @@ public final class AppDatabase_Impl extends AppDatabase {
   protected InvalidationTracker createInvalidationTracker() {
     final HashMap<String, String> _shadowTablesMap = new HashMap<String, String>(0);
     final HashMap<String, Set<String>> _viewTables = new HashMap<String, Set<String>>(0);
-    return new InvalidationTracker(this, _shadowTablesMap, _viewTables, "image_data","image_paths","image_tags");
+    return new InvalidationTracker(this, _shadowTablesMap, _viewTables, "image_data","image_paths","image_tags","contacts","image_contacts");
   }
 
   @Override
@@ -171,6 +207,8 @@ public final class AppDatabase_Impl extends AppDatabase {
       _db.execSQL("DELETE FROM `image_data`");
       _db.execSQL("DELETE FROM `image_paths`");
       _db.execSQL("DELETE FROM `image_tags`");
+      _db.execSQL("DELETE FROM `contacts`");
+      _db.execSQL("DELETE FROM `image_contacts`");
       super.setTransactionSuccessful();
     } finally {
       super.endTransaction();
@@ -191,6 +229,7 @@ public final class AppDatabase_Impl extends AppDatabase {
     _typeConvertersMap.put(ImageDataDao.class, ImageDataDao_Impl.getRequiredConverters());
     _typeConvertersMap.put(ImagePathDao.class, ImagePathDao_Impl.getRequiredConverters());
     _typeConvertersMap.put(ImageTagDao.class, ImageTagDao_Impl.getRequiredConverters());
+    _typeConvertersMap.put(ContactDao.class, ContactDao_Impl.getRequiredConverters());
     return _typeConvertersMap;
   }
 
@@ -247,6 +286,20 @@ public final class AppDatabase_Impl extends AppDatabase {
           _imageTagDao = new ImageTagDao_Impl(this);
         }
         return _imageTagDao;
+      }
+    }
+  }
+
+  @Override
+  public ContactDao contactDao() {
+    if (_contactDao != null) {
+      return _contactDao;
+    } else {
+      synchronized(this) {
+        if(_contactDao == null) {
+          _contactDao = new ContactDao_Impl(this);
+        }
+        return _contactDao;
       }
     }
   }

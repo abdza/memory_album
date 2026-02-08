@@ -5,8 +5,13 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.Menu
 import android.view.View
+import android.widget.ArrayAdapter
+import android.widget.EditText
+import android.widget.ListView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
@@ -22,6 +27,7 @@ import com.hashalbum.app.R
 import com.hashalbum.app.data.GalleryItem
 import com.hashalbum.app.databinding.ActivityMainBinding
 import com.hashalbum.app.util.ImageBucket
+import com.hashalbum.app.util.PhoneContactsHelper
 import com.hashalbum.app.util.TagParser
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -46,6 +52,16 @@ class MainActivity : AppCompatActivity() {
                 "Permission required to access photos",
                 Toast.LENGTH_LONG
             ).show()
+        }
+    }
+
+    private val contactsPermissionLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { isGranted ->
+        if (isGranted) {
+            showBatchContactDialog()
+        } else {
+            Toast.makeText(this, R.string.contacts_permission_needed, Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -97,7 +113,8 @@ class MainActivity : AppCompatActivity() {
                 lifecycleScope.launch {
                     val remark = viewModel.getRemark(image.uri)
                     val tags = viewModel.getTagsForImage(image.uri)
-                    holder.showInfoOverlay(remark, tags)
+                    val contacts = viewModel.getContactsForImage(image.uri)
+                    holder.showInfoOverlay(remark, tags, contacts.map { it.name })
                 }
             }
         )
@@ -191,6 +208,16 @@ class MainActivity : AppCompatActivity() {
         })
 
         return true
+    }
+
+    override fun onOptionsItemSelected(item: android.view.MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.action_contacts -> {
+                startActivity(Intent(this, ContactsActivity::class.java))
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
     }
 
     private fun loadBuckets() {
@@ -301,6 +328,9 @@ class MainActivity : AppCompatActivity() {
         binding.batchRemarkButton.setOnClickListener {
             showBatchRemarkDialog()
         }
+        binding.batchContactButton.setOnClickListener {
+            showBatchContactDialog()
+        }
     }
 
     private fun enterSelectionMode() {
@@ -363,6 +393,80 @@ class MainActivity : AppCompatActivity() {
                     val uris = selectedImages.map { it.uri }
                     viewModel.saveRemarkToImages(uris, remark)
                     Toast.makeText(this, R.string.remark_set, Toast.LENGTH_SHORT).show()
+                    exitSelectionMode()
+                }
+            }
+            .setNegativeButton(android.R.string.cancel, null)
+            .show()
+    }
+
+    private fun showBatchContactDialog() {
+        val selectedImages = galleryAdapter.getSelectedImages()
+        if (selectedImages.isEmpty()) return
+
+        if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED) {
+            contactsPermissionLauncher.launch(android.Manifest.permission.READ_CONTACTS)
+            return
+        }
+
+        val phoneContacts = PhoneContactsHelper.getPhoneContacts(this)
+        if (phoneContacts.isEmpty()) {
+            Toast.makeText(this, R.string.no_phone_contacts, Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        val selectedNames = mutableSetOf<String>()
+
+        val layout = android.widget.LinearLayout(this).apply {
+            orientation = android.widget.LinearLayout.VERTICAL
+            setPadding(48, 24, 48, 0)
+        }
+
+        val searchInput = EditText(this).apply {
+            hint = getString(R.string.search_contacts)
+            setSingleLine()
+        }
+        layout.addView(searchInput)
+
+        val listView = ListView(this).apply {
+            choiceMode = ListView.CHOICE_MODE_MULTIPLE
+        }
+        val adapter = ArrayAdapter(this, android.R.layout.simple_list_item_multiple_choice, phoneContacts.toMutableList())
+        listView.adapter = adapter
+        layout.addView(listView, android.widget.LinearLayout.LayoutParams(
+            android.widget.LinearLayout.LayoutParams.MATCH_PARENT, 800
+        ))
+
+        listView.setOnItemClickListener { _, _, position, _ ->
+            val name = adapter.getItem(position) ?: return@setOnItemClickListener
+            if (listView.isItemChecked(position)) {
+                selectedNames.add(name)
+            } else {
+                selectedNames.remove(name)
+            }
+        }
+
+        searchInput.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+            override fun afterTextChanged(s: Editable?) {
+                adapter.filter.filter(s) {
+                    for (i in 0 until adapter.count) {
+                        val name = adapter.getItem(i) ?: continue
+                        listView.setItemChecked(i, name in selectedNames)
+                    }
+                }
+            }
+        })
+
+        MaterialAlertDialogBuilder(this)
+            .setTitle(R.string.add_contacts)
+            .setView(layout)
+            .setPositiveButton(android.R.string.ok) { _, _ ->
+                if (selectedNames.isNotEmpty()) {
+                    val uris = selectedImages.map { it.uri }
+                    viewModel.addContactsToImages(uris, selectedNames.toList())
+                    Toast.makeText(this, R.string.contacts_added, Toast.LENGTH_SHORT).show()
                     exitSelectionMode()
                 }
             }

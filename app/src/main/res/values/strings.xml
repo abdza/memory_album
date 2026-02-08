@@ -40,4 +40,14 @@
     <string name="no_info">No remark or tags</string>
     <string name="today">Today</string>
     <string name="yesterday">Yesterday</string>
+    <string name="contacts">Contacts</string>
+    <string name="add_contacts">Add Contacts</string>
+    <string name="enter_contacts">Enter contact names (e.g. John Sarah)</string>
+    <string name="contacts_added">Contacts added</string>
+    <string name="no_contacts">No contacts yet</string>
+    <string name="contact_images">Contact Images</string>
+    <string name="contact_removed">Contact removed</string>
+    <string name="no_phone_contacts">No contacts found on device</string>
+    <string name="contacts_permission_needed">Contacts permission needed to select from phone contacts</string>
+    <string name="search_contacts">Search contacts…</string>
 </resources>

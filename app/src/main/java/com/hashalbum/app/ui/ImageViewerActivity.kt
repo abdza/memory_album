@@ -1,7 +1,9 @@
 package com.hashalbum.app.ui
 
+import android.Manifest
 import android.animation.ObjectAnimator
 import android.animation.PropertyValuesHolder
+import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
 import android.view.GestureDetector
@@ -11,17 +13,26 @@ import android.view.animation.AccelerateDecelerateInterpolator
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.core.view.GestureDetectorCompat
 import androidx.lifecycle.lifecycleScope
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.chip.Chip
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.hashalbum.app.R
+import com.hashalbum.app.data.Contact
 import com.hashalbum.app.databinding.ActivityImageViewerBinding
+import android.text.Editable
+import android.text.TextWatcher
+import android.widget.ArrayAdapter
+import android.widget.EditText
+import android.widget.ListView
 import com.hashalbum.app.util.ImageMetadata
 import com.hashalbum.app.util.ImageMetadataHelper
+import com.hashalbum.app.util.PhoneContactsHelper
 import com.hashalbum.app.util.TagParser
 import kotlinx.coroutines.launch
 import kotlin.math.abs
@@ -49,6 +60,16 @@ class ImageViewerActivity : AppCompatActivity() {
     private var remarkPanelAnimator: ObjectAnimator? = null
 
     private lateinit var gestureDetector: GestureDetectorCompat
+
+    private val contactsPermissionLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { isGranted ->
+        if (isGranted) {
+            showAddContactsDialog()
+        } else {
+            Toast.makeText(this, R.string.contacts_permission_needed, Toast.LENGTH_SHORT).show()
+        }
+    }
     
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -177,6 +198,15 @@ class ImageViewerActivity : AppCompatActivity() {
             showAddTagsDialog()
         }
 
+        // Add contacts button
+        binding.addContactsButton.setOnClickListener {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_CONTACTS) == PackageManager.PERMISSION_GRANTED) {
+                showAddContactsDialog()
+            } else {
+                contactsPermissionLauncher.launch(Manifest.permission.READ_CONTACTS)
+            }
+        }
+
         // Swipe hint
         binding.swipeHint.visibility = View.VISIBLE
     }
@@ -246,6 +276,120 @@ class ImageViewerActivity : AppCompatActivity() {
             viewModel.removeTagFromImage(currentUri, tag)
             loadCurrentImageTags()
             Toast.makeText(this@ImageViewerActivity, R.string.tag_removed, Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun showAddContactsDialog() {
+        val phoneContacts = PhoneContactsHelper.getPhoneContacts(this)
+        if (phoneContacts.isEmpty()) {
+            Toast.makeText(this, R.string.no_phone_contacts, Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        val selectedNames = mutableSetOf<String>()
+
+        val layout = android.widget.LinearLayout(this).apply {
+            orientation = android.widget.LinearLayout.VERTICAL
+            setPadding(48, 24, 48, 0)
+        }
+
+        val searchInput = EditText(this).apply {
+            hint = getString(R.string.search_contacts)
+            setSingleLine()
+        }
+        layout.addView(searchInput)
+
+        val listView = ListView(this).apply {
+            choiceMode = ListView.CHOICE_MODE_MULTIPLE
+        }
+        val adapter = ArrayAdapter(this, android.R.layout.simple_list_item_multiple_choice, phoneContacts.toMutableList())
+        listView.adapter = adapter
+        layout.addView(listView, android.widget.LinearLayout.LayoutParams(
+            android.widget.LinearLayout.LayoutParams.MATCH_PARENT, 800
+        ))
+
+        listView.setOnItemClickListener { _, _, position, _ ->
+            val name = adapter.getItem(position) ?: return@setOnItemClickListener
+            if (listView.isItemChecked(position)) {
+                selectedNames.add(name)
+            } else {
+                selectedNames.remove(name)
+            }
+        }
+
+        searchInput.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+            override fun afterTextChanged(s: Editable?) {
+                adapter.filter.filter(s) {
+                    // Restore check states after filtering
+                    for (i in 0 until adapter.count) {
+                        val name = adapter.getItem(i) ?: continue
+                        listView.setItemChecked(i, name in selectedNames)
+                    }
+                }
+            }
+        })
+
+        MaterialAlertDialogBuilder(this)
+            .setTitle(R.string.add_contacts)
+            .setView(layout)
+            .setPositiveButton(android.R.string.ok) { _, _ ->
+                if (selectedNames.isNotEmpty() && imageUris.isNotEmpty() && currentPosition < imageUris.size) {
+                    val currentUri = imageUris[currentPosition]
+                    lifecycleScope.launch {
+                        viewModel.addContactsToImage(currentUri, selectedNames.toList())
+                        loadCurrentImageContacts()
+                        Toast.makeText(this@ImageViewerActivity, R.string.contacts_added, Toast.LENGTH_SHORT).show()
+                    }
+                }
+            }
+            .setNegativeButton(android.R.string.cancel, null)
+            .show()
+    }
+
+    private fun loadCurrentImageContacts() {
+        if (imageUris.isEmpty() || currentPosition >= imageUris.size) return
+        val currentUri = imageUris[currentPosition]
+        lifecycleScope.launch {
+            val contacts = viewModel.getContactsForImage(currentUri)
+            displayContacts(contacts)
+        }
+    }
+
+    private fun displayContacts(contacts: List<Contact>) {
+        binding.contactChipGroup.removeAllViews()
+        if (contacts.isEmpty()) {
+            binding.contactsSection.visibility = View.GONE
+            return
+        }
+        binding.contactsSection.visibility = View.VISIBLE
+        for (contact in contacts) {
+            val chip = Chip(this).apply {
+                text = contact.name
+                isCloseIconVisible = true
+                setTextColor(resources.getColor(android.R.color.white, theme))
+                chipBackgroundColor = android.content.res.ColorStateList.valueOf(
+                    resources.getColor(R.color.accent, theme)
+                )
+                closeIconTint = android.content.res.ColorStateList.valueOf(
+                    resources.getColor(android.R.color.white, theme)
+                )
+                setOnCloseIconClickListener {
+                    removeContact(contact.id)
+                }
+            }
+            binding.contactChipGroup.addView(chip)
+        }
+    }
+
+    private fun removeContact(contactId: Long) {
+        if (imageUris.isEmpty() || currentPosition >= imageUris.size) return
+        val currentUri = imageUris[currentPosition]
+        lifecycleScope.launch {
+            viewModel.removeContactFromImage(currentUri, contactId)
+            loadCurrentImageContacts()
+            Toast.makeText(this@ImageViewerActivity, R.string.contact_removed, Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -333,6 +477,9 @@ class ImageViewerActivity : AppCompatActivity() {
 
             // Load tags
             loadCurrentImageTags()
+
+            // Load contacts
+            loadCurrentImageContacts()
 
             // Pre-set the correct mode but don't show the panel
             prepareDisplayMode()
