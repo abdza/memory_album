@@ -106,6 +106,10 @@ class ImageRepository(
         return imageTagDao.searchByTag(query)
     }
 
+    suspend fun searchContactsByName(query: String): List<Contact> {
+        return contactDao?.searchContacts(query) ?: emptyList()
+    }
+
     suspend fun getOrCreateContact(name: String): Long {
         val dao = contactDao ?: return -1
         val existing = dao.getContactByName(name)

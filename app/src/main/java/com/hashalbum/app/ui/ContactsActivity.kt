@@ -4,8 +4,10 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
+import android.view.Menu
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.SearchView
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -34,6 +36,7 @@ class ContactsActivity : AppCompatActivity() {
     private lateinit var repository: ImageRepository
 
     private var currentContact: ContactWithCount? = null
+    private var allContacts: List<ContactWithCount> = emptyList()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -51,6 +54,34 @@ class ContactsActivity : AppCompatActivity() {
         setupToolbar()
         setupContactsList()
         loadContacts()
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        if (currentContact == null) {
+            menuInflater.inflate(R.menu.menu_contacts, menu)
+            val searchItem = menu.findItem(R.id.action_search)
+            val searchView = searchItem.actionView as SearchView
+            searchView.queryHint = getString(R.string.search_contacts)
+            searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+                override fun onQueryTextSubmit(query: String?): Boolean = false
+                override fun onQueryTextChange(newText: String?): Boolean {
+                    filterContacts(newText.orEmpty())
+                    return true
+                }
+            })
+        }
+        return true
+    }
+
+    private fun filterContacts(query: String) {
+        if (query.isBlank()) {
+            contactsAdapter.submitList(allContacts)
+            binding.emptyView.visibility = if (allContacts.isEmpty()) View.VISIBLE else View.GONE
+        } else {
+            val filtered = allContacts.filter { it.name.contains(query, ignoreCase = true) }
+            contactsAdapter.submitList(filtered)
+            binding.emptyView.visibility = if (filtered.isEmpty()) View.VISIBLE else View.GONE
+        }
     }
 
     private fun setupToolbar() {
@@ -96,6 +127,7 @@ class ContactsActivity : AppCompatActivity() {
         lifecycleScope.launch {
             repository.getContactsWithCount().collectLatest { contacts ->
                 binding.progressBar.visibility = View.GONE
+                allContacts = contacts
                 contactsAdapter.submitList(contacts)
                 binding.emptyView.visibility = if (contacts.isEmpty()) View.VISIBLE else View.GONE
             }
@@ -104,6 +136,7 @@ class ContactsActivity : AppCompatActivity() {
 
     private fun showContactImages(contact: ContactWithCount) {
         currentContact = contact
+        invalidateOptionsMenu()
         supportActionBar?.title = contact.name
         binding.toolbar.navigationIcon = getDrawable(R.drawable.ic_close)
 
@@ -144,6 +177,7 @@ class ContactsActivity : AppCompatActivity() {
 
     private fun showContactsList() {
         currentContact = null
+        invalidateOptionsMenu()
         supportActionBar?.title = getString(R.string.contacts)
         binding.toolbar.navigationIcon = getDrawable(R.drawable.ic_close)
         binding.recyclerView.layoutManager = LinearLayoutManager(this)

@@ -200,7 +200,18 @@ class GalleryViewModel(application: Application) : AndroidViewModel(application)
                     .filter { it !in remarkHashes }
                     .mapNotNull { repository.getByHash(it) }
 
-                val allImageData = imageDataList + tagOnlyData
+                // Also search by contact name
+                val contactMatches = repository.searchContactsByName(query)
+                val contactHashes = mutableSetOf<String>()
+                for (contact in contactMatches) {
+                    contactHashes.addAll(repository.getImageHashesForContact(contact.id))
+                }
+                val existingHashes = remarkHashes + tagMatchedHashes.toSet()
+                val contactOnlyData = contactHashes
+                    .filter { it !in existingHashes }
+                    .mapNotNull { repository.getByHash(it) }
+
+                val allImageData = imageDataList + tagOnlyData + contactOnlyData
 
                 val results = allImageData.map { imageData ->
                     val paths = repository.getPathsForHashSync(imageData.hash).map { imagePath ->
