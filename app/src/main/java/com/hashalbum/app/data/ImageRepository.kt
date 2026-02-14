@@ -34,7 +34,7 @@ class ImageRepository(
         imageDataDao.updatePath(hash, path)
     }
 
-    suspend fun saveOrUpdateRemark(hash: String, remark: String, path: String) {
+    suspend fun saveOrUpdateRemark(hash: String, remark: String, path: String, mediaType: String = "image") {
         val existing = imageDataDao.getByHash(hash)
         if (existing != null) {
             imageDataDao.updateRemark(hash, remark)
@@ -46,18 +46,19 @@ class ImageRepository(
                 ImageData(
                     hash = hash,
                     remark = remark,
-                    lastKnownPath = path
+                    lastKnownPath = path,
+                    mediaType = mediaType
                 )
             )
         }
         addOrUpdatePath(hash, path)
     }
 
-    suspend fun addOrUpdatePath(hash: String, path: String) {
+    suspend fun addOrUpdatePath(hash: String, path: String, mediaType: String = "image") {
         // Ensure parent image_data row exists (FK constraint)
         val imageData = imageDataDao.getByHash(hash)
         if (imageData == null) {
-            imageDataDao.insert(ImageData(hash = hash, lastKnownPath = path))
+            imageDataDao.insert(ImageData(hash = hash, lastKnownPath = path, mediaType = mediaType))
         }
         val existing = imagePathDao.getPathsForHashSync(hash).find { it.path == path }
         if (existing != null) {

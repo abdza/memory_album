@@ -51,7 +51,7 @@ public final class ImageDataDao_Impl implements ImageDataDao {
       @Override
       @NonNull
       protected String createQuery() {
-        return "INSERT OR REPLACE INTO `image_data` (`hash`,`remark`,`lastKnownPath`,`createdAt`,`updatedAt`) VALUES (?,?,?,?,?)";
+        return "INSERT OR REPLACE INTO `image_data` (`hash`,`remark`,`lastKnownPath`,`createdAt`,`updatedAt`,`mediaType`) VALUES (?,?,?,?,?,?)";
       }
 
       @Override
@@ -74,6 +74,11 @@ public final class ImageDataDao_Impl implements ImageDataDao {
         }
         statement.bindLong(4, entity.getCreatedAt());
         statement.bindLong(5, entity.getUpdatedAt());
+        if (entity.getMediaType() == null) {
+          statement.bindNull(6);
+        } else {
+          statement.bindString(6, entity.getMediaType());
+        }
       }
     };
     this.__deletionAdapterOfImageData = new EntityDeletionOrUpdateAdapter<ImageData>(__db) {
@@ -97,7 +102,7 @@ public final class ImageDataDao_Impl implements ImageDataDao {
       @Override
       @NonNull
       protected String createQuery() {
-        return "UPDATE OR ABORT `image_data` SET `hash` = ?,`remark` = ?,`lastKnownPath` = ?,`createdAt` = ?,`updatedAt` = ? WHERE `hash` = ?";
+        return "UPDATE OR ABORT `image_data` SET `hash` = ?,`remark` = ?,`lastKnownPath` = ?,`createdAt` = ?,`updatedAt` = ?,`mediaType` = ? WHERE `hash` = ?";
       }
 
       @Override
@@ -120,10 +125,15 @@ public final class ImageDataDao_Impl implements ImageDataDao {
         }
         statement.bindLong(4, entity.getCreatedAt());
         statement.bindLong(5, entity.getUpdatedAt());
-        if (entity.getHash() == null) {
+        if (entity.getMediaType() == null) {
           statement.bindNull(6);
         } else {
-          statement.bindString(6, entity.getHash());
+          statement.bindString(6, entity.getMediaType());
+        }
+        if (entity.getHash() == null) {
+          statement.bindNull(7);
+        } else {
+          statement.bindString(7, entity.getHash());
         }
       }
     };
@@ -154,7 +164,7 @@ public final class ImageDataDao_Impl implements ImageDataDao {
   }
 
   @Override
-  public Object insert(final ImageData imageData, final Continuation<? super Unit> arg1) {
+  public Object insert(final ImageData imageData, final Continuation<? super Unit> $completion) {
     return CoroutinesRoom.execute(__db, true, new Callable<Unit>() {
       @Override
       @NonNull
@@ -168,11 +178,11 @@ public final class ImageDataDao_Impl implements ImageDataDao {
           __db.endTransaction();
         }
       }
-    }, arg1);
+    }, $completion);
   }
 
   @Override
-  public Object delete(final ImageData imageData, final Continuation<? super Unit> arg1) {
+  public Object delete(final ImageData imageData, final Continuation<? super Unit> $completion) {
     return CoroutinesRoom.execute(__db, true, new Callable<Unit>() {
       @Override
       @NonNull
@@ -186,11 +196,11 @@ public final class ImageDataDao_Impl implements ImageDataDao {
           __db.endTransaction();
         }
       }
-    }, arg1);
+    }, $completion);
   }
 
   @Override
-  public Object update(final ImageData imageData, final Continuation<? super Unit> arg1) {
+  public Object update(final ImageData imageData, final Continuation<? super Unit> $completion) {
     return CoroutinesRoom.execute(__db, true, new Callable<Unit>() {
       @Override
       @NonNull
@@ -204,12 +214,12 @@ public final class ImageDataDao_Impl implements ImageDataDao {
           __db.endTransaction();
         }
       }
-    }, arg1);
+    }, $completion);
   }
 
   @Override
   public Object updateRemark(final String hash, final String remark, final long updatedAt,
-      final Continuation<? super Unit> arg3) {
+      final Continuation<? super Unit> $completion) {
     return CoroutinesRoom.execute(__db, true, new Callable<Unit>() {
       @Override
       @NonNull
@@ -242,12 +252,12 @@ public final class ImageDataDao_Impl implements ImageDataDao {
           __preparedStmtOfUpdateRemark.release(_stmt);
         }
       }
-    }, arg3);
+    }, $completion);
   }
 
   @Override
   public Object updatePath(final String hash, final String path, final long updatedAt,
-      final Continuation<? super Unit> arg3) {
+      final Continuation<? super Unit> $completion) {
     return CoroutinesRoom.execute(__db, true, new Callable<Unit>() {
       @Override
       @NonNull
@@ -280,11 +290,11 @@ public final class ImageDataDao_Impl implements ImageDataDao {
           __preparedStmtOfUpdatePath.release(_stmt);
         }
       }
-    }, arg3);
+    }, $completion);
   }
 
   @Override
-  public Object deleteByHash(final String hash, final Continuation<? super Unit> arg1) {
+  public Object deleteByHash(final String hash, final Continuation<? super Unit> $completion) {
     return CoroutinesRoom.execute(__db, true, new Callable<Unit>() {
       @Override
       @NonNull
@@ -309,11 +319,11 @@ public final class ImageDataDao_Impl implements ImageDataDao {
           __preparedStmtOfDeleteByHash.release(_stmt);
         }
       }
-    }, arg1);
+    }, $completion);
   }
 
   @Override
-  public Object getByHash(final String hash, final Continuation<? super ImageData> arg1) {
+  public Object getByHash(final String hash, final Continuation<? super ImageData> $completion) {
     final String _sql = "SELECT * FROM image_data WHERE hash = ?";
     final RoomSQLiteQuery _statement = RoomSQLiteQuery.acquire(_sql, 1);
     int _argIndex = 1;
@@ -334,6 +344,7 @@ public final class ImageDataDao_Impl implements ImageDataDao {
           final int _cursorIndexOfLastKnownPath = CursorUtil.getColumnIndexOrThrow(_cursor, "lastKnownPath");
           final int _cursorIndexOfCreatedAt = CursorUtil.getColumnIndexOrThrow(_cursor, "createdAt");
           final int _cursorIndexOfUpdatedAt = CursorUtil.getColumnIndexOrThrow(_cursor, "updatedAt");
+          final int _cursorIndexOfMediaType = CursorUtil.getColumnIndexOrThrow(_cursor, "mediaType");
           final ImageData _result;
           if (_cursor.moveToFirst()) {
             final String _tmpHash;
@@ -358,7 +369,13 @@ public final class ImageDataDao_Impl implements ImageDataDao {
             _tmpCreatedAt = _cursor.getLong(_cursorIndexOfCreatedAt);
             final long _tmpUpdatedAt;
             _tmpUpdatedAt = _cursor.getLong(_cursorIndexOfUpdatedAt);
-            _result = new ImageData(_tmpHash,_tmpRemark,_tmpLastKnownPath,_tmpCreatedAt,_tmpUpdatedAt);
+            final String _tmpMediaType;
+            if (_cursor.isNull(_cursorIndexOfMediaType)) {
+              _tmpMediaType = null;
+            } else {
+              _tmpMediaType = _cursor.getString(_cursorIndexOfMediaType);
+            }
+            _result = new ImageData(_tmpHash,_tmpRemark,_tmpLastKnownPath,_tmpCreatedAt,_tmpUpdatedAt,_tmpMediaType);
           } else {
             _result = null;
           }
@@ -368,7 +385,7 @@ public final class ImageDataDao_Impl implements ImageDataDao {
           _statement.release();
         }
       }
-    }, arg1);
+    }, $completion);
   }
 
   @Override
@@ -392,6 +409,7 @@ public final class ImageDataDao_Impl implements ImageDataDao {
           final int _cursorIndexOfLastKnownPath = CursorUtil.getColumnIndexOrThrow(_cursor, "lastKnownPath");
           final int _cursorIndexOfCreatedAt = CursorUtil.getColumnIndexOrThrow(_cursor, "createdAt");
           final int _cursorIndexOfUpdatedAt = CursorUtil.getColumnIndexOrThrow(_cursor, "updatedAt");
+          final int _cursorIndexOfMediaType = CursorUtil.getColumnIndexOrThrow(_cursor, "mediaType");
           final ImageData _result;
           if (_cursor.moveToFirst()) {
             final String _tmpHash;
@@ -416,7 +434,13 @@ public final class ImageDataDao_Impl implements ImageDataDao {
             _tmpCreatedAt = _cursor.getLong(_cursorIndexOfCreatedAt);
             final long _tmpUpdatedAt;
             _tmpUpdatedAt = _cursor.getLong(_cursorIndexOfUpdatedAt);
-            _result = new ImageData(_tmpHash,_tmpRemark,_tmpLastKnownPath,_tmpCreatedAt,_tmpUpdatedAt);
+            final String _tmpMediaType;
+            if (_cursor.isNull(_cursorIndexOfMediaType)) {
+              _tmpMediaType = null;
+            } else {
+              _tmpMediaType = _cursor.getString(_cursorIndexOfMediaType);
+            }
+            _result = new ImageData(_tmpHash,_tmpRemark,_tmpLastKnownPath,_tmpCreatedAt,_tmpUpdatedAt,_tmpMediaType);
           } else {
             _result = null;
           }
@@ -448,6 +472,7 @@ public final class ImageDataDao_Impl implements ImageDataDao {
           final int _cursorIndexOfLastKnownPath = CursorUtil.getColumnIndexOrThrow(_cursor, "lastKnownPath");
           final int _cursorIndexOfCreatedAt = CursorUtil.getColumnIndexOrThrow(_cursor, "createdAt");
           final int _cursorIndexOfUpdatedAt = CursorUtil.getColumnIndexOrThrow(_cursor, "updatedAt");
+          final int _cursorIndexOfMediaType = CursorUtil.getColumnIndexOrThrow(_cursor, "mediaType");
           final List<ImageData> _result = new ArrayList<ImageData>(_cursor.getCount());
           while (_cursor.moveToNext()) {
             final ImageData _item;
@@ -473,7 +498,13 @@ public final class ImageDataDao_Impl implements ImageDataDao {
             _tmpCreatedAt = _cursor.getLong(_cursorIndexOfCreatedAt);
             final long _tmpUpdatedAt;
             _tmpUpdatedAt = _cursor.getLong(_cursorIndexOfUpdatedAt);
-            _item = new ImageData(_tmpHash,_tmpRemark,_tmpLastKnownPath,_tmpCreatedAt,_tmpUpdatedAt);
+            final String _tmpMediaType;
+            if (_cursor.isNull(_cursorIndexOfMediaType)) {
+              _tmpMediaType = null;
+            } else {
+              _tmpMediaType = _cursor.getString(_cursorIndexOfMediaType);
+            }
+            _item = new ImageData(_tmpHash,_tmpRemark,_tmpLastKnownPath,_tmpCreatedAt,_tmpUpdatedAt,_tmpMediaType);
             _result.add(_item);
           }
           return _result;
@@ -504,6 +535,7 @@ public final class ImageDataDao_Impl implements ImageDataDao {
           final int _cursorIndexOfLastKnownPath = CursorUtil.getColumnIndexOrThrow(_cursor, "lastKnownPath");
           final int _cursorIndexOfCreatedAt = CursorUtil.getColumnIndexOrThrow(_cursor, "createdAt");
           final int _cursorIndexOfUpdatedAt = CursorUtil.getColumnIndexOrThrow(_cursor, "updatedAt");
+          final int _cursorIndexOfMediaType = CursorUtil.getColumnIndexOrThrow(_cursor, "mediaType");
           final List<ImageData> _result = new ArrayList<ImageData>(_cursor.getCount());
           while (_cursor.moveToNext()) {
             final ImageData _item;
@@ -529,7 +561,13 @@ public final class ImageDataDao_Impl implements ImageDataDao {
             _tmpCreatedAt = _cursor.getLong(_cursorIndexOfCreatedAt);
             final long _tmpUpdatedAt;
             _tmpUpdatedAt = _cursor.getLong(_cursorIndexOfUpdatedAt);
-            _item = new ImageData(_tmpHash,_tmpRemark,_tmpLastKnownPath,_tmpCreatedAt,_tmpUpdatedAt);
+            final String _tmpMediaType;
+            if (_cursor.isNull(_cursorIndexOfMediaType)) {
+              _tmpMediaType = null;
+            } else {
+              _tmpMediaType = _cursor.getString(_cursorIndexOfMediaType);
+            }
+            _item = new ImageData(_tmpHash,_tmpRemark,_tmpLastKnownPath,_tmpCreatedAt,_tmpUpdatedAt,_tmpMediaType);
             _result.add(_item);
           }
           return _result;
@@ -566,6 +604,7 @@ public final class ImageDataDao_Impl implements ImageDataDao {
           final int _cursorIndexOfLastKnownPath = CursorUtil.getColumnIndexOrThrow(_cursor, "lastKnownPath");
           final int _cursorIndexOfCreatedAt = CursorUtil.getColumnIndexOrThrow(_cursor, "createdAt");
           final int _cursorIndexOfUpdatedAt = CursorUtil.getColumnIndexOrThrow(_cursor, "updatedAt");
+          final int _cursorIndexOfMediaType = CursorUtil.getColumnIndexOrThrow(_cursor, "mediaType");
           final List<ImageData> _result = new ArrayList<ImageData>(_cursor.getCount());
           while (_cursor.moveToNext()) {
             final ImageData _item;
@@ -591,7 +630,13 @@ public final class ImageDataDao_Impl implements ImageDataDao {
             _tmpCreatedAt = _cursor.getLong(_cursorIndexOfCreatedAt);
             final long _tmpUpdatedAt;
             _tmpUpdatedAt = _cursor.getLong(_cursorIndexOfUpdatedAt);
-            _item = new ImageData(_tmpHash,_tmpRemark,_tmpLastKnownPath,_tmpCreatedAt,_tmpUpdatedAt);
+            final String _tmpMediaType;
+            if (_cursor.isNull(_cursorIndexOfMediaType)) {
+              _tmpMediaType = null;
+            } else {
+              _tmpMediaType = _cursor.getString(_cursorIndexOfMediaType);
+            }
+            _item = new ImageData(_tmpHash,_tmpRemark,_tmpLastKnownPath,_tmpCreatedAt,_tmpUpdatedAt,_tmpMediaType);
             _result.add(_item);
           }
           return _result;

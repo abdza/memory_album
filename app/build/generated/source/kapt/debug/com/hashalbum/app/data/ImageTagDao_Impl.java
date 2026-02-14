@@ -70,7 +70,8 @@ public final class ImageTagDao_Impl implements ImageTagDao {
   }
 
   @Override
-  public Object insertTags(final List<ImageTag> tags, final Continuation<? super Unit> arg1) {
+  public Object insertTags(final List<ImageTag> tags,
+      final Continuation<? super Unit> $completion) {
     return CoroutinesRoom.execute(__db, true, new Callable<Unit>() {
       @Override
       @NonNull
@@ -84,12 +85,12 @@ public final class ImageTagDao_Impl implements ImageTagDao {
           __db.endTransaction();
         }
       }
-    }, arg1);
+    }, $completion);
   }
 
   @Override
   public Object deleteTag(final String hash, final String tag,
-      final Continuation<? super Unit> arg2) {
+      final Continuation<? super Unit> $completion) {
     return CoroutinesRoom.execute(__db, true, new Callable<Unit>() {
       @Override
       @NonNull
@@ -120,12 +121,12 @@ public final class ImageTagDao_Impl implements ImageTagDao {
           __preparedStmtOfDeleteTag.release(_stmt);
         }
       }
-    }, arg2);
+    }, $completion);
   }
 
   @Override
   public Object getTagsForHashSync(final String hash,
-      final Continuation<? super List<ImageTag>> arg1) {
+      final Continuation<? super List<ImageTag>> $completion) {
     final String _sql = "SELECT * FROM image_tags WHERE hash = ?";
     final RoomSQLiteQuery _statement = RoomSQLiteQuery.acquire(_sql, 1);
     int _argIndex = 1;
@@ -170,11 +171,12 @@ public final class ImageTagDao_Impl implements ImageTagDao {
           _statement.release();
         }
       }
-    }, arg1);
+    }, $completion);
   }
 
   @Override
-  public Object searchByTag(final String query, final Continuation<? super List<String>> arg1) {
+  public Object searchByTag(final String query,
+      final Continuation<? super List<String>> $completion) {
     final String _sql = "SELECT DISTINCT hash FROM image_tags WHERE tag LIKE '%' || ? || '%'";
     final RoomSQLiteQuery _statement = RoomSQLiteQuery.acquire(_sql, 1);
     int _argIndex = 1;
@@ -206,7 +208,7 @@ public final class ImageTagDao_Impl implements ImageTagDao {
           _statement.release();
         }
       }
-    }, arg1);
+    }, $completion);
   }
 
   @NonNull

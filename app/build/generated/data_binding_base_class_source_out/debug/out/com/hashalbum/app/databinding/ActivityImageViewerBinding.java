@@ -56,6 +56,12 @@ public final class ActivityImageViewerBinding implements ViewBinding {
   public final TextView dateTakenValue;
 
   @NonNull
+  public final LinearLayout durationRow;
+
+  @NonNull
+  public final TextView durationValue;
+
+  @NonNull
   public final MaterialButton editRemarkButton;
 
   @NonNull
@@ -135,7 +141,8 @@ public final class ActivityImageViewerBinding implements ViewBinding {
       @NonNull LinearLayout cameraRow, @NonNull TextView cameraValue,
       @NonNull ImageButton closeButton, @NonNull ChipGroup contactChipGroup,
       @NonNull LinearLayout contactsSection, @NonNull LinearLayout dateRow,
-      @NonNull TextView dateTakenValue, @NonNull MaterialButton editRemarkButton,
+      @NonNull TextView dateTakenValue, @NonNull LinearLayout durationRow,
+      @NonNull TextView durationValue, @NonNull MaterialButton editRemarkButton,
       @NonNull LinearLayout fileSizeRow, @NonNull TextView fileSizeValue,
       @NonNull TextView imageCounter, @NonNull LinearLayout locationRow,
       @NonNull TextView locationValue, @NonNull LinearLayout metadataSection,
@@ -158,6 +165,8 @@ public final class ActivityImageViewerBinding implements ViewBinding {
     this.contactsSection = contactsSection;
     this.dateRow = dateRow;
     this.dateTakenValue = dateTakenValue;
+    this.durationRow = durationRow;
+    this.durationValue = durationValue;
     this.editRemarkButton = editRemarkButton;
     this.fileSizeRow = fileSizeRow;
     this.fileSizeValue = fileSizeValue;
@@ -263,6 +272,18 @@ public final class ActivityImageViewerBinding implements ViewBinding {
       id = R.id.dateTakenValue;
       TextView dateTakenValue = ViewBindings.findChildViewById(rootView, id);
       if (dateTakenValue == null) {
+        break missingId;
+      }
+
+      id = R.id.durationRow;
+      LinearLayout durationRow = ViewBindings.findChildViewById(rootView, id);
+      if (durationRow == null) {
+        break missingId;
+      }
+
+      id = R.id.durationValue;
+      TextView durationValue = ViewBindings.findChildViewById(rootView, id);
+      if (durationValue == null) {
         break missingId;
       }
 
@@ -418,9 +439,9 @@ public final class ActivityImageViewerBinding implements ViewBinding {
 
       return new ActivityImageViewerBinding((FrameLayout) rootView, addContactsButton,
           addTagsButton, cameraRow, cameraValue, closeButton, contactChipGroup, contactsSection,
-          dateRow, dateTakenValue, editRemarkButton, fileSizeRow, fileSizeValue, imageCounter,
-          locationRow, locationValue, metadataSection, noRemarkText, remarkDisplay,
-          remarkDisplayContainer, remarkEditContainer, remarkIndicator, remarkInput,
+          dateRow, dateTakenValue, durationRow, durationValue, editRemarkButton, fileSizeRow,
+          fileSizeValue, imageCounter, locationRow, locationValue, metadataSection, noRemarkText,
+          remarkDisplay, remarkDisplayContainer, remarkEditContainer, remarkIndicator, remarkInput,
           remarkInputLayout, remarkLabel, remarkPanel, remarkPanelHandle, resolutionRow,
           resolutionValue, saveRemarkButton, swipeHint, tagChipGroup, tagsSection, topBar,
           viewPager);

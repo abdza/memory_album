@@ -11,6 +11,7 @@ import com.hashalbum.app.R
 import com.hashalbum.app.data.GalleryImage
 import com.hashalbum.app.data.GalleryItem
 import com.hashalbum.app.data.ImageData
+import com.hashalbum.app.data.MediaType
 import com.hashalbum.app.data.ImageRepository
 import com.hashalbum.app.data.PathInfo
 import com.hashalbum.app.data.SearchResultItem
@@ -57,6 +58,10 @@ class GalleryViewModel(application: Application) : AndroidViewModel(application)
 
     private val hashCache = mutableMapOf<Uri, String>()
 
+    private fun isVideoUri(uri: Uri): Boolean {
+        return uri.toString().contains("/video/")
+    }
+
     init {
         val database = (application as HashAlbumApp).database
         repository = ImageRepository(database.imageDataDao(), database.imagePathDao(), database.imageTagDao(), database.contactDao())
@@ -67,7 +72,7 @@ class GalleryViewModel(application: Application) : AndroidViewModel(application)
             _isLoading.value = true
             _currentBucket.value = null
 
-            val loadedImages = MediaStoreHelper.loadAllImages(getApplication())
+            val loadedImages = MediaStoreHelper.loadAllMedia(getApplication())
             _images.value = loadedImages
             _galleryItems.value = groupImagesByDate(loadedImages)
 
@@ -101,9 +106,13 @@ class GalleryViewModel(application: Application) : AndroidViewModel(application)
         }
     }
 
-    suspend fun getImageHash(uri: Uri): String? {
+    suspend fun getImageHash(uri: Uri, isVideo: Boolean = false): String? {
         return hashCache[uri] ?: run {
-            val hash = ImageHasher.generateHash(getApplication(), uri)
+            val hash = if (isVideo) {
+                ImageHasher.generateQuickHash(getApplication(), uri)
+            } else {
+                ImageHasher.generateHash(getApplication(), uri)
+            }
             hash?.let { hashCache[uri] = it }
             hash
         }
@@ -114,45 +123,46 @@ class GalleryViewModel(application: Application) : AndroidViewModel(application)
     }
 
     suspend fun saveRemark(uri: Uri, remark: String) {
-        val hash = getImageHash(uri) ?: return
-        repository.saveOrUpdateRemark(hash, remark, uri.toString())
+        val isVideo = isVideoUri(uri)
+        val hash = getImageHash(uri, isVideo) ?: return
+        repository.saveOrUpdateRemark(hash, remark, uri.toString(), if (isVideo) "video" else "image")
     }
 
     suspend fun hasRemark(uri: Uri): Boolean {
-        val hash = getImageHash(uri) ?: return false
+        val hash = getImageHash(uri, isVideoUri(uri)) ?: return false
         val imageData = repository.getByHash(hash)
         return !imageData?.remark.isNullOrBlank()
     }
 
     suspend fun getRemark(uri: Uri): String {
-        val hash = getImageHash(uri) ?: return ""
+        val hash = getImageHash(uri, isVideoUri(uri)) ?: return ""
         return repository.getByHash(hash)?.remark ?: ""
     }
 
     suspend fun trackImagePath(uri: Uri) {
-        val hash = getImageHash(uri) ?: return
-        repository.addOrUpdatePath(hash, uri.toString())
+        val isVideo = isVideoUri(uri)
+        val hash = getImageHash(uri, isVideo) ?: return
+        repository.addOrUpdatePath(hash, uri.toString(), if (isVideo) "video" else "image")
     }
 
     suspend fun getTagsForImage(uri: Uri): List<String> {
-        val hash = getImageHash(uri) ?: return emptyList()
+        val hash = getImageHash(uri, isVideoUri(uri)) ?: return emptyList()
         return repository.getTagsForHashSync(hash)
     }
 
     suspend fun addTagsToImage(uri: Uri, tags: List<String>) {
-        val hash = getImageHash(uri) ?: return
-        // Ensure ImageData row exists
+        val isVideo = isVideoUri(uri)
+        val hash = getImageHash(uri, isVideo) ?: return
         val existing = repository.getByHash(hash)
         if (existing == null) {
-            repository.insert(ImageData(hash = hash, lastKnownPath = uri.toString()))
+            repository.insert(ImageData(hash = hash, lastKnownPath = uri.toString(), mediaType = if (isVideo) "video" else "image"))
         }
-        // Ensure path is tracked so search results can show thumbnail
         repository.addOrUpdatePath(hash, uri.toString())
         repository.addTagsToImage(hash, tags)
     }
 
     suspend fun removeTagFromImage(uri: Uri, tag: String) {
-        val hash = getImageHash(uri) ?: return
+        val hash = getImageHash(uri, isVideoUri(uri)) ?: return
         repository.removeTagFromImage(hash, tag)
     }
 
@@ -309,22 +319,23 @@ class GalleryViewModel(application: Application) : AndroidViewModel(application)
     }
 
     suspend fun getContactsForImage(uri: Uri): List<com.hashalbum.app.data.Contact> {
-        val hash = getImageHash(uri) ?: return emptyList()
+        val hash = getImageHash(uri, isVideoUri(uri)) ?: return emptyList()
         return repository.getContactsForImage(hash)
     }
 
     suspend fun addContactsToImage(uri: Uri, names: List<String>) {
-        val hash = getImageHash(uri) ?: return
+        val isVideo = isVideoUri(uri)
+        val hash = getImageHash(uri, isVideo) ?: return
         val existing = repository.getByHash(hash)
         if (existing == null) {
-            repository.insert(ImageData(hash = hash, lastKnownPath = uri.toString()))
+            repository.insert(ImageData(hash = hash, lastKnownPath = uri.toString(), mediaType = if (isVideo) "video" else "image"))
         }
         repository.addOrUpdatePath(hash, uri.toString())
         repository.addContactsToImage(hash, names)
     }
 
     suspend fun removeContactFromImage(uri: Uri, contactId: Long) {
-        val hash = getImageHash(uri) ?: return
+        val hash = getImageHash(uri, isVideoUri(uri)) ?: return
         repository.removeContactFromImage(hash, contactId)
     }
 

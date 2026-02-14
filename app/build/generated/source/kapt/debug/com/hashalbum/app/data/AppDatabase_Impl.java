@@ -38,17 +38,17 @@ public final class AppDatabase_Impl extends AppDatabase {
   @Override
   @NonNull
   protected SupportSQLiteOpenHelper createOpenHelper(@NonNull final DatabaseConfiguration config) {
-    final SupportSQLiteOpenHelper.Callback _openCallback = new RoomOpenHelper(config, new RoomOpenHelper.Delegate(4) {
+    final SupportSQLiteOpenHelper.Callback _openCallback = new RoomOpenHelper(config, new RoomOpenHelper.Delegate(5) {
       @Override
       public void createAllTables(@NonNull final SupportSQLiteDatabase db) {
-        db.execSQL("CREATE TABLE IF NOT EXISTS `image_data` (`hash` TEXT NOT NULL, `remark` TEXT NOT NULL, `lastKnownPath` TEXT NOT NULL, `createdAt` INTEGER NOT NULL, `updatedAt` INTEGER NOT NULL, PRIMARY KEY(`hash`))");
+        db.execSQL("CREATE TABLE IF NOT EXISTS `image_data` (`hash` TEXT NOT NULL, `remark` TEXT NOT NULL, `lastKnownPath` TEXT NOT NULL, `createdAt` INTEGER NOT NULL, `updatedAt` INTEGER NOT NULL, `mediaType` TEXT NOT NULL, PRIMARY KEY(`hash`))");
         db.execSQL("CREATE TABLE IF NOT EXISTS `image_paths` (`hash` TEXT NOT NULL, `path` TEXT NOT NULL, `lastSeen` INTEGER NOT NULL, `isValid` INTEGER NOT NULL, PRIMARY KEY(`hash`, `path`), FOREIGN KEY(`hash`) REFERENCES `image_data`(`hash`) ON UPDATE NO ACTION ON DELETE CASCADE )");
         db.execSQL("CREATE TABLE IF NOT EXISTS `image_tags` (`hash` TEXT NOT NULL, `tag` TEXT NOT NULL, `createdAt` INTEGER NOT NULL, PRIMARY KEY(`hash`, `tag`), FOREIGN KEY(`hash`) REFERENCES `image_data`(`hash`) ON UPDATE NO ACTION ON DELETE CASCADE )");
         db.execSQL("CREATE TABLE IF NOT EXISTS `contacts` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `name` TEXT NOT NULL, `createdAt` INTEGER NOT NULL)");
         db.execSQL("CREATE TABLE IF NOT EXISTS `image_contacts` (`hash` TEXT NOT NULL, `contactId` INTEGER NOT NULL, `createdAt` INTEGER NOT NULL, PRIMARY KEY(`hash`, `contactId`), FOREIGN KEY(`hash`) REFERENCES `image_data`(`hash`) ON UPDATE NO ACTION ON DELETE CASCADE , FOREIGN KEY(`contactId`) REFERENCES `contacts`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )");
         db.execSQL("CREATE INDEX IF NOT EXISTS `index_image_contacts_contactId` ON `image_contacts` (`contactId`)");
         db.execSQL("CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)");
-        db.execSQL("INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'a60a105e0d6f18872adf7f8818129dc4')");
+        db.execSQL("INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'db451dd27a02b18fb6e108700bb25a6a')");
       }
 
       @Override
@@ -102,12 +102,13 @@ public final class AppDatabase_Impl extends AppDatabase {
       @NonNull
       public RoomOpenHelper.ValidationResult onValidateSchema(
           @NonNull final SupportSQLiteDatabase db) {
-        final HashMap<String, TableInfo.Column> _columnsImageData = new HashMap<String, TableInfo.Column>(5);
+        final HashMap<String, TableInfo.Column> _columnsImageData = new HashMap<String, TableInfo.Column>(6);
         _columnsImageData.put("hash", new TableInfo.Column("hash", "TEXT", true, 1, null, TableInfo.CREATED_FROM_ENTITY));
         _columnsImageData.put("remark", new TableInfo.Column("remark", "TEXT", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
         _columnsImageData.put("lastKnownPath", new TableInfo.Column("lastKnownPath", "TEXT", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
         _columnsImageData.put("createdAt", new TableInfo.Column("createdAt", "INTEGER", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
         _columnsImageData.put("updatedAt", new TableInfo.Column("updatedAt", "INTEGER", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
+        _columnsImageData.put("mediaType", new TableInfo.Column("mediaType", "TEXT", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
         final HashSet<TableInfo.ForeignKey> _foreignKeysImageData = new HashSet<TableInfo.ForeignKey>(0);
         final HashSet<TableInfo.Index> _indicesImageData = new HashSet<TableInfo.Index>(0);
         final TableInfo _infoImageData = new TableInfo("image_data", _columnsImageData, _foreignKeysImageData, _indicesImageData);
@@ -177,7 +178,7 @@ public final class AppDatabase_Impl extends AppDatabase {
         }
         return new RoomOpenHelper.ValidationResult(true, null);
       }
-    }, "a60a105e0d6f18872adf7f8818129dc4", "de97f569f3d2f2a66fb2a452a223ba96");
+    }, "db451dd27a02b18fb6e108700bb25a6a", "2775e139c98e4013dff2657995042fef");
     final SupportSQLiteOpenHelper.Configuration _sqliteConfig = SupportSQLiteOpenHelper.Configuration.builder(config.context).name(config.name).callback(_openCallback).build();
     final SupportSQLiteOpenHelper _helper = config.sqliteOpenHelperFactory.create(_sqliteConfig);
     return _helper;

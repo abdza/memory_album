@@ -15,5 +15,6 @@ data class ImageData(
     val remark: String = "",    // User's remark/note for this image
     val lastKnownPath: String = "", // Last known file path (for reference)
     val createdAt: Long = System.currentTimeMillis(),
-    val updatedAt: Long = System.currentTimeMillis()
+    val updatedAt: Long = System.currentTimeMillis(),
+    val mediaType: String = "image"
 )

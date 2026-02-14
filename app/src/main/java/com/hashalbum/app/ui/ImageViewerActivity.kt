@@ -24,6 +24,7 @@ import com.google.android.material.chip.Chip
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.hashalbum.app.R
 import com.hashalbum.app.data.Contact
+import com.hashalbum.app.data.MediaType
 import com.hashalbum.app.databinding.ActivityImageViewerBinding
 import android.text.Editable
 import android.text.TextWatcher
@@ -42,6 +43,8 @@ class ImageViewerActivity : AppCompatActivity() {
     companion object {
         const val EXTRA_IMAGE_POSITION = "extra_image_position"
         const val EXTRA_IMAGE_URIS = "extra_image_uris"
+        const val EXTRA_MEDIA_TYPES = "extra_media_types"
+        const val EXTRA_DURATIONS = "extra_durations"
         private const val SWIPE_THRESHOLD = 100
         private const val SWIPE_VELOCITY_THRESHOLD = 100
     }
@@ -49,7 +52,8 @@ class ImageViewerActivity : AppCompatActivity() {
     private lateinit var binding: ActivityImageViewerBinding
     private val viewModel: GalleryViewModel by viewModels()
     
-    private lateinit var imageAdapter: ImagePagerAdapter
+    private lateinit var mediaAdapter: MediaPagerAdapter
+    private var mediaItems: List<MediaPagerAdapter.MediaItem> = emptyList()
     private var imageUris: List<Uri> = emptyList()
     private var currentPosition = 0
     
@@ -89,17 +93,34 @@ class ImageViewerActivity : AppCompatActivity() {
     private fun parseIntent() {
         currentPosition = intent.getIntExtra(EXTRA_IMAGE_POSITION, 0)
         val uriStrings = intent.getStringArrayListExtra(EXTRA_IMAGE_URIS) ?: arrayListOf()
+        val mediaTypeStrings = intent.getStringArrayListExtra(EXTRA_MEDIA_TYPES)
+        val durations = intent.getStringArrayListExtra(EXTRA_DURATIONS)
+
         imageUris = uriStrings.map { Uri.parse(it) }
+        mediaItems = uriStrings.mapIndexed { index, uriStr ->
+            val explicitType = mediaTypeStrings?.getOrNull(index)
+            val mediaType = when {
+                explicitType == "video" -> MediaType.VIDEO
+                uriStr.contains("/video/") -> MediaType.VIDEO
+                else -> MediaType.IMAGE
+            }
+            val duration = durations?.getOrNull(index)?.toLongOrNull() ?: 0L
+            MediaPagerAdapter.MediaItem(
+                uri = Uri.parse(uriStr),
+                mediaType = mediaType,
+                duration = duration
+            )
+        }
     }
     
     private fun setupViewPager() {
-        imageAdapter = ImagePagerAdapter(imageUris) { position ->
+        mediaAdapter = MediaPagerAdapter(mediaItems) { position ->
             // Single tap - toggle UI visibility
             toggleUiVisibility()
         }
         
         binding.viewPager.apply {
-            adapter = imageAdapter
+            adapter = mediaAdapter
             setCurrentItem(currentPosition, false)
             
             registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
@@ -534,6 +555,15 @@ class ImageViewerActivity : AppCompatActivity() {
             hasAnyMetadata = true
         } else {
             binding.fileSizeRow.visibility = View.GONE
+        }
+
+        // Duration (videos)
+        if (metadata.duration != null) {
+            binding.durationValue.text = metadata.duration
+            binding.durationRow.visibility = View.VISIBLE
+            hasAnyMetadata = true
+        } else {
+            binding.durationRow.visibility = View.GONE
         }
 
         // Show/hide metadata section

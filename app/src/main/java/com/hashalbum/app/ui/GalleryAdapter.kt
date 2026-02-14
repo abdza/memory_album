@@ -17,6 +17,7 @@ import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.hashalbum.app.R
 import com.hashalbum.app.data.GalleryImage
 import com.hashalbum.app.data.GalleryItem
+import com.hashalbum.app.data.MediaType
 
 class GalleryAdapter(
     private val onImageClick: (GalleryImage, Int) -> Unit,
@@ -120,6 +121,8 @@ class GalleryAdapter(
         private val overlayRemark: TextView = itemView.findViewById(R.id.overlayRemark)
         private val overlayTags: TextView = itemView.findViewById(R.id.overlayTags)
         private val overlayContacts: TextView = itemView.findViewById(R.id.overlayContacts)
+        private val playIcon: View = itemView.findViewById(R.id.playIcon)
+        private val durationBadge: TextView = itemView.findViewById(R.id.durationBadge)
 
         fun bind(image: GalleryImage, position: Int) {
             Glide.with(itemView.context)
@@ -130,6 +133,16 @@ class GalleryAdapter(
                 .transition(DrawableTransitionOptions.withCrossFade())
                 .placeholder(R.drawable.placeholder_image)
                 .into(imageView)
+
+            // Video indicators
+            if (image.mediaType == MediaType.VIDEO) {
+                playIcon.visibility = View.VISIBLE
+                durationBadge.visibility = View.VISIBLE
+                durationBadge.text = formatDuration(image.duration)
+            } else {
+                playIcon.visibility = View.GONE
+                durationBadge.visibility = View.GONE
+            }
 
             // Hide remark indicator by default - will be shown after hash check
             remarkIndicator.visibility = View.GONE
@@ -218,6 +231,18 @@ class GalleryAdapter(
 
         fun hideInfoOverlay() {
             infoOverlay.visibility = View.GONE
+        }
+    }
+
+    private fun formatDuration(millis: Long): String {
+        val totalSeconds = millis / 1000
+        val hours = totalSeconds / 3600
+        val minutes = (totalSeconds % 3600) / 60
+        val seconds = totalSeconds % 60
+        return if (hours > 0) {
+            String.format("%d:%02d:%02d", hours, minutes, seconds)
+        } else {
+            String.format("%d:%02d", minutes, seconds)
         }
     }
 

@@ -13,6 +13,7 @@ import com.hashalbum.app.HashAlbumApp
 import com.hashalbum.app.R
 import com.hashalbum.app.data.ContactWithCount
 import com.hashalbum.app.data.GalleryImage
+import com.hashalbum.app.data.MediaType
 import com.hashalbum.app.data.GalleryItem
 import com.hashalbum.app.data.ImageRepository
 import com.hashalbum.app.databinding.ActivityContactsBinding
@@ -69,10 +70,16 @@ class ContactsActivity : AppCompatActivity() {
             onImageClick = { image, _ ->
                 val imageItems = galleryAdapter.currentList.filterIsInstance<GalleryItem.ImageItem>()
                 val imageUris = ArrayList(imageItems.map { it.image.uri.toString() })
+                val mediaTypes = ArrayList(imageItems.map {
+                    if (it.image.mediaType == MediaType.VIDEO) "video" else "image"
+                })
+                val durations = ArrayList(imageItems.map { it.image.duration.toString() })
                 val imagePosition = imageItems.indexOfFirst { it.image.uri == image.uri }
                 val intent = Intent(this, ImageViewerActivity::class.java).apply {
                     putExtra(ImageViewerActivity.EXTRA_IMAGE_POSITION, imagePosition.coerceAtLeast(0))
                     putStringArrayListExtra(ImageViewerActivity.EXTRA_IMAGE_URIS, imageUris)
+                    putStringArrayListExtra(ImageViewerActivity.EXTRA_MEDIA_TYPES, mediaTypes)
+                    putStringArrayListExtra(ImageViewerActivity.EXTRA_DURATIONS, durations)
                 }
                 startActivity(intent)
             }

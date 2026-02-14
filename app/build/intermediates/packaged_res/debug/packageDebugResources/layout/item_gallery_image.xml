@@ -14,6 +14,33 @@
         android:background="@color/placeholder_bg"
         tools:src="@drawable/placeholder_image" />
 
+    <!-- Video play icon overlay -->
+    <ImageView
+        android:id="@+id/playIcon"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:layout_gravity="center"
+        android:src="@drawable/ic_play_circle"
+        android:contentDescription="@string/play"
+        android:visibility="gone" />
+
+    <!-- Video duration badge -->
+    <TextView
+        android:id="@+id/durationBadge"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="4dp"
+        android:background="#80000000"
+        android:paddingStart="4dp"
+        android:paddingEnd="4dp"
+        android:paddingTop="1dp"
+        android:paddingBottom="1dp"
+        android:textColor="@android:color/white"
+        android:textSize="10sp"
+        android:visibility="gone"
+        tools:text="1:23" />
+
     <!-- Remark indicator badge -->
     <View
         android:id="@+id/remarkIndicator"

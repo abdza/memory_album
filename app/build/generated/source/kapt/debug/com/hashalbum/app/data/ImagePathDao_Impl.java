@@ -103,7 +103,8 @@ public final class ImagePathDao_Impl implements ImagePathDao {
   }
 
   @Override
-  public Object insertPath(final ImagePath imagePath, final Continuation<? super Unit> arg1) {
+  public Object insertPath(final ImagePath imagePath,
+      final Continuation<? super Unit> $completion) {
     return CoroutinesRoom.execute(__db, true, new Callable<Unit>() {
       @Override
       @NonNull
@@ -117,12 +118,12 @@ public final class ImagePathDao_Impl implements ImagePathDao {
           __db.endTransaction();
         }
       }
-    }, arg1);
+    }, $completion);
   }
 
   @Override
   public Object updateLastSeen(final String hash, final String path, final long lastSeen,
-      final Continuation<? super Unit> arg3) {
+      final Continuation<? super Unit> $completion) {
     return CoroutinesRoom.execute(__db, true, new Callable<Unit>() {
       @Override
       @NonNull
@@ -155,12 +156,12 @@ public final class ImagePathDao_Impl implements ImagePathDao {
           __preparedStmtOfUpdateLastSeen.release(_stmt);
         }
       }
-    }, arg3);
+    }, $completion);
   }
 
   @Override
   public Object updateValidity(final String hash, final String path, final boolean isValid,
-      final Continuation<? super Unit> arg3) {
+      final Continuation<? super Unit> $completion) {
     return CoroutinesRoom.execute(__db, true, new Callable<Unit>() {
       @Override
       @NonNull
@@ -194,12 +195,12 @@ public final class ImagePathDao_Impl implements ImagePathDao {
           __preparedStmtOfUpdateValidity.release(_stmt);
         }
       }
-    }, arg3);
+    }, $completion);
   }
 
   @Override
   public Object deletePath(final String hash, final String path,
-      final Continuation<? super Unit> arg2) {
+      final Continuation<? super Unit> $completion) {
     return CoroutinesRoom.execute(__db, true, new Callable<Unit>() {
       @Override
       @NonNull
@@ -230,12 +231,12 @@ public final class ImagePathDao_Impl implements ImagePathDao {
           __preparedStmtOfDeletePath.release(_stmt);
         }
       }
-    }, arg2);
+    }, $completion);
   }
 
   @Override
   public Object deleteStaleInvalidPaths(final long cutoffTime,
-      final Continuation<? super Unit> arg1) {
+      final Continuation<? super Unit> $completion) {
     return CoroutinesRoom.execute(__db, true, new Callable<Unit>() {
       @Override
       @NonNull
@@ -256,7 +257,7 @@ public final class ImagePathDao_Impl implements ImagePathDao {
           __preparedStmtOfDeleteStaleInvalidPaths.release(_stmt);
         }
       }
-    }, arg1);
+    }, $completion);
   }
 
   @Override
@@ -318,7 +319,7 @@ public final class ImagePathDao_Impl implements ImagePathDao {
 
   @Override
   public Object getPathsForHashSync(final String hash,
-      final Continuation<? super List<ImagePath>> arg1) {
+      final Continuation<? super List<ImagePath>> $completion) {
     final String _sql = "SELECT * FROM image_paths WHERE hash = ?";
     final RoomSQLiteQuery _statement = RoomSQLiteQuery.acquire(_sql, 1);
     int _argIndex = 1;
@@ -368,7 +369,7 @@ public final class ImagePathDao_Impl implements ImagePathDao {
           _statement.release();
         }
       }
-    }, arg1);
+    }, $completion);
   }
 
   @Override
@@ -423,7 +424,7 @@ public final class ImagePathDao_Impl implements ImagePathDao {
   }
 
   @Override
-  public Object getAllPathsSync(final Continuation<? super List<ImagePath>> arg0) {
+  public Object getAllPathsSync(final Continuation<? super List<ImagePath>> $completion) {
     final String _sql = "SELECT * FROM image_paths";
     final RoomSQLiteQuery _statement = RoomSQLiteQuery.acquire(_sql, 0);
     final CancellationSignal _cancellationSignal = DBUtil.createCancellationSignal();
@@ -467,7 +468,7 @@ public final class ImagePathDao_Impl implements ImagePathDao {
           _statement.release();
         }
       }
-    }, arg0);
+    }, $completion);
   }
 
   @NonNull

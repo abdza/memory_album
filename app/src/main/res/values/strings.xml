@@ -50,4 +50,8 @@
     <string name="no_phone_contacts">No contacts found on device</string>
     <string name="contacts_permission_needed">Contacts permission needed to select from phone contacts</string>
     <string name="search_contacts">Search contacts…</string>
+    <string name="video">Video</string>
+    <string name="play">Play</string>
+    <string name="pause">Pause</string>
+    <string name="duration">Duration</string>
 </resources>

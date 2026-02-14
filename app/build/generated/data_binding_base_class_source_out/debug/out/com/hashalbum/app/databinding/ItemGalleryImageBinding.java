@@ -25,6 +25,9 @@ public final class ItemGalleryImageBinding implements ViewBinding {
   public final ImageView checkIcon;
 
   @NonNull
+  public final TextView durationBadge;
+
+  @NonNull
   public final ImageView imageView;
 
   @NonNull
@@ -40,23 +43,28 @@ public final class ItemGalleryImageBinding implements ViewBinding {
   public final TextView overlayTags;
 
   @NonNull
+  public final ImageView playIcon;
+
+  @NonNull
   public final View remarkIndicator;
 
   @NonNull
   public final View selectionOverlay;
 
   private ItemGalleryImageBinding(@NonNull FrameLayout rootView, @NonNull ImageView checkIcon,
-      @NonNull ImageView imageView, @NonNull LinearLayout infoOverlay,
-      @NonNull TextView overlayContacts, @NonNull TextView overlayRemark,
-      @NonNull TextView overlayTags, @NonNull View remarkIndicator,
-      @NonNull View selectionOverlay) {
+      @NonNull TextView durationBadge, @NonNull ImageView imageView,
+      @NonNull LinearLayout infoOverlay, @NonNull TextView overlayContacts,
+      @NonNull TextView overlayRemark, @NonNull TextView overlayTags, @NonNull ImageView playIcon,
+      @NonNull View remarkIndicator, @NonNull View selectionOverlay) {
     this.rootView = rootView;
     this.checkIcon = checkIcon;
+    this.durationBadge = durationBadge;
     this.imageView = imageView;
     this.infoOverlay = infoOverlay;
     this.overlayContacts = overlayContacts;
     this.overlayRemark = overlayRemark;
     this.overlayTags = overlayTags;
+    this.playIcon = playIcon;
     this.remarkIndicator = remarkIndicator;
     this.selectionOverlay = selectionOverlay;
   }
@@ -94,6 +102,12 @@ public final class ItemGalleryImageBinding implements ViewBinding {
         break missingId;
       }
 
+      id = R.id.durationBadge;
+      TextView durationBadge = ViewBindings.findChildViewById(rootView, id);
+      if (durationBadge == null) {
+        break missingId;
+      }
+
       id = R.id.imageView;
       ImageView imageView = ViewBindings.findChildViewById(rootView, id);
       if (imageView == null) {
@@ -124,6 +138,12 @@ public final class ItemGalleryImageBinding implements ViewBinding {
         break missingId;
       }
 
+      id = R.id.playIcon;
+      ImageView playIcon = ViewBindings.findChildViewById(rootView, id);
+      if (playIcon == null) {
+        break missingId;
+      }
+
       id = R.id.remarkIndicator;
       View remarkIndicator = ViewBindings.findChildViewById(rootView, id);
       if (remarkIndicator == null) {
@@ -136,8 +156,9 @@ public final class ItemGalleryImageBinding implements ViewBinding {
         break missingId;
       }
 
-      return new ItemGalleryImageBinding((FrameLayout) rootView, checkIcon, imageView, infoOverlay,
-          overlayContacts, overlayRemark, overlayTags, remarkIndicator, selectionOverlay);
+      return new ItemGalleryImageBinding((FrameLayout) rootView, checkIcon, durationBadge,
+          imageView, infoOverlay, overlayContacts, overlayRemark, overlayTags, playIcon,
+          remarkIndicator, selectionOverlay);
     }
     String missingId = rootView.getResources().getResourceName(id);
     throw new NullPointerException("Missing required view with ID: ".concat(missingId));

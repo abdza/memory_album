@@ -24,6 +24,7 @@ drawable ic_launcher_background
 drawable ic_launcher_foreground
 drawable ic_menu
 drawable ic_note
+drawable ic_play_circle
 drawable ic_remark
 drawable ic_swipe_up
 drawable ic_tag
@@ -57,6 +58,9 @@ id dateHeaderText
 id dateRow
 id dateTakenValue
 id drawerLayout
+id durationBadge
+id durationRow
+id durationValue
 id editRemarkButton
 id emptyView
 id fabJumpToDate
@@ -77,6 +81,8 @@ id overlayTags
 id pathListContainer
 id pathSummary
 id pathText
+id playIcon
+id playPauseButton
 id progressBar
 id recyclerView
 id remarkDisplay
@@ -106,6 +112,7 @@ id tagsSection
 id togglePaths
 id toolbar
 id topBar
+id videoView
 id viewPager
 layout activity_contacts
 layout activity_image_viewer
@@ -117,6 +124,7 @@ layout item_gallery_image
 layout item_image_pager
 layout item_path
 layout item_search_result
+layout item_video_pager
 menu menu_main
 mipmap ic_launcher
 mipmap ic_launcher_round
@@ -134,6 +142,7 @@ string contacts
 string contacts_added
 string contacts_permission_needed
 string date_taken
+string duration
 string edit
 string enter_contacts
 string enter_remark
@@ -153,6 +162,8 @@ string no_phone_contacts
 string no_remark
 string no_search_results
 string no_valid_paths
+string pause
+string play
 string remark
 string remark_saved
 string remark_set
@@ -169,6 +180,7 @@ string tag_removed
 string tags
 string tags_added
 string today
+string video
 string yesterday
 style Theme.HashAlbum
 style Theme.HashAlbum.FullScreen

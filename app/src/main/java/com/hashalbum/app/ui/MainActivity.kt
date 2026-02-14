@@ -26,6 +26,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.hashalbum.app.R
 import com.hashalbum.app.data.GalleryItem
+import com.hashalbum.app.data.MediaType
 import com.hashalbum.app.databinding.ActivityMainBinding
 import com.hashalbum.app.util.ImageBucket
 import com.hashalbum.app.util.PhoneContactsHelper
@@ -46,15 +47,16 @@ class MainActivity : AppCompatActivity() {
     private lateinit var searchResultAdapter: SearchResultAdapter
 
     private val permissionLauncher = registerForActivityResult(
-        ActivityResultContracts.RequestPermission()
-    ) { isGranted ->
-        if (isGranted) {
+        ActivityResultContracts.RequestMultiplePermissions()
+    ) { permissions ->
+        val allGranted = permissions.values.all { it }
+        if (allGranted) {
             loadImages()
             loadBuckets()
         } else {
             Toast.makeText(
                 this,
-                "Permission required to access photos",
+                "Permission required to access photos and videos",
                 Toast.LENGTH_LONG
             ).show()
         }
@@ -101,10 +103,16 @@ class MainActivity : AppCompatActivity() {
                 val imageItems = viewModel.galleryItems.value
                     .filterIsInstance<GalleryItem.ImageItem>()
                 val imageUris = ArrayList(imageItems.map { it.image.uri.toString() })
+                val mediaTypes = ArrayList(imageItems.map {
+                    if (it.image.mediaType == MediaType.VIDEO) "video" else "image"
+                })
+                val durations = ArrayList(imageItems.map { it.image.duration.toString() })
                 val imagePosition = imageItems.indexOfFirst { it.image.uri == image.uri }
                 val intent = Intent(this, ImageViewerActivity::class.java).apply {
                     putExtra(ImageViewerActivity.EXTRA_IMAGE_POSITION, imagePosition.coerceAtLeast(0))
                     putStringArrayListExtra(ImageViewerActivity.EXTRA_IMAGE_URIS, imageUris)
+                    putStringArrayListExtra(ImageViewerActivity.EXTRA_MEDIA_TYPES, mediaTypes)
+                    putStringArrayListExtra(ImageViewerActivity.EXTRA_DURATIONS, durations)
                 }
                 startActivity(intent)
             },
@@ -129,11 +137,20 @@ class MainActivity : AppCompatActivity() {
             val validPath = searchResult.paths.firstOrNull { it.isValid }
                 ?: searchResult.paths.firstOrNull()
             if (validPath != null) {
+                val mediaType = searchResult.imageData.mediaType
                 val intent = Intent(this, ImageViewerActivity::class.java).apply {
                     putExtra(ImageViewerActivity.EXTRA_IMAGE_POSITION, 0)
                     putStringArrayListExtra(
                         ImageViewerActivity.EXTRA_IMAGE_URIS,
                         arrayListOf(validPath.uri.toString())
+                    )
+                    putStringArrayListExtra(
+                        ImageViewerActivity.EXTRA_MEDIA_TYPES,
+                        arrayListOf(mediaType)
+                    )
+                    putStringArrayListExtra(
+                        ImageViewerActivity.EXTRA_DURATIONS,
+                        arrayListOf("0")
                     )
                 }
                 startActivity(intent)
@@ -301,27 +318,31 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun checkPermissionAndLoad() {
-        val permission = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            Manifest.permission.READ_MEDIA_IMAGES
+        val permissions = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            arrayOf(Manifest.permission.READ_MEDIA_IMAGES, Manifest.permission.READ_MEDIA_VIDEO)
         } else {
-            Manifest.permission.READ_EXTERNAL_STORAGE
+            arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE)
+        }
+
+        val allGranted = permissions.all {
+            ContextCompat.checkSelfPermission(this, it) == PackageManager.PERMISSION_GRANTED
         }
 
         when {
-            ContextCompat.checkSelfPermission(this, permission) == PackageManager.PERMISSION_GRANTED -> {
+            allGranted -> {
                 loadImages()
                 loadBuckets()
             }
-            shouldShowRequestPermissionRationale(permission) -> {
+            permissions.any { shouldShowRequestPermissionRationale(it) } -> {
                 Toast.makeText(
                     this,
-                    "Permission needed to show your photos",
+                    "Permission needed to show your photos and videos",
                     Toast.LENGTH_LONG
                 ).show()
-                permissionLauncher.launch(permission)
+                permissionLauncher.launch(permissions)
             }
             else -> {
-                permissionLauncher.launch(permission)
+                permissionLauncher.launch(permissions)
             }
         }
     }

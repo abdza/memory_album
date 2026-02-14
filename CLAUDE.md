@@ -10,7 +10,7 @@ Requires JDK 17 (AGP 8.4.0 needs 17+, Kotlin 1.9.22 kapt breaks on JDK 25):
 JAVA_HOME=/usr/lib/jvm/java-17-openjdk ./gradlew assembleDebug
 ```
 
-Install to device via ADB over network (confirm IP and port with user before connecting):
+Install to device via ADB over network. Last known address: `192.168.1.5:40001`. Reconfirm with user or ask for new IP:port if needed (same session typically reuses the same address):
 ```bash
 ~/Android/Sdk/platform-tools/adb connect <ip>:<port>
 ~/Android/Sdk/platform-tools/adb -s <ip>:<port> install -r app/build/outputs/apk/debug/app-debug.apk
@@ -22,14 +22,14 @@ No tests exist yet. Test dependencies (JUnit 4, Espresso) are configured but unu
 
 MVVM Android app (single module, Kotlin, View Binding) for managing photo metadata by content hash.
 
-**Data flow:** Activities/Adapters → GalleryViewModel → ImageRepository → Room DAOs → AppDatabase (v4)
+**Data flow:** Activities/Adapters → GalleryViewModel → ImageRepository → Room DAOs → AppDatabase (v5)
 
 **Key design decision:** Images are identified by SHA-256 content hash (not path), so metadata survives moves/renames. Multiple file paths can point to the same image.
 
 ### Data Layer (`data/`)
 
 - **Room entities:** `ImageData` (hash PK, remark), `ImagePath` (hash+path composite PK), `ImageTag`, `Contact`, image_contacts junction table
-- **AppDatabase** — version 4 with migration chain (1→2→3→4). New schema changes need a new migration in the companion object.
+- **AppDatabase** — version 5 with migration chain (1→2→3→4→5). New schema changes need a new migration in the companion object.
 - **ImageRepository** — single repository orchestrating all four DAOs (~35 methods)
 
 ### UI Layer (`ui/`)
@@ -55,4 +55,4 @@ MVVM Android app (single module, Kotlin, View Binding) for managing photo metada
 
 ## Permissions
 
-Runtime-requested: `READ_MEDIA_IMAGES` (API 33+) / `READ_EXTERNAL_STORAGE` (older), `READ_CONTACTS` (on-demand for contact tagging).
+Runtime-requested: `READ_MEDIA_IMAGES` + `READ_MEDIA_VIDEO` (API 33+) / `READ_EXTERNAL_STORAGE` (older), `READ_CONTACTS` (on-demand for contact tagging).
