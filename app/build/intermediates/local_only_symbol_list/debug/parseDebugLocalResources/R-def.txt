@@ -15,6 +15,7 @@ color teal_700
 color white
 drawable gradient_bottom
 drawable gradient_top
+drawable ic_calendar
 drawable ic_cancel
 drawable ic_close
 drawable ic_contacts
@@ -58,6 +59,7 @@ id dateTakenValue
 id drawerLayout
 id editRemarkButton
 id emptyView
+id fabJumpToDate
 id fileSizeRow
 id fileSizeValue
 id fullImageView

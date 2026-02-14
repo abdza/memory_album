@@ -85,6 +85,17 @@
 
         </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fabJumpToDate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|end"
+            android:layout_margin="16dp"
+            android:layout_marginBottom="72dp"
+            android:src="@drawable/ic_calendar"
+            android:contentDescription="Jump to date"
+            app:tint="@android:color/white" />
+
         <!-- Selection action bar -->
         <LinearLayout
             android:id="@+id/selectionBar"

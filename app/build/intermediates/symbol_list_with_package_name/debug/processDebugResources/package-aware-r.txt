@@ -2998,6 +2998,7 @@ drawable design_snackbar_background
 drawable gradient_bottom
 drawable gradient_top
 drawable ic_arrow_back_black_24
+drawable ic_calendar
 drawable ic_call_answer
 drawable ic_call_answer_low
 drawable ic_call_answer_video
@@ -3315,6 +3316,7 @@ id enterAlwaysCollapsed
 id exitUntilCollapsed
 id expand_activities_button
 id expanded_menu
+id fabJumpToDate
 id fade
 id fileSizeRow
 id fileSizeValue

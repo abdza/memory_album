@@ -48,10 +48,6 @@
         "source": "/home/abdza/.gradle/daemon/8.6/com.hashalbum.app-main-47:/drawable/ic_swipe_up.xml"
     },
     {
-        "merged": "com.hashalbum.app-debug-45:/layout_activity_image_viewer.xml.flat",
-        "source": "com.hashalbum.app-main-47:/layout/activity_image_viewer.xml"
-    },
-    {
         "merged": "/home/abdza/.gradle/daemon/8.6/com.hashalbum.app-debug-45:/layout_activity_image_viewer.xml.flat",
         "source": "/home/abdza/.gradle/daemon/8.6/com.hashalbum.app-main-47:/layout/activity_image_viewer.xml"
     },
@@ -74,6 +70,14 @@
     {
         "merged": "/home/abdza/.gradle/daemon/8.6/com.hashalbum.app-debug-45:/layout_item_path.xml.flat",
         "source": "/home/abdza/.gradle/daemon/8.6/com.hashalbum.app-main-47:/layout/item_path.xml"
+    },
+    {
+        "merged": "com.hashalbum.app-debug-45:/layout_activity_main.xml.flat",
+        "source": "com.hashalbum.app-main-47:/layout/activity_main.xml"
+    },
+    {
+        "merged": "com.hashalbum.app-debug-45:/drawable_ic_calendar.xml.flat",
+        "source": "com.hashalbum.app-main-47:/drawable/ic_calendar.xml"
     },
     {
         "merged": "/home/abdza/.gradle/daemon/8.6/com.hashalbum.app-debug-45:/layout_activity_main.xml.flat",

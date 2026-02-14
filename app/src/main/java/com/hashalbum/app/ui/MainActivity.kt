@@ -1,6 +1,7 @@
 package com.hashalbum.app.ui
 
 import android.Manifest
+import android.app.DatePickerDialog
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
@@ -31,6 +32,10 @@ import com.hashalbum.app.util.PhoneContactsHelper
 import com.hashalbum.app.util.TagParser
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
+import java.util.Calendar
+import java.util.Date
+import java.util.Locale
 
 class MainActivity : AppCompatActivity() {
 
@@ -77,6 +82,7 @@ class MainActivity : AppCompatActivity() {
         observeViewModel()
 
         setupSelectionBar()
+        setupFab()
         checkPermissionAndLoad()
     }
 
@@ -272,10 +278,12 @@ class MainActivity : AppCompatActivity() {
             viewModel.isSearchMode.collectLatest { isSearchMode ->
                 if (isSearchMode) {
                     switchToSearchMode()
+                    binding.fabJumpToDate.hide()
                     searchResultAdapter.submitList(viewModel.searchResults.value)
                     binding.emptyView.visibility = if (viewModel.searchResults.value.isEmpty()) View.VISIBLE else View.GONE
                 } else {
                     switchToGalleryMode()
+                    binding.fabJumpToDate.show()
                     galleryAdapter.submitList(viewModel.galleryItems.value)
                     binding.emptyView.visibility = if (viewModel.galleryItems.value.isEmpty()) View.VISIBLE else View.GONE
                 }
@@ -336,6 +344,7 @@ class MainActivity : AppCompatActivity() {
     private fun enterSelectionMode() {
         galleryAdapter.enterSelectionMode()
         binding.selectionBar.visibility = View.VISIBLE
+        binding.fabJumpToDate.hide()
         binding.swipeRefresh.isEnabled = false
         updateSelectionCount(galleryAdapter.getSelectedCount())
     }
@@ -343,6 +352,9 @@ class MainActivity : AppCompatActivity() {
     private fun exitSelectionMode() {
         galleryAdapter.exitSelectionMode()
         binding.selectionBar.visibility = View.GONE
+        if (!viewModel.isSearchMode.value) {
+            binding.fabJumpToDate.show()
+        }
         binding.swipeRefresh.isEnabled = true
     }
 
@@ -488,6 +500,102 @@ class MainActivity : AppCompatActivity() {
             supportActionBar?.title = getString(R.string.all_images)
         } else {
             super.onBackPressed()
+        }
+    }
+
+    private fun setupFab() {
+        binding.fabJumpToDate.setOnClickListener {
+            val calendar = Calendar.getInstance()
+            DatePickerDialog(
+                this,
+                { _, year, month, dayOfMonth ->
+                    val selectedCal = Calendar.getInstance().apply {
+                        set(Calendar.YEAR, year)
+                        set(Calendar.MONTH, month)
+                        set(Calendar.DAY_OF_MONTH, dayOfMonth)
+                        set(Calendar.HOUR_OF_DAY, 0)
+                        set(Calendar.MINUTE, 0)
+                        set(Calendar.SECOND, 0)
+                        set(Calendar.MILLISECOND, 0)
+                    }
+                    jumpToDate(selectedCal)
+                },
+                calendar.get(Calendar.YEAR),
+                calendar.get(Calendar.MONTH),
+                calendar.get(Calendar.DAY_OF_MONTH)
+            ).show()
+        }
+    }
+
+    private fun jumpToDate(selectedDate: Calendar) {
+        val items = viewModel.galleryItems.value
+        if (items.isEmpty()) {
+            Toast.makeText(this, "No photos available", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        // Build the label for the selected date using the same logic as groupImagesByDate
+        val today = Calendar.getInstance().apply {
+            set(Calendar.HOUR_OF_DAY, 0)
+            set(Calendar.MINUTE, 0)
+            set(Calendar.SECOND, 0)
+            set(Calendar.MILLISECOND, 0)
+        }
+        val yesterday = Calendar.getInstance().apply {
+            timeInMillis = today.timeInMillis
+            add(Calendar.DAY_OF_YEAR, -1)
+        }
+
+        val targetLabel = when {
+            selectedDate.timeInMillis >= today.timeInMillis -> getString(R.string.today)
+            selectedDate.timeInMillis >= yesterday.timeInMillis -> getString(R.string.yesterday)
+            else -> SimpleDateFormat("EEE, MMM d, yyyy", Locale.getDefault()).format(Date(selectedDate.timeInMillis))
+        }
+
+        // Try exact match first
+        val exactPosition = items.indexOfFirst { it is GalleryItem.DateHeader && it.label == targetLabel }
+        if (exactPosition >= 0) {
+            scrollToPosition(exactPosition)
+            return
+        }
+
+        // No exact match - find nearest date header that is <= selected date
+        // Selected date as epoch seconds (to compare with dateModified)
+        val selectedEpochSec = selectedDate.timeInMillis / 1000
+
+        var bestPosition = -1
+        var bestDiff = Long.MAX_VALUE
+
+        for (i in items.indices) {
+            val item = items[i]
+            if (item is GalleryItem.DateHeader) {
+                // Find the first image after this header to get its date
+                val nextImage = items.getOrNull(i + 1)
+                if (nextImage is GalleryItem.ImageItem) {
+                    val imageDateSec = nextImage.image.dateModified
+                    // We want the nearest header where the images are <= selected date
+                    if (imageDateSec <= selectedEpochSec) {
+                        val diff = selectedEpochSec - imageDateSec
+                        if (diff < bestDiff) {
+                            bestDiff = diff
+                            bestPosition = i
+                        }
+                    }
+                }
+            }
+        }
+
+        if (bestPosition >= 0) {
+            scrollToPosition(bestPosition)
+        } else {
+            Toast.makeText(this, "No photos at or before the selected date", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun scrollToPosition(position: Int) {
+        val layoutManager = binding.recyclerView.layoutManager
+        if (layoutManager is GridLayoutManager) {
+            layoutManager.scrollToPositionWithOffset(position, 0)
         }
     }
 

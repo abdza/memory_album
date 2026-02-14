@@ -16,6 +16,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import androidx.viewbinding.ViewBinding;
 import androidx.viewbinding.ViewBindings;
 import com.google.android.material.appbar.MaterialToolbar;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.hashalbum.app.R;
 import java.lang.NullPointerException;
 import java.lang.Override;
@@ -47,6 +48,9 @@ public final class ActivityMainBinding implements ViewBinding {
   public final LinearLayout emptyView;
 
   @NonNull
+  public final FloatingActionButton fabJumpToDate;
+
+  @NonNull
   public final LinearLayout navigationDrawer;
 
   @NonNull
@@ -71,10 +75,11 @@ public final class ActivityMainBinding implements ViewBinding {
       @NonNull ImageButton batchContactButton, @NonNull ImageButton batchRemarkButton,
       @NonNull ImageButton batchTagButton, @NonNull RecyclerView bucketRecyclerView,
       @NonNull ImageButton cancelSelectionButton, @NonNull DrawerLayout drawerLayout,
-      @NonNull LinearLayout emptyView, @NonNull LinearLayout navigationDrawer,
-      @NonNull ProgressBar progressBar, @NonNull RecyclerView recyclerView,
-      @NonNull LinearLayout selectionBar, @NonNull TextView selectionCount,
-      @NonNull SwipeRefreshLayout swipeRefresh, @NonNull MaterialToolbar toolbar) {
+      @NonNull LinearLayout emptyView, @NonNull FloatingActionButton fabJumpToDate,
+      @NonNull LinearLayout navigationDrawer, @NonNull ProgressBar progressBar,
+      @NonNull RecyclerView recyclerView, @NonNull LinearLayout selectionBar,
+      @NonNull TextView selectionCount, @NonNull SwipeRefreshLayout swipeRefresh,
+      @NonNull MaterialToolbar toolbar) {
     this.rootView = rootView;
     this.batchContactButton = batchContactButton;
     this.batchRemarkButton = batchRemarkButton;
@@ -83,6 +88,7 @@ public final class ActivityMainBinding implements ViewBinding {
     this.cancelSelectionButton = cancelSelectionButton;
     this.drawerLayout = drawerLayout;
     this.emptyView = emptyView;
+    this.fabJumpToDate = fabJumpToDate;
     this.navigationDrawer = navigationDrawer;
     this.progressBar = progressBar;
     this.recyclerView = recyclerView;
@@ -157,6 +163,12 @@ public final class ActivityMainBinding implements ViewBinding {
         break missingId;
       }
 
+      id = R.id.fabJumpToDate;
+      FloatingActionButton fabJumpToDate = ViewBindings.findChildViewById(rootView, id);
+      if (fabJumpToDate == null) {
+        break missingId;
+      }
+
       id = R.id.navigationDrawer;
       LinearLayout navigationDrawer = ViewBindings.findChildViewById(rootView, id);
       if (navigationDrawer == null) {
@@ -201,8 +213,8 @@ public final class ActivityMainBinding implements ViewBinding {
 
       return new ActivityMainBinding((DrawerLayout) rootView, batchContactButton, batchRemarkButton,
           batchTagButton, bucketRecyclerView, cancelSelectionButton, drawerLayout, emptyView,
-          navigationDrawer, progressBar, recyclerView, selectionBar, selectionCount, swipeRefresh,
-          toolbar);
+          fabJumpToDate, navigationDrawer, progressBar, recyclerView, selectionBar, selectionCount,
+          swipeRefresh, toolbar);
     }
     String missingId = rootView.getResources().getResourceName(id);
     throw new NullPointerException("Missing required view with ID: ".concat(missingId));
