@@ -39,8 +39,9 @@ interface ContactDao {
     @Query("""
         SELECT c.id, c.name, COUNT(ic.hash) as imageCount
         FROM contacts c
-        LEFT JOIN image_contacts ic ON c.id = ic.contactId
+        INNER JOIN image_contacts ic ON c.id = ic.contactId
         GROUP BY c.id
+        HAVING imageCount > 0
         ORDER BY c.name ASC
     """)
     fun getContactsWithCount(): Flow<List<ContactWithCount>>

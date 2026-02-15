@@ -67,11 +67,19 @@ class MainActivity : AppCompatActivity() {
     }
 
     private val contactsPermissionLauncher = registerForActivityResult(
-        ActivityResultContracts.RequestPermission()
-    ) { isGranted ->
-        if (isGranted) {
+        ActivityResultContracts.RequestMultiplePermissions()
+    ) { permissions ->
+        if (permissions.values.any { it }) {
             showBatchContactDialog()
         } else {
+            Toast.makeText(this, R.string.contacts_permission_needed, Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private val writeContactsPermissionLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { isGranted ->
+        if (!isGranted) {
             Toast.makeText(this, R.string.contacts_permission_needed, Toast.LENGTH_SHORT).show()
         }
     }
@@ -486,15 +494,11 @@ class MainActivity : AppCompatActivity() {
         if (selectedImages.isEmpty()) return
 
         if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED) {
-            contactsPermissionLauncher.launch(android.Manifest.permission.READ_CONTACTS)
+            contactsPermissionLauncher.launch(arrayOf(android.Manifest.permission.READ_CONTACTS, android.Manifest.permission.WRITE_CONTACTS))
             return
         }
 
-        val phoneContacts = PhoneContactsHelper.getPhoneContacts(this)
-        if (phoneContacts.isEmpty()) {
-            Toast.makeText(this, R.string.no_phone_contacts, Toast.LENGTH_SHORT).show()
-            return
-        }
+        var phoneContacts = PhoneContactsHelper.getPhoneContacts(this)
 
         val selectedNames = mutableSetOf<String>()
 
@@ -502,6 +506,12 @@ class MainActivity : AppCompatActivity() {
             orientation = android.widget.LinearLayout.VERTICAL
             setPadding(48, 24, 48, 0)
         }
+
+        val addNewButton = com.google.android.material.button.MaterialButton(this).apply {
+            text = getString(R.string.add_new_contact)
+            setIconResource(android.R.drawable.ic_input_add)
+        }
+        layout.addView(addNewButton)
 
         val searchInput = EditText(this).apply {
             hint = getString(R.string.search_contacts)
@@ -540,6 +550,25 @@ class MainActivity : AppCompatActivity() {
             }
         })
 
+        addNewButton.setOnClickListener {
+            if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.WRITE_CONTACTS) != PackageManager.PERMISSION_GRANTED) {
+                writeContactsPermissionLauncher.launch(android.Manifest.permission.WRITE_CONTACTS)
+                return@setOnClickListener
+            }
+            showCreateContactDialog { newName ->
+                phoneContacts = PhoneContactsHelper.getPhoneContacts(this)
+                adapter.clear()
+                adapter.addAll(phoneContacts)
+                adapter.notifyDataSetChanged()
+                selectedNames.add(newName)
+                searchInput.text.clear()
+                for (i in 0 until adapter.count) {
+                    val name = adapter.getItem(i) ?: continue
+                    listView.setItemChecked(i, name in selectedNames)
+                }
+            }
+        }
+
         MaterialAlertDialogBuilder(this)
             .setTitle(R.string.add_contacts)
             .setView(layout)
@@ -549,6 +578,45 @@ class MainActivity : AppCompatActivity() {
                     viewModel.addContactsToImages(uris, selectedNames.toList())
                     Toast.makeText(this, R.string.contacts_added, Toast.LENGTH_SHORT).show()
                     exitSelectionMode()
+                }
+            }
+            .setNegativeButton(android.R.string.cancel, null)
+            .show()
+    }
+
+    private fun showCreateContactDialog(onCreated: (String) -> Unit) {
+        val layout = android.widget.LinearLayout(this).apply {
+            orientation = android.widget.LinearLayout.VERTICAL
+            setPadding(48, 24, 48, 0)
+        }
+
+        val nameInput = EditText(this).apply {
+            hint = getString(R.string.new_contact_name)
+            setSingleLine()
+        }
+        layout.addView(nameInput)
+
+        val phoneInput = EditText(this).apply {
+            hint = getString(R.string.new_contact_phone)
+            setSingleLine()
+            inputType = android.text.InputType.TYPE_CLASS_PHONE
+        }
+        layout.addView(phoneInput)
+
+        MaterialAlertDialogBuilder(this)
+            .setTitle(R.string.add_new_contact)
+            .setView(layout)
+            .setPositiveButton(android.R.string.ok) { _, _ ->
+                val name = nameInput.text.toString().trim()
+                val phone = phoneInput.text.toString().trim()
+                if (name.isNotBlank()) {
+                    val success = PhoneContactsHelper.addContact(this, name, phone)
+                    if (success) {
+                        Toast.makeText(this, R.string.contact_created, Toast.LENGTH_SHORT).show()
+                        onCreated(name)
+                    } else {
+                        Toast.makeText(this, R.string.contact_create_failed, Toast.LENGTH_SHORT).show()
+                    }
                 }
             }
             .setNegativeButton(android.R.string.cancel, null)
