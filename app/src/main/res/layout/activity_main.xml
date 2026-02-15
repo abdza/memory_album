@@ -146,6 +146,15 @@
                 android:tooltipText="@string/set_remark" />
 
             <ImageButton
+                android:id="@+id/batchShareButton"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:src="@drawable/ic_share"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="@string/share"
+                android:tooltipText="@string/share" />
+
+            <ImageButton
                 android:id="@+id/batchDeleteButton"
                 android:layout_width="48dp"
                 android:layout_height="48dp"

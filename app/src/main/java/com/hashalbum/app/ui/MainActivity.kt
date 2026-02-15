@@ -413,6 +413,9 @@ class MainActivity : AppCompatActivity() {
         binding.batchContactButton.setOnClickListener {
             showBatchContactDialog()
         }
+        binding.batchShareButton.setOnClickListener {
+            shareBatchSelected()
+        }
         binding.batchDeleteButton.setOnClickListener {
             showBatchDeleteDialog()
         }
@@ -436,7 +439,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun updateSelectionCount(count: Int) {
-        binding.selectionCount.text = "$count selected"
+        binding.selectionCount.text = "$count"
     }
 
     private fun showBatchTagDialog() {
@@ -621,6 +624,33 @@ class MainActivity : AppCompatActivity() {
             }
             .setNegativeButton(android.R.string.cancel, null)
             .show()
+    }
+
+    private fun shareBatchSelected() {
+        val selectedImages = galleryAdapter.getSelectedImages()
+        if (selectedImages.isEmpty()) return
+
+        val uris = ArrayList(selectedImages.map { it.uri })
+        val mimeTypes = selectedImages.map {
+            if (it.mediaType == MediaType.VIDEO) "video" else "image"
+        }.toSet()
+        val mimeType = if (mimeTypes.size == 1) "${mimeTypes.first()}/*" else "*/*"
+
+        val shareIntent = if (uris.size == 1) {
+            Intent(Intent.ACTION_SEND).apply {
+                type = mimeType
+                putExtra(Intent.EXTRA_STREAM, uris[0])
+                addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+            }
+        } else {
+            Intent(Intent.ACTION_SEND_MULTIPLE).apply {
+                type = mimeType
+                putParcelableArrayListExtra(Intent.EXTRA_STREAM, uris)
+                addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+            }
+        }
+        startActivity(Intent.createChooser(shareIntent, getString(R.string.share)))
+        exitSelectionMode()
     }
 
     private fun showBatchDeleteDialog() {

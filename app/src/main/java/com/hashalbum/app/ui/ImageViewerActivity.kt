@@ -4,6 +4,7 @@ import android.Manifest
 import android.animation.ObjectAnimator
 import android.animation.PropertyValuesHolder
 import android.app.RecoverableSecurityException
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
@@ -117,6 +118,7 @@ class ImageViewerActivity : AppCompatActivity() {
         setupGestureDetection()
         setupRemarkPanel()
         setupCloseButton()
+        setupShareButton()
         setupDeleteButton()
 
         // Load initial remark
@@ -522,6 +524,21 @@ class ImageViewerActivity : AppCompatActivity() {
     private fun setupCloseButton() {
         binding.closeButton.setOnClickListener {
             finish()
+        }
+    }
+
+    private fun setupShareButton() {
+        binding.shareButton.setOnClickListener {
+            if (imageUris.isEmpty() || currentPosition >= imageUris.size) return@setOnClickListener
+            val uri = imageUris[currentPosition]
+            val mediaType = mediaItems[currentPosition].mediaType
+            val mimeType = if (mediaType == MediaType.VIDEO) "video/*" else "image/*"
+            val shareIntent = Intent(Intent.ACTION_SEND).apply {
+                type = mimeType
+                putExtra(Intent.EXTRA_STREAM, uri)
+                addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+            }
+            startActivity(Intent.createChooser(shareIntent, getString(R.string.share)))
         }
     }
     
