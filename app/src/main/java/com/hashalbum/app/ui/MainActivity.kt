@@ -2,10 +2,13 @@ package com.hashalbum.app.ui
 
 import android.Manifest
 import android.app.DatePickerDialog
+import android.app.RecoverableSecurityException
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.provider.MediaStore
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.Menu
@@ -14,6 +17,7 @@ import android.widget.ArrayAdapter
 import android.widget.EditText
 import android.widget.ListView
 import android.widget.Toast
+import androidx.activity.result.IntentSenderRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -72,6 +76,41 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private val imageViewerLauncher = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        if (result.resultCode == RESULT_OK) {
+            // Files were deleted in the viewer, reload gallery
+            val currentBucket = viewModel.currentBucket.value
+            if (currentBucket != null) {
+                viewModel.loadImagesFromBucket(currentBucket)
+            } else {
+                loadImages()
+            }
+        }
+    }
+
+    private var pendingDeleteUris: List<Uri> = emptyList()
+
+    private val deleteRequestLauncher = registerForActivityResult(
+        ActivityResultContracts.StartIntentSenderForResult()
+    ) { result ->
+        if (result.resultCode == RESULT_OK) {
+            lifecycleScope.launch {
+                for (uri in pendingDeleteUris) {
+                    viewModel.cleanupAfterDelete(uri)
+                }
+                viewModel.removeFromGallery(pendingDeleteUris)
+                Toast.makeText(this@MainActivity, R.string.deleted_successfully, Toast.LENGTH_SHORT).show()
+                pendingDeleteUris = emptyList()
+                exitSelectionMode()
+            }
+        } else {
+            Toast.makeText(this@MainActivity, R.string.delete_failed, Toast.LENGTH_SHORT).show()
+            pendingDeleteUris = emptyList()
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
@@ -114,7 +153,7 @@ class MainActivity : AppCompatActivity() {
                     putStringArrayListExtra(ImageViewerActivity.EXTRA_MEDIA_TYPES, mediaTypes)
                     putStringArrayListExtra(ImageViewerActivity.EXTRA_DURATIONS, durations)
                 }
-                startActivity(intent)
+                imageViewerLauncher.launch(intent)
             },
             onLongPress = { image, _ ->
                 enterSelectionMode()
@@ -186,6 +225,12 @@ class MainActivity : AppCompatActivity() {
         binding.bucketRecyclerView.apply {
             layoutManager = LinearLayoutManager(this@MainActivity)
             adapter = bucketAdapter
+        }
+
+        binding.allImagesButton.setOnClickListener {
+            viewModel.loadAllImages()
+            supportActionBar?.title = getString(R.string.all_images)
+            binding.drawerLayout.closeDrawer(GravityCompat.START)
         }
     }
 
@@ -360,6 +405,9 @@ class MainActivity : AppCompatActivity() {
         binding.batchContactButton.setOnClickListener {
             showBatchContactDialog()
         }
+        binding.batchDeleteButton.setOnClickListener {
+            showBatchDeleteDialog()
+        }
     }
 
     private fun enterSelectionMode() {
@@ -505,6 +553,75 @@ class MainActivity : AppCompatActivity() {
             }
             .setNegativeButton(android.R.string.cancel, null)
             .show()
+    }
+
+    private fun showBatchDeleteDialog() {
+        val selectedImages = galleryAdapter.getSelectedImages()
+        if (selectedImages.isEmpty()) return
+
+        val count = selectedImages.size
+        MaterialAlertDialogBuilder(this)
+            .setTitle(R.string.delete_selected)
+            .setMessage(getString(R.string.confirm_delete_multiple, count))
+            .setPositiveButton(R.string.delete) { _, _ ->
+                performBatchDelete(selectedImages.map { it.uri })
+            }
+            .setNegativeButton(android.R.string.cancel, null)
+            .show()
+    }
+
+    private fun performBatchDelete(uris: List<Uri>) {
+        lifecycleScope.launch {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                pendingDeleteUris = uris
+                try {
+                    val intentSender = MediaStore.createDeleteRequest(contentResolver, uris).intentSender
+                    deleteRequestLauncher.launch(IntentSenderRequest.Builder(intentSender).build())
+                } catch (e: Exception) {
+                    directBatchDelete(uris)
+                }
+            } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                try {
+                    for (uri in uris) {
+                        contentResolver.delete(uri, null, null)
+                    }
+                    for (uri in uris) {
+                        viewModel.cleanupAfterDelete(uri)
+                    }
+                    viewModel.removeFromGallery(uris)
+                    Toast.makeText(this@MainActivity, R.string.deleted_successfully, Toast.LENGTH_SHORT).show()
+                    exitSelectionMode()
+                } catch (e: RecoverableSecurityException) {
+                    pendingDeleteUris = uris
+                    val intentSender = e.userAction.actionIntent.intentSender
+                    deleteRequestLauncher.launch(IntentSenderRequest.Builder(intentSender).build())
+                }
+            } else {
+                directBatchDelete(uris)
+            }
+        }
+    }
+
+    private suspend fun directBatchDelete(uris: List<Uri>) {
+        var successCount = 0
+        for (uri in uris) {
+            try {
+                val rows = contentResolver.delete(uri, null, null)
+                if (rows > 0) {
+                    viewModel.cleanupAfterDelete(uri)
+                    successCount++
+                }
+            } catch (e: Exception) {
+                // Skip failed deletes
+            }
+        }
+        viewModel.removeFromGallery(uris)
+        if (successCount > 0) {
+            Toast.makeText(this@MainActivity, R.string.deleted_successfully, Toast.LENGTH_SHORT).show()
+        } else {
+            Toast.makeText(this@MainActivity, R.string.delete_failed, Toast.LENGTH_SHORT).show()
+        }
+        exitSelectionMode()
     }
 
     @Deprecated("Deprecated in Java")

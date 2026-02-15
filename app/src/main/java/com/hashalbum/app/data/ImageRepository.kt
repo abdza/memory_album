@@ -89,6 +89,10 @@ class ImageRepository(
         imageDataDao.deleteByHash(hash)
     }
 
+    suspend fun deletePath(hash: String, path: String) {
+        imagePathDao.deletePath(hash, path)
+    }
+
     suspend fun addTagsToImage(hash: String, tags: List<String>) {
         val imageTags = tags.map { ImageTag(hash = hash, tag = it) }
         imageTagDao.insertTags(imageTags)

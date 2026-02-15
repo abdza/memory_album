@@ -146,6 +146,15 @@
                 android:tooltipText="@string/set_remark" />
 
             <ImageButton
+                android:id="@+id/batchDeleteButton"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:src="@drawable/ic_delete"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="@string/delete_selected"
+                android:tooltipText="@string/delete_selected" />
+
+            <ImageButton
                 android:id="@+id/cancelSelectionButton"
                 android:layout_width="48dp"
                 android:layout_height="48dp"
@@ -177,6 +186,16 @@
             android:padding="16dp"
             android:background="?attr/colorPrimary"
             android:textColor="@android:color/white" />
+
+        <TextView
+            android:id="@+id/allImagesButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/all_images"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:padding="16dp"
+            android:background="?attr/selectableItemBackground" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/bucketRecyclerView"

@@ -54,4 +54,14 @@
     <string name="play">Play</string>
     <string name="pause">Pause</string>
     <string name="duration">Duration</string>
+    <string name="delete">Delete</string>
+    <string name="delete_file">Delete File</string>
+    <string name="delete_selected">Delete Selected</string>
+    <string name="confirm_delete_single">Delete this file?</string>
+    <string name="confirm_delete_multiple">Delete %d selected files?</string>
+    <string name="confirm_delete_duplicates">This image has %d known copies. Delete just this file or all copies?</string>
+    <string name="delete_this_file">This File Only</string>
+    <string name="delete_all_copies">All Copies</string>
+    <string name="deleted_successfully">Deleted successfully</string>
+    <string name="delete_failed">Delete failed</string>
 </resources>

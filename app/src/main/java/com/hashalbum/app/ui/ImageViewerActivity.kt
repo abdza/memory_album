@@ -3,9 +3,12 @@ package com.hashalbum.app.ui
 import android.Manifest
 import android.animation.ObjectAnimator
 import android.animation.PropertyValuesHolder
+import android.app.RecoverableSecurityException
 import android.content.pm.PackageManager
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
+import android.provider.MediaStore
 import android.view.GestureDetector
 import android.view.MotionEvent
 import android.view.View
@@ -13,6 +16,7 @@ import android.view.animation.AccelerateDecelerateInterpolator
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
+import androidx.activity.result.IntentSenderRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -74,7 +78,27 @@ class ImageViewerActivity : AppCompatActivity() {
             Toast.makeText(this, R.string.contacts_permission_needed, Toast.LENGTH_SHORT).show()
         }
     }
-    
+
+    private var pendingDeleteUris: List<Uri> = emptyList()
+    private var pendingDeleteAll = false
+
+    private val deleteRequestLauncher = registerForActivityResult(
+        ActivityResultContracts.StartIntentSenderForResult()
+    ) { result ->
+        if (result.resultCode == RESULT_OK) {
+            lifecycleScope.launch {
+                for (uri in pendingDeleteUris) {
+                    viewModel.cleanupAfterDelete(uri)
+                }
+                onDeleteComplete(pendingDeleteUris)
+                pendingDeleteUris = emptyList()
+            }
+        } else {
+            Toast.makeText(this, R.string.delete_failed, Toast.LENGTH_SHORT).show()
+            pendingDeleteUris = emptyList()
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityImageViewerBinding.inflate(layoutInflater)
@@ -85,7 +109,8 @@ class ImageViewerActivity : AppCompatActivity() {
         setupGestureDetection()
         setupRemarkPanel()
         setupCloseButton()
-        
+        setupDeleteButton()
+
         // Load initial remark
         loadCurrentImageRemark()
     }
@@ -648,6 +673,139 @@ class ImageViewerActivity : AppCompatActivity() {
         imm.hideSoftInputFromWindow(binding.remarkInput.windowToken, 0)
     }
     
+    private fun setupDeleteButton() {
+        binding.deleteButton.setOnClickListener {
+            if (imageUris.isEmpty() || currentPosition >= imageUris.size) return@setOnClickListener
+            val currentUri = imageUris[currentPosition]
+            lifecycleScope.launch {
+                val paths = viewModel.getPathsForImage(currentUri)
+                if (paths.size > 1) {
+                    showDuplicateDeleteDialog(currentUri, paths.size)
+                } else {
+                    showSimpleDeleteDialog(currentUri)
+                }
+            }
+        }
+    }
+
+    private fun showSimpleDeleteDialog(uri: Uri) {
+        MaterialAlertDialogBuilder(this)
+            .setTitle(R.string.delete_file)
+            .setMessage(R.string.confirm_delete_single)
+            .setPositiveButton(R.string.delete) { _, _ ->
+                performDelete(listOf(uri), false)
+            }
+            .setNegativeButton(android.R.string.cancel, null)
+            .show()
+    }
+
+    private fun showDuplicateDeleteDialog(uri: Uri, pathCount: Int) {
+        MaterialAlertDialogBuilder(this)
+            .setTitle(R.string.delete_file)
+            .setMessage(getString(R.string.confirm_delete_duplicates, pathCount))
+            .setPositiveButton(R.string.delete_this_file) { _, _ ->
+                performDelete(listOf(uri), false)
+            }
+            .setNeutralButton(R.string.delete_all_copies) { _, _ ->
+                performDelete(listOf(uri), true)
+            }
+            .setNegativeButton(android.R.string.cancel, null)
+            .show()
+    }
+
+    private fun performDelete(uris: List<Uri>, deleteAllCopies: Boolean) {
+        lifecycleScope.launch {
+            val urisToDelete = if (deleteAllCopies) {
+                val allPaths = mutableListOf<Uri>()
+                for (uri in uris) {
+                    val paths = viewModel.cleanupAllCopies(uri)
+                    allPaths.addAll(paths.map { Uri.parse(it) })
+                }
+                allPaths
+            } else {
+                uris
+            }
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                pendingDeleteUris = if (deleteAllCopies) emptyList() else uris
+                pendingDeleteAll = deleteAllCopies
+                try {
+                    val intentSender = MediaStore.createDeleteRequest(contentResolver, urisToDelete).intentSender
+                    deleteRequestLauncher.launch(IntentSenderRequest.Builder(intentSender).build())
+                } catch (e: Exception) {
+                    // If createDeleteRequest fails, try direct delete
+                    directDelete(urisToDelete, uris, deleteAllCopies)
+                }
+            } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                try {
+                    for (uri in urisToDelete) {
+                        contentResolver.delete(uri, null, null)
+                    }
+                    if (!deleteAllCopies) {
+                        for (uri in uris) {
+                            viewModel.cleanupAfterDelete(uri)
+                        }
+                    }
+                    onDeleteComplete(uris)
+                } catch (e: RecoverableSecurityException) {
+                    pendingDeleteUris = if (deleteAllCopies) emptyList() else uris
+                    pendingDeleteAll = deleteAllCopies
+                    val intentSender = e.userAction.actionIntent.intentSender
+                    deleteRequestLauncher.launch(IntentSenderRequest.Builder(intentSender).build())
+                }
+            } else {
+                directDelete(urisToDelete, uris, deleteAllCopies)
+            }
+        }
+    }
+
+    private suspend fun directDelete(urisToDelete: List<Uri>, originalUris: List<Uri>, deleteAllCopies: Boolean) {
+        var success = true
+        for (uri in urisToDelete) {
+            try {
+                contentResolver.delete(uri, null, null)
+            } catch (e: Exception) {
+                success = false
+            }
+        }
+        if (!deleteAllCopies) {
+            for (uri in originalUris) {
+                viewModel.cleanupAfterDelete(uri)
+            }
+        }
+        if (success) {
+            onDeleteComplete(originalUris)
+        } else {
+            Toast.makeText(this@ImageViewerActivity, R.string.delete_failed, Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun onDeleteComplete(deletedUris: List<Uri>) {
+        Toast.makeText(this, R.string.deleted_successfully, Toast.LENGTH_SHORT).show()
+
+        val deletedSet = deletedUris.toSet()
+        val newUris = imageUris.filter { it !in deletedSet }
+        val newMediaItems = mediaItems.filterIndexed { index, _ -> imageUris[index] !in deletedSet }
+
+        if (newUris.isEmpty()) {
+            setResult(RESULT_OK)
+            finish()
+            return
+        }
+
+        imageUris = newUris
+        mediaItems = newMediaItems
+
+        mediaAdapter = MediaPagerAdapter(mediaItems) { _ -> toggleUiVisibility() }
+        binding.viewPager.adapter = mediaAdapter
+
+        val newPosition = currentPosition.coerceAtMost(newUris.size - 1)
+        binding.viewPager.setCurrentItem(newPosition, false)
+        currentPosition = newPosition
+        updateCounter()
+        loadCurrentImageRemark()
+    }
+
     override fun dispatchTouchEvent(ev: MotionEvent): Boolean {
         // Let gesture detector handle the event first
         gestureDetector.onTouchEvent(ev)

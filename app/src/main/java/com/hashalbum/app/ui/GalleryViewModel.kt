@@ -19,6 +19,9 @@ import com.hashalbum.app.util.ImageBucket
 import com.hashalbum.app.util.ImageHasher
 import com.hashalbum.app.util.MediaStoreHelper
 import com.hashalbum.app.util.PathValidator
+import android.content.ContentResolver
+import android.os.Build
+import android.provider.MediaStore
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -322,6 +325,51 @@ class GalleryViewModel(application: Application) : AndroidViewModel(application)
         }
 
         return result
+    }
+
+    suspend fun getPathsForImage(uri: Uri): List<com.hashalbum.app.data.ImagePath> {
+        val hash = getImageHash(uri, isVideoUri(uri)) ?: return emptyList()
+        return repository.getPathsForHashSync(hash)
+    }
+
+    suspend fun deleteFromMediaStore(contentResolver: ContentResolver, uri: Uri): Boolean {
+        return try {
+            val rows = contentResolver.delete(uri, null, null)
+            rows > 0
+        } catch (e: SecurityException) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                throw e
+            }
+            false
+        }
+    }
+
+    suspend fun cleanupAfterDelete(uri: Uri) {
+        val hash = getImageHash(uri, isVideoUri(uri)) ?: return
+        repository.deletePath(hash, uri.toString())
+        val remaining = repository.getPathsForHashSync(hash)
+        if (remaining.isEmpty()) {
+            repository.delete(hash)
+        }
+        hashCache.remove(uri)
+    }
+
+    suspend fun cleanupAllCopies(uri: Uri): List<String> {
+        val hash = getImageHash(uri, isVideoUri(uri)) ?: return emptyList()
+        val paths = repository.getPathsForHashSync(hash)
+        val pathStrings = paths.map { it.path }
+        repository.delete(hash)
+        for (path in pathStrings) {
+            hashCache.remove(Uri.parse(path))
+        }
+        return pathStrings
+    }
+
+    fun removeFromGallery(uris: List<Uri>) {
+        val uriSet = uris.toSet()
+        val currentImages = _images.value.filter { it.uri !in uriSet }
+        _images.value = currentImages
+        _galleryItems.value = groupImagesByDate(currentImages)
     }
 
     fun clearSearch() {
