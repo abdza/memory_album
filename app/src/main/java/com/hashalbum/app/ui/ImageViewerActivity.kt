@@ -185,10 +185,12 @@ class ImageViewerActivity : AppCompatActivity() {
                 val diffX = e2.x - e1.x
                 
                 // Check for vertical swipe (up to show remark panel)
-                if (abs(diffY) > abs(diffX) && 
-                    abs(diffY) > SWIPE_THRESHOLD && 
+                // Skip when an image is zoomed — vertical swipe is panning the image instead
+                if (!ZoomableImageView.anyZoomed &&
+                    abs(diffY) > abs(diffX) &&
+                    abs(diffY) > SWIPE_THRESHOLD &&
                     abs(velocityY) > SWIPE_VELOCITY_THRESHOLD) {
-                    
+
                     if (diffY < 0) {
                         // Swipe up - show remark panel
                         showRemarkPanel()

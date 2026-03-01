@@ -63,17 +63,16 @@ class MediaPagerAdapter(
     }
 
     inner class ImageViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        private val imageView: ImageView = itemView.findViewById(R.id.fullImageView)
+        private val imageView: ZoomableImageView = itemView.findViewById(R.id.fullImageView)
 
         fun bind(uri: Uri, position: Int) {
+            imageView.resetToFitCenter()
+            imageView.onSingleTap = { onItemClick(position) }
+
             Glide.with(itemView.context)
                 .load(uri)
                 .fitCenter()
                 .into(imageView)
-
-            itemView.setOnClickListener {
-                onItemClick(position)
-            }
         }
     }
 
