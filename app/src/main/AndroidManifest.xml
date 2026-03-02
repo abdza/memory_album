@@ -44,6 +44,11 @@
             android:exported="false"
             android:theme="@style/Theme.HashAlbum" />
 
+        <activity
+            android:name=".ui.BackupActivity"
+            android:exported="false"
+            android:theme="@style/Theme.HashAlbum" />
+
     </application>
 
 </manifest>

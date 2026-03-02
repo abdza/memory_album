@@ -35,7 +35,13 @@ interface ImageDataDao {
     
     @Delete
     suspend fun delete(imageData: ImageData)
-    
+
     @Query("DELETE FROM image_data WHERE hash = :hash")
     suspend fun deleteByHash(hash: String)
+
+    @Query("SELECT * FROM image_data")
+    suspend fun getAllImagesForBackup(): List<ImageData>
+
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    suspend fun insertIfNotExists(imageData: ImageData)
 }

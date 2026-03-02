@@ -19,4 +19,7 @@ interface ImageTagDao {
 
     @Query("SELECT DISTINCT hash FROM image_tags WHERE tag LIKE '%' || :query || '%'")
     suspend fun searchByTag(query: String): List<String>
+
+    @Query("SELECT * FROM image_tags")
+    suspend fun getAllTagsForBackup(): List<ImageTag>
 }

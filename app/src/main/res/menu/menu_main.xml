@@ -15,4 +15,9 @@
         android:title="@string/contacts"
         app:showAsAction="ifRoom" />
 
+    <item
+        android:id="@+id/action_backup"
+        android:title="@string/backup_restore"
+        app:showAsAction="never" />
+
 </menu>

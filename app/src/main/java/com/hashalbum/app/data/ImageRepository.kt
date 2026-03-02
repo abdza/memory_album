@@ -1,6 +1,10 @@
 package com.hashalbum.app.data
 
+import com.hashalbum.app.util.BackupManager
 import kotlinx.coroutines.flow.Flow
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 class ImageRepository(
     private val imageDataDao: ImageDataDao,
@@ -147,5 +151,94 @@ class ImageRepository(
     fun getContactsWithCount(): Flow<List<ContactWithCount>> {
         return contactDao?.getContactsWithCount()
             ?: kotlinx.coroutines.flow.flowOf(emptyList())
+    }
+
+    suspend fun exportBackupData(): BackupData {
+        val dao = contactDao
+        val allImages = imageDataDao.getAllImagesForBackup()
+        val allTags = imageTagDao.getAllTagsForBackup().groupBy { it.hash }
+        val allImageContacts = dao?.getAllImageContactsForBackup()?.groupBy { it.hash } ?: emptyMap()
+        val allContacts = dao?.getAllContactsForBackup() ?: emptyList()
+
+        val backupImages = allImages.map { img ->
+            BackupImageData(
+                hash = img.hash,
+                remark = img.remark,
+                mediaType = img.mediaType,
+                createdAt = img.createdAt,
+                updatedAt = img.updatedAt,
+                tags = allTags[img.hash]?.map { it.tag } ?: emptyList(),
+                contactIds = allImageContacts[img.hash]?.map { it.contactId } ?: emptyList()
+            )
+        }
+
+        val backupContacts = allContacts.map { c ->
+            BackupContact(id = c.id, name = c.name, createdAt = c.createdAt)
+        }
+
+        val now = System.currentTimeMillis()
+        val exportDate = SimpleDateFormat("yyyy-MM-dd", Locale.US).format(Date(now))
+        return BackupData(
+            version = 1,
+            exportDate = exportDate,
+            exportDateMs = now,
+            images = backupImages,
+            contacts = backupContacts
+        )
+    }
+
+    suspend fun importData(json: String): ImportResult {
+        val dao = contactDao
+        val backup = BackupManager.fromJson(json)
+
+        // Build old contact id → new contact id map
+        val idMap = mutableMapOf<Long, Long>()
+        var contactsRestored = 0
+        for (bc in backup.contacts) {
+            val existing = dao?.getContactByName(bc.name)
+            val newId = existing?.id ?: dao?.insertContact(Contact(name = bc.name, createdAt = bc.createdAt))
+            if (newId != null) {
+                idMap[bc.id] = newId
+                if (existing == null) contactsRestored++
+            }
+        }
+
+        var imagesRestored = 0
+        var skipped = 0
+        for (bi in backup.images) {
+            val existing = imageDataDao.getByHash(bi.hash)
+            imageDataDao.insertIfNotExists(
+                ImageData(
+                    hash = bi.hash,
+                    remark = bi.remark,
+                    mediaType = bi.mediaType,
+                    createdAt = bi.createdAt,
+                    updatedAt = bi.updatedAt
+                )
+            )
+            if (existing == null) {
+                imagesRestored++
+            } else {
+                if (existing.remark.isBlank() && bi.remark.isNotBlank()) {
+                    imageDataDao.updateRemark(bi.hash, bi.remark)
+                }
+                skipped++
+            }
+
+            if (bi.tags.isNotEmpty()) {
+                imageTagDao.insertTags(bi.tags.map { ImageTag(hash = bi.hash, tag = it) })
+            }
+
+            for (oldContactId in bi.contactIds) {
+                val newId = idMap[oldContactId] ?: continue
+                dao?.insertImageContact(ImageContact(hash = bi.hash, contactId = newId))
+            }
+        }
+
+        return ImportResult(
+            imagesRestored = imagesRestored,
+            contactsRestored = contactsRestored,
+            skipped = skipped
+        )
     }
 }

@@ -292,6 +292,10 @@ class MainActivity : AppCompatActivity() {
                 startActivity(Intent(this, ContactsActivity::class.java))
                 true
             }
+            R.id.action_backup -> {
+                startActivity(Intent(this, BackupActivity::class.java))
+                true
+            }
             else -> super.onOptionsItemSelected(item)
         }
     }

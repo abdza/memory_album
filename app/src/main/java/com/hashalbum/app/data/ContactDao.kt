@@ -48,4 +48,10 @@ interface ContactDao {
 
     @Query("SELECT * FROM contacts WHERE name LIKE '%' || :query || '%' ORDER BY name ASC")
     suspend fun searchContacts(query: String): List<Contact>
+
+    @Query("SELECT * FROM contacts")
+    suspend fun getAllContactsForBackup(): List<Contact>
+
+    @Query("SELECT * FROM image_contacts")
+    suspend fun getAllImageContactsForBackup(): List<ImageContact>
 }

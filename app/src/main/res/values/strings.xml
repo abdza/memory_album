@@ -70,4 +70,14 @@
     <string name="new_contact_phone">Phone number</string>
     <string name="contact_created">Contact created</string>
     <string name="contact_create_failed">Failed to create contact</string>
+    <string name="backup_restore">Backup &amp; Restore</string>
+    <string name="export_backup">Export Backup</string>
+    <string name="import_backup">Import Backup</string>
+    <string name="backup_description">Export your tags, remarks, and contacts to a file. Import on a new device once your photos are transferred.</string>
+    <string name="export_success">Backup exported: %1$d images, %2$d contacts</string>
+    <string name="export_failed">Export failed</string>
+    <string name="import_success">Import complete: %1$d images, %2$d contacts restored</string>
+    <string name="import_failed">Import failed: invalid backup file</string>
+    <string name="importing">Importing…</string>
+    <string name="exporting">Exporting…</string>
 </resources>
