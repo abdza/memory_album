@@ -28,3 +28,4 @@ replay_pid*
 .gradle/
 .idea/
 app/build/
+keystore.properties

@@ -204,10 +204,10 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        val gridLayoutManager = GridLayoutManager(this, 3)
+        val gridLayoutManager = GridLayoutManager(this, 5)
         gridLayoutManager.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
             override fun getSpanSize(position: Int): Int {
-                return if (galleryAdapter.getItemViewType(position) == 0) 3 else 1
+                return if (galleryAdapter.getItemViewType(position) == 0) 5 else 1
             }
         }
 
@@ -311,10 +311,10 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun switchToGalleryMode() {
-        val gridLayoutManager = GridLayoutManager(this, 3)
+        val gridLayoutManager = GridLayoutManager(this, 5)
         gridLayoutManager.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
             override fun getSpanSize(position: Int): Int {
-                return if (galleryAdapter.getItemViewType(position) == 0) 3 else 1
+                return if (galleryAdapter.getItemViewType(position) == 0) 5 else 1
             }
         }
         binding.recyclerView.layoutManager = gridLayoutManager
