@@ -80,4 +80,6 @@
     <string name="import_failed">Import failed: invalid backup file</string>
     <string name="importing">Importing…</string>
     <string name="exporting">Exporting…</string>
+    <string name="settings">Settings</string>
+    <string name="images_per_row">Images per row</string>
 </resources>

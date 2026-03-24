@@ -49,6 +49,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var galleryAdapter: GalleryAdapter
     private lateinit var bucketAdapter: BucketAdapter
     private lateinit var searchResultAdapter: SearchResultAdapter
+    private var gridColumns: Int = 3
 
     private val permissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestMultiplePermissions()
@@ -124,6 +125,7 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        gridColumns = getSharedPreferences("album_prefs", MODE_PRIVATE).getInt("grid_columns", 3)
         setupToolbar()
         setupRecyclerView()
         setupBucketDrawer()
@@ -204,10 +206,10 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        val gridLayoutManager = GridLayoutManager(this, 5)
+        val gridLayoutManager = GridLayoutManager(this, gridColumns)
         gridLayoutManager.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
             override fun getSpanSize(position: Int): Int {
-                return if (galleryAdapter.getItemViewType(position) == 0) 5 else 1
+                return if (galleryAdapter.getItemViewType(position) == 0) gridColumns else 1
             }
         }
 
@@ -296,7 +298,22 @@ class MainActivity : AppCompatActivity() {
                 startActivity(Intent(this, BackupActivity::class.java))
                 true
             }
+            R.id.action_settings -> {
+                startActivity(Intent(this, SettingsActivity::class.java))
+                true
+            }
             else -> super.onOptionsItemSelected(item)
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        val newColumns = getSharedPreferences("album_prefs", MODE_PRIVATE).getInt("grid_columns", 3)
+        if (newColumns != gridColumns) {
+            gridColumns = newColumns
+            if (!viewModel.isSearchMode.value) {
+                switchToGalleryMode()
+            }
         }
     }
 
@@ -311,10 +328,10 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun switchToGalleryMode() {
-        val gridLayoutManager = GridLayoutManager(this, 5)
+        val gridLayoutManager = GridLayoutManager(this, gridColumns)
         gridLayoutManager.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
             override fun getSpanSize(position: Int): Int {
-                return if (galleryAdapter.getItemViewType(position) == 0) 5 else 1
+                return if (galleryAdapter.getItemViewType(position) == 0) gridColumns else 1
             }
         }
         binding.recyclerView.layoutManager = gridLayoutManager
