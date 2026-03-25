@@ -160,15 +160,18 @@ class ImageRepository(
         val allImageContacts = dao?.getAllImageContactsForBackup()?.groupBy { it.hash } ?: emptyMap()
         val allContacts = dao?.getAllContactsForBackup() ?: emptyList()
 
-        val backupImages = allImages.map { img ->
+        val backupImages = allImages.mapNotNull { img ->
+            val tags = allTags[img.hash]?.map { it.tag } ?: emptyList()
+            val contactIds = allImageContacts[img.hash]?.map { it.contactId } ?: emptyList()
+            if (img.remark.isBlank() && tags.isEmpty() && contactIds.isEmpty()) return@mapNotNull null
             BackupImageData(
                 hash = img.hash,
                 remark = img.remark,
                 mediaType = img.mediaType,
                 createdAt = img.createdAt,
                 updatedAt = img.updatedAt,
-                tags = allTags[img.hash]?.map { it.tag } ?: emptyList(),
-                contactIds = allImageContacts[img.hash]?.map { it.contactId } ?: emptyList()
+                tags = tags,
+                contactIds = contactIds
             )
         }
 
