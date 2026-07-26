@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.provider.MediaStore
 import android.view.Menu
 import android.view.View
+import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
 import androidx.lifecycle.lifecycleScope
@@ -53,6 +54,7 @@ class ContactsActivity : AppCompatActivity() {
 
         setupToolbar()
         setupContactsList()
+        setupBackHandler()
         loadContacts()
     }
 
@@ -242,12 +244,16 @@ class ContactsActivity : AppCompatActivity() {
         return result
     }
 
-    @Deprecated("Deprecated in Java")
-    override fun onBackPressed() {
-        if (currentContact != null) {
-            showContactsList()
-        } else {
-            super.onBackPressed()
-        }
+    private fun setupBackHandler() {
+        onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                if (currentContact != null) {
+                    showContactsList()
+                } else {
+                    isEnabled = false
+                    onBackPressedDispatcher.onBackPressed()
+                }
+            }
+        })
     }
 }

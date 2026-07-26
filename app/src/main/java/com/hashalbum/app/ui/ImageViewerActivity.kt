@@ -17,6 +17,7 @@ import android.view.animation.AccelerateDecelerateInterpolator
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.IntentSenderRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
@@ -120,6 +121,7 @@ class ImageViewerActivity : AppCompatActivity() {
         setupCloseButton()
         setupShareButton()
         setupDeleteButton()
+        setupBackHandler()
 
         // Load initial remark
         loadCurrentImageRemark()
@@ -898,11 +900,16 @@ class ImageViewerActivity : AppCompatActivity() {
         return super.dispatchTouchEvent(ev)
     }
     
-    override fun onBackPressed() {
-        if (isRemarkPanelShown) {
-            hideRemarkPanel()
-        } else {
-            super.onBackPressed()
-        }
+    private fun setupBackHandler() {
+        onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                if (isRemarkPanelShown) {
+                    hideRemarkPanel()
+                } else {
+                    isEnabled = false
+                    onBackPressedDispatcher.onBackPressed()
+                }
+            }
+        })
     }
 }

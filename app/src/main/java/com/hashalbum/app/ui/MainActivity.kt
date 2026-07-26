@@ -17,6 +17,7 @@ import android.widget.ArrayAdapter
 import android.widget.EditText
 import android.widget.ListView
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.IntentSenderRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
@@ -134,6 +135,7 @@ class MainActivity : AppCompatActivity() {
 
         setupSelectionBar()
         setupFab()
+        setupBackHandler()
         checkPermissionAndLoad()
     }
 
@@ -743,21 +745,26 @@ class MainActivity : AppCompatActivity() {
         exitSelectionMode()
     }
 
-    @Deprecated("Deprecated in Java")
-    override fun onBackPressed() {
-        if (galleryAdapter.isSelectionMode) {
-            exitSelectionMode()
-        } else if (binding.drawerLayout.isDrawerOpen(GravityCompat.START)) {
-            binding.drawerLayout.closeDrawer(GravityCompat.START)
-        } else if (viewModel.isSearchMode.value) {
-            viewModel.clearSearch()
-            invalidateOptionsMenu()
-        } else if (viewModel.currentBucket.value != null) {
-            viewModel.loadAllImages()
-            supportActionBar?.title = getString(R.string.all_images)
-        } else {
-            super.onBackPressed()
-        }
+    private fun setupBackHandler() {
+        onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                if (galleryAdapter.isSelectionMode) {
+                    exitSelectionMode()
+                } else if (binding.drawerLayout.isDrawerOpen(GravityCompat.START)) {
+                    binding.drawerLayout.closeDrawer(GravityCompat.START)
+                } else if (viewModel.isSearchMode.value) {
+                    viewModel.clearSearch()
+                    invalidateOptionsMenu()
+                } else if (viewModel.currentBucket.value != null) {
+                    viewModel.loadAllImages()
+                    supportActionBar?.title = getString(R.string.all_images)
+                } else {
+                    // Nothing left to unwind: step aside and let the default handler finish us.
+                    isEnabled = false
+                    onBackPressedDispatcher.onBackPressed()
+                }
+            }
+        })
     }
 
     private fun setupFab() {
