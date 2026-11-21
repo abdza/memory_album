@@ -153,18 +153,19 @@ class MainActivity : AppCompatActivity() {
             onImageClick = { image, _ ->
                 val imageItems = viewModel.galleryItems.value
                     .filterIsInstance<GalleryItem.ImageItem>()
-                val imageUris = ArrayList(imageItems.map { it.image.uri.toString() })
-                val mediaTypes = ArrayList(imageItems.map {
-                    if (it.image.mediaType == MediaType.VIDEO) "video" else "image"
-                })
-                val durations = ArrayList(imageItems.map { it.image.duration.toString() })
-                val imagePosition = imageItems.indexOfFirst { it.image.uri == image.uri }
-                val intent = Intent(this, ImageViewerActivity::class.java).apply {
-                    putExtra(ImageViewerActivity.EXTRA_IMAGE_POSITION, imagePosition.coerceAtLeast(0))
-                    putStringArrayListExtra(ImageViewerActivity.EXTRA_IMAGE_URIS, imageUris)
-                    putStringArrayListExtra(ImageViewerActivity.EXTRA_MEDIA_TYPES, mediaTypes)
-                    putStringArrayListExtra(ImageViewerActivity.EXTRA_DURATIONS, durations)
+                val mediaItems = imageItems.map {
+                    MediaPagerAdapter.MediaItem(
+                        uri = it.image.uri,
+                        mediaType = it.image.mediaType,
+                        duration = it.image.duration
+                    )
                 }
+                val imagePosition = imageItems.indexOfFirst { it.image.uri == image.uri }
+                val intent = ImageViewerActivity.createIntent(
+                    this,
+                    mediaItems,
+                    imagePosition.coerceAtLeast(0)
+                )
                 imageViewerLauncher.launch(intent)
             },
             onLongPress = { image, _ ->
@@ -188,22 +189,15 @@ class MainActivity : AppCompatActivity() {
             val validPath = searchResult.paths.firstOrNull { it.isValid }
                 ?: searchResult.paths.firstOrNull()
             if (validPath != null) {
-                val mediaType = searchResult.imageData.mediaType
-                val intent = Intent(this, ImageViewerActivity::class.java).apply {
-                    putExtra(ImageViewerActivity.EXTRA_IMAGE_POSITION, 0)
-                    putStringArrayListExtra(
-                        ImageViewerActivity.EXTRA_IMAGE_URIS,
-                        arrayListOf(validPath.uri.toString())
-                    )
-                    putStringArrayListExtra(
-                        ImageViewerActivity.EXTRA_MEDIA_TYPES,
-                        arrayListOf(mediaType)
-                    )
-                    putStringArrayListExtra(
-                        ImageViewerActivity.EXTRA_DURATIONS,
-                        arrayListOf("0")
-                    )
-                }
+                val mediaType = if (searchResult.imageData.mediaType == "video" ||
+                    validPath.uri.toString().contains("/video/")
+                ) MediaType.VIDEO else MediaType.IMAGE
+                val item = MediaPagerAdapter.MediaItem(
+                    uri = validPath.uri,
+                    mediaType = mediaType,
+                    duration = 0L
+                )
+                val intent = ImageViewerActivity.createIntent(this, listOf(item), 0)
                 startActivity(intent)
             }
         }

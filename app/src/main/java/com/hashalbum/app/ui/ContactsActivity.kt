@@ -102,18 +102,19 @@ class ContactsActivity : AppCompatActivity() {
         galleryAdapter = GalleryAdapter(
             onImageClick = { image, _ ->
                 val imageItems = galleryAdapter.currentList.filterIsInstance<GalleryItem.ImageItem>()
-                val imageUris = ArrayList(imageItems.map { it.image.uri.toString() })
-                val mediaTypes = ArrayList(imageItems.map {
-                    if (it.image.mediaType == MediaType.VIDEO) "video" else "image"
-                })
-                val durations = ArrayList(imageItems.map { it.image.duration.toString() })
-                val imagePosition = imageItems.indexOfFirst { it.image.uri == image.uri }
-                val intent = Intent(this, ImageViewerActivity::class.java).apply {
-                    putExtra(ImageViewerActivity.EXTRA_IMAGE_POSITION, imagePosition.coerceAtLeast(0))
-                    putStringArrayListExtra(ImageViewerActivity.EXTRA_IMAGE_URIS, imageUris)
-                    putStringArrayListExtra(ImageViewerActivity.EXTRA_MEDIA_TYPES, mediaTypes)
-                    putStringArrayListExtra(ImageViewerActivity.EXTRA_DURATIONS, durations)
+                val mediaItems = imageItems.map {
+                    MediaPagerAdapter.MediaItem(
+                        uri = it.image.uri,
+                        mediaType = it.image.mediaType,
+                        duration = it.image.duration
+                    )
                 }
+                val imagePosition = imageItems.indexOfFirst { it.image.uri == image.uri }
+                val intent = ImageViewerActivity.createIntent(
+                    this,
+                    mediaItems,
+                    imagePosition.coerceAtLeast(0)
+                )
                 startActivity(intent)
             }
         )

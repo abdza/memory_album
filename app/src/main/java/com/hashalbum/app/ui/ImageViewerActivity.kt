@@ -4,6 +4,7 @@ import android.Manifest
 import android.animation.ObjectAnimator
 import android.animation.PropertyValuesHolder
 import android.app.RecoverableSecurityException
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
@@ -44,21 +45,78 @@ import com.hashalbum.app.util.TagParser
 import kotlinx.coroutines.launch
 import kotlin.math.abs
 
+object ImageViewerSession {
+    private var nextId = 1L
+    private var currentId: Long = -1L
+    private var currentItems: List<MediaPagerAdapter.MediaItem> = emptyList()
+
+    @Synchronized
+    fun store(items: List<MediaPagerAdapter.MediaItem>): Long {
+        val id = nextId++
+        currentId = id
+        currentItems = items
+        return id
+    }
+
+    @Synchronized
+    fun get(id: Long): List<MediaPagerAdapter.MediaItem>? {
+        return if (id == currentId && currentItems.isNotEmpty()) currentItems else null
+    }
+
+    @Synchronized
+    fun update(id: Long, items: List<MediaPagerAdapter.MediaItem>) {
+        if (id == currentId) {
+            currentItems = items
+        }
+    }
+}
+
 class ImageViewerActivity : AppCompatActivity() {
     
     companion object {
+        const val EXTRA_SESSION_ID = "extra_session_id"
         const val EXTRA_IMAGE_POSITION = "extra_image_position"
+        const val EXTRA_SELECTED_URI = "extra_selected_uri"
+        const val EXTRA_SELECTED_MEDIA_TYPE = "extra_selected_media_type"
+        const val EXTRA_SELECTED_DURATION = "extra_selected_duration"
         const val EXTRA_IMAGE_URIS = "extra_image_uris"
         const val EXTRA_MEDIA_TYPES = "extra_media_types"
         const val EXTRA_DURATIONS = "extra_durations"
+        private const val STATE_CURRENT_POSITION = "state_current_position"
+        private const val STATE_CURRENT_URI = "state_current_uri"
+        private const val STATE_CURRENT_MEDIA_TYPE = "state_current_media_type"
+        private const val STATE_CURRENT_DURATION = "state_current_duration"
         private const val SWIPE_THRESHOLD = 100
         private const val SWIPE_VELOCITY_THRESHOLD = 100
+
+        fun createIntent(
+            context: Context,
+            items: List<MediaPagerAdapter.MediaItem>,
+            position: Int
+        ): Intent {
+            val safePosition = if (items.isEmpty()) 0 else position.coerceIn(0, items.lastIndex)
+            val sessionId = ImageViewerSession.store(items)
+            val selected = items.getOrNull(safePosition)
+            return Intent(context, ImageViewerActivity::class.java).apply {
+                putExtra(EXTRA_SESSION_ID, sessionId)
+                putExtra(EXTRA_IMAGE_POSITION, safePosition)
+                if (selected != null) {
+                    putExtra(EXTRA_SELECTED_URI, selected.uri.toString())
+                    putExtra(
+                        EXTRA_SELECTED_MEDIA_TYPE,
+                        if (selected.mediaType == MediaType.VIDEO) "video" else "image"
+                    )
+                    putExtra(EXTRA_SELECTED_DURATION, selected.duration)
+                }
+            }
+        }
     }
     
     private lateinit var binding: ActivityImageViewerBinding
     private val viewModel: GalleryViewModel by viewModels()
     
     private lateinit var mediaAdapter: MediaPagerAdapter
+    private var sessionId: Long = -1L
     private var mediaItems: List<MediaPagerAdapter.MediaItem> = emptyList()
     private var imageUris: List<Uri> = emptyList()
     private var currentPosition = 0
@@ -114,7 +172,11 @@ class ImageViewerActivity : AppCompatActivity() {
         binding = ActivityImageViewerBinding.inflate(layoutInflater)
         setContentView(binding.root)
         
-        parseIntent()
+        parseIntent(savedInstanceState)
+        if (mediaItems.isEmpty()) {
+            finish()
+            return
+        }
         setupViewPager()
         setupGestureDetection()
         setupRemarkPanel()
@@ -126,32 +188,88 @@ class ImageViewerActivity : AppCompatActivity() {
         // Load initial remark
         loadCurrentImageRemark()
     }
-    
-    private fun parseIntent() {
-        currentPosition = intent.getIntExtra(EXTRA_IMAGE_POSITION, 0)
-        val uriStrings = intent.getStringArrayListExtra(EXTRA_IMAGE_URIS) ?: arrayListOf()
-        val mediaTypeStrings = intent.getStringArrayListExtra(EXTRA_MEDIA_TYPES)
-        val durations = intent.getStringArrayListExtra(EXTRA_DURATIONS)
 
-        imageUris = uriStrings.map { Uri.parse(it) }
-        mediaItems = uriStrings.mapIndexed { index, uriStr ->
-            val explicitType = mediaTypeStrings?.getOrNull(index)
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putInt(STATE_CURRENT_POSITION, currentPosition)
+        mediaItems.getOrNull(currentPosition)?.let { item ->
+            outState.putString(STATE_CURRENT_URI, item.uri.toString())
+            outState.putString(
+                STATE_CURRENT_MEDIA_TYPE,
+                if (item.mediaType == MediaType.VIDEO) "video" else "image"
+            )
+            outState.putLong(STATE_CURRENT_DURATION, item.duration)
+        }
+    }
+    
+    private fun parseIntent(savedInstanceState: Bundle?) {
+        sessionId = intent.getLongExtra(EXTRA_SESSION_ID, -1L)
+        val savedPos = savedInstanceState?.getInt(STATE_CURRENT_POSITION, -1) ?: -1
+        val requestedPosition = if (savedPos >= 0) savedPos else intent.getIntExtra(EXTRA_IMAGE_POSITION, 0)
+
+        val sessionItems = if (sessionId != -1L) ImageViewerSession.get(sessionId) else null
+        if (sessionItems != null) {
+            mediaItems = sessionItems
+            imageUris = sessionItems.map { it.uri }
+            currentPosition = requestedPosition.coerceIn(0, mediaItems.lastIndex)
+            return
+        }
+
+        val uriStrings = intent.getStringArrayListExtra(EXTRA_IMAGE_URIS)
+        if (!uriStrings.isNullOrEmpty()) {
+            val mediaTypeStrings = intent.getStringArrayListExtra(EXTRA_MEDIA_TYPES)
+            val durations = intent.getStringArrayListExtra(EXTRA_DURATIONS)
+
+            imageUris = uriStrings.map { Uri.parse(it) }
+            mediaItems = uriStrings.mapIndexed { index, uriStr ->
+                val explicitType = mediaTypeStrings?.getOrNull(index)
+                val mediaType = when {
+                    explicitType == "video" -> MediaType.VIDEO
+                    uriStr.contains("/video/") -> MediaType.VIDEO
+                    else -> MediaType.IMAGE
+                }
+                val duration = durations?.getOrNull(index)?.toLongOrNull() ?: 0L
+                MediaPagerAdapter.MediaItem(
+                    uri = Uri.parse(uriStr),
+                    mediaType = mediaType,
+                    duration = duration
+                )
+            }
+            currentPosition = requestedPosition.coerceIn(0, mediaItems.lastIndex)
+            return
+        }
+
+        val fallbackUriStr = savedInstanceState?.getString(STATE_CURRENT_URI)
+            ?: intent.getStringExtra(EXTRA_SELECTED_URI)
+        if (fallbackUriStr != null) {
+            val fallbackTypeStr = savedInstanceState?.getString(STATE_CURRENT_MEDIA_TYPE)
+                ?: intent.getStringExtra(EXTRA_SELECTED_MEDIA_TYPE)
+            val fallbackDuration = savedInstanceState?.getLong(STATE_CURRENT_DURATION, 0L)
+                ?: intent.getLongExtra(EXTRA_SELECTED_DURATION, 0L)
             val mediaType = when {
-                explicitType == "video" -> MediaType.VIDEO
-                uriStr.contains("/video/") -> MediaType.VIDEO
+                fallbackTypeStr == "video" -> MediaType.VIDEO
+                fallbackUriStr.contains("/video/") -> MediaType.VIDEO
                 else -> MediaType.IMAGE
             }
-            val duration = durations?.getOrNull(index)?.toLongOrNull() ?: 0L
-            MediaPagerAdapter.MediaItem(
-                uri = Uri.parse(uriStr),
-                mediaType = mediaType,
-                duration = duration
+            val uri = Uri.parse(fallbackUriStr)
+            imageUris = listOf(uri)
+            mediaItems = listOf(
+                MediaPagerAdapter.MediaItem(
+                    uri = uri,
+                    mediaType = mediaType,
+                    duration = fallbackDuration
+                )
             )
+            currentPosition = 0
+        } else {
+            imageUris = emptyList()
+            mediaItems = emptyList()
+            currentPosition = 0
         }
     }
     
     private fun setupViewPager() {
-        mediaAdapter = MediaPagerAdapter(mediaItems) { position ->
+        mediaAdapter = MediaPagerAdapter(mediaItems) { _ ->
             // Single tap - toggle UI visibility
             toggleUiVisibility()
         }
@@ -883,6 +1001,9 @@ class ImageViewerActivity : AppCompatActivity() {
 
         imageUris = newUris
         mediaItems = newMediaItems
+        if (sessionId != -1L) {
+            ImageViewerSession.update(sessionId, newMediaItems)
+        }
 
         mediaAdapter = MediaPagerAdapter(mediaItems) { _ -> toggleUiVisibility() }
         binding.viewPager.adapter = mediaAdapter
